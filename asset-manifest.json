@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/flightplot/static/css/main.168b535a.chunk.css",
+    "main.js": "/flightplot/static/js/main.c8df50bf.chunk.js",
+    "main.js.map": "/flightplot/static/js/main.c8df50bf.chunk.js.map",
+    "runtime-main.js": "/flightplot/static/js/runtime-main.3b055fa1.js",
+    "runtime-main.js.map": "/flightplot/static/js/runtime-main.3b055fa1.js.map",
+    "static/css/2.9015c732.chunk.css": "/flightplot/static/css/2.9015c732.chunk.css",
+    "static/js/2.db3147be.chunk.js": "/flightplot/static/js/2.db3147be.chunk.js",
+    "static/js/2.db3147be.chunk.js.map": "/flightplot/static/js/2.db3147be.chunk.js.map",
+    "index.html": "/flightplot/index.html",
+    "precache-manifest.52a94d19df5198cc4dceff8092c7f1c4.js": "/flightplot/precache-manifest.52a94d19df5198cc4dceff8092c7f1c4.js",
+    "service-worker.js": "/flightplot/service-worker.js",
+    "static/css/2.9015c732.chunk.css.map": "/flightplot/static/css/2.9015c732.chunk.css.map",
+    "static/css/main.168b535a.chunk.css.map": "/flightplot/static/css/main.168b535a.chunk.css.map",
+    "static/js/2.db3147be.chunk.js.LICENSE.txt": "/flightplot/static/js/2.db3147be.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3b055fa1.js",
+    "static/css/2.9015c732.chunk.css",
+    "static/js/2.db3147be.chunk.js",
+    "static/css/main.168b535a.chunk.css",
+    "static/js/main.c8df50bf.chunk.js"
+  ]
+}

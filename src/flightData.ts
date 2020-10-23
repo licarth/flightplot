@@ -31,13 +31,11 @@ const gpsRecordDecoder: Decoder.Decoder<Row, GpsRecord> = {
     }),
 };
 
-export const parseFile = (
-  fileName: string,
-): TE.TaskEither<any, LatLngTuple[]> => {
+export const getFlightData = (fileName: string) => {
   const parser = new Parser();
   return pipe(
     TE.tryCatch(
-      () => fetch(`/${fileName}`),
+      () => fetch(`/flightplot/flights/${fileName}`),
       (reason) => new Error(`Could not fetch: ${reason}`),
     ),
     TE.chain((file) =>
@@ -46,14 +44,20 @@ export const parseFile = (
         () => new Error("Could not parse as text"),
       ),
     ),
-    TE.map((text) => parser.parse(text)),
+    TE.mapLeft((x) => x),
+    TE.chain((text) =>
+      TE.fromEither(
+        E.tryCatch(
+          () => parser.parse(text),
+          (e) => new Error(`Parser.parse() failed: ${e}`),
+        ),
+      ),
+    ),
     TE.map(([_headers, ...lines]) => lines.slice(4500, 8000)),
     TE.chainW(TEOfmapOfGpsRecord),
-    TE.map((x) => x.map(({ latitude, longitude }) => [latitude, longitude])),
-    // TE.map((x) => {
-      // console.log(x);
-    //   return [[1, 1]];
-    // }),
+    TE.map((x) =>
+      x.map(({ latitude, longitude }) => [latitude, longitude] as LatLngTuple),
+    ),
   );
 };
 const TEOfmapOfGpsRecord = FPArray.traverse(TE.taskEither)(

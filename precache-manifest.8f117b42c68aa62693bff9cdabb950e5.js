@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "140a34dfedf737faaf23486fb958d5a5",
+    "revision": "7f83823e8eca4ee78a0a5f51e9703a58",
     "url": "/flightplot/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/flightplot/static/css/2.ae800195.chunk.css"
   },
   {
-    "revision": "fe3b941738a55d610f18",
+    "revision": "f2d32e7257d0e495d0fd",
     "url": "/flightplot/static/css/main.168b535a.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/flightplot/static/js/2.97a02154.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "fe3b941738a55d610f18",
-    "url": "/flightplot/static/js/main.49c04426.chunk.js"
+    "revision": "f2d32e7257d0e495d0fd",
+    "url": "/flightplot/static/js/main.d4eb3827.chunk.js"
   },
   {
     "revision": "2de71bc8cab1bdb086b3",

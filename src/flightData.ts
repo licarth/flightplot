@@ -44,7 +44,6 @@ export const getFlightData = (fileName: string) => {
         () => new Error("Could not parse as text"),
       ),
     ),
-    TE.mapLeft((x) => x),
     TE.chain((text) =>
       TE.fromEither(
         E.tryCatch(
@@ -54,12 +53,13 @@ export const getFlightData = (fileName: string) => {
       ),
     ),
     TE.map(([_headers, ...lines]) => lines.slice(4500, 8000)),
-    TE.chainW(TEOfmapOfGpsRecord),
+    TE.chainW(
+      FPArray.traverse(TE.taskEither)(
+        flow(gpsRecordDecoder.decode, TE.fromEither),
+      ),
+    ),
     TE.map((x) =>
       x.map(({ latitude, longitude }) => [latitude, longitude] as LatLngTuple),
     ),
   );
 };
-const TEOfmapOfGpsRecord = FPArray.traverse(TE.taskEither)(
-  flow(gpsRecordDecoder.decode, TE.fromEither),
-);

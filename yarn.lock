@@ -5779,6 +5779,11 @@ gensync@^1.0.0-beta.1:
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.1.tgz#58f4361ff987e5ff6e1e7a210827aa371eaac269"
   integrity sha512-r8EC6NO1sngH/zdD9fiRDLdcgnbayXah+mLgManTaIZJqEC1MZstmnox8KpnI2/fxQwrp5OpCOYWLp4rBl4Jcg==
 
+geolib@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/geolib/-/geolib-3.3.1.tgz#f144a53b6a6858e81111ff71d137318389927611"
+  integrity sha512-sfahBXFcgELdpumDZV5b3KWiINkZxC5myAkLk067UUcTmTXaiE9SWmxMEHztn/Eus4JX6kesHxaIuZlniYgUtg==
+
 geoportal-access-lib@2.1.6:
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/geoportal-access-lib/-/geoportal-access-lib-2.1.6.tgz#8bb0d4cc7045c39c3392fe076ba699aace2b6066"
@@ -7545,6 +7550,18 @@ leaflet-draw@1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/leaflet-draw/-/leaflet-draw-1.0.4.tgz#45be92f378ed253e7202fdeda1fcc71885198d46"
   integrity sha512-rsQ6saQO5ST5Aj6XRFylr5zvarWgzWnrg46zQ1MEOEIHsppdC/8hnN8qMoFvACsPvTioAuysya/TVtog15tyAQ==
+
+leaflet-path-drag@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/leaflet-path-drag/-/leaflet-path-drag-1.1.0.tgz#586e464b51ee3b712e74b4a92dc10a259f0eb9ff"
+  integrity sha512-wd2uNgn3yuMl7HI0YG0z6qhxnRbvCQHE8ncpERfUZ6gTPbM5Xctwzyi+gE8cMnIDlv22GO3slSBupD9GW7jIEQ==
+
+leaflet-path-transform@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/leaflet-path-transform/-/leaflet-path-transform-1.1.3.tgz#8cdbcc70079b953279b0f5a404c8647b1cf8b65e"
+  integrity sha512-hmF3igZVyKRcA4RprEUxA08hWN9ORpOK41wuvHWc839IFr9b0kpREzw2u1XmoImJYq67Omb3Q+MKT43tK90S3w==
+  dependencies:
+    leaflet-path-drag "^1.1.0"
 
 leaflet.locatecontrol@^0.72.0:
   version "0.72.0"
@@ -10348,6 +10365,11 @@ react-is@^16.8.1, react-is@^16.8.4:
   version "16.12.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.12.0.tgz#2cc0fe0fba742d97fd527c42a13bec4eeb06241c"
   integrity sha512-rPCkf/mWBtKc97aLL9/txD8DZdemK0vkA3JMLShjlJB3Pj3s+lpf1KaBzMfQrAmhMQB0n1cU/SUGgKKBCe837Q==
+
+react-leaflet-distortable-imageoverlay@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-leaflet-distortable-imageoverlay/-/react-leaflet-distortable-imageoverlay-1.0.1.tgz#5dfe5a03c1d5ac93d66c25adc74e1e2c6b638332"
+  integrity sha512-7EWfswY4389/uDfKUb1cTYBc11Ow42/ZfGryqukLzdDcQ6rUbP0HQ4AxTuP8uxqZQvgPJD+3DZslme6sZ5y0Qg==
 
 react-leaflet@^2.7.0:
   version "2.7.0"

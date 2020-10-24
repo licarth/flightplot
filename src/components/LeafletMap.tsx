@@ -5,10 +5,11 @@ import * as TE from "fp-ts/lib/TaskEither";
 import "geoportal-extensions-leaflet/dist/GpPluginLeaflet";
 import "geoportal-extensions-leaflet/dist/GpPluginLeaflet.css";
 import { LatLngTuple } from "leaflet";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Map, Polyline } from "react-leaflet";
+import { Map as LeafletInternalMap } from "leaflet";
 import { getFlightData } from "../flightData";
-import { Chart } from "./Chart";
+import { Chart } from "./CustomChart";
 import { OaciLayer } from "./layer";
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
@@ -16,7 +17,8 @@ const zoom: number = 11;
 
 export const LeafletMap: React.FC = () => {
   const [lines, setLines] = useState<LatLngTuple[] | null>(null);
-
+  // const mapRef = useRef<LeafletInternalMap>(null);
+  const mapRef = useRef<Map>(null);
   const openNotificationWithIcon = ({
     title,
     message,
@@ -76,12 +78,12 @@ export const LeafletMap: React.FC = () => {
   // pg.on("drag, dragend", function (e) {
   //   overlay.setBounds(pg.getBounds());
   // });
-
+  const leafletMap = mapRef.current?.leafletElement;
   return (
-    <Map id="mapId" center={defaultLatLng} zoom={zoom}>
+    <Map id="mapId" ref={mapRef} center={defaultLatLng} zoom={zoom}>
       {/* <OpenStreetMapLayer /> */}
       <OaciLayer />
-      <Chart />
+      {leafletMap && <Chart map={leafletMap} />}
       {/* <LocateControl startDirectly /> */}
       {lines && <Polyline opacity={10} color="black" positions={lines} />}
     </Map>

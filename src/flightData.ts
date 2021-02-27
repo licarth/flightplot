@@ -4,17 +4,17 @@ import * as E from "fp-ts/lib/Either";
 import { flow, pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
 import * as Decoder from "io-ts/lib/Decoder";
-import { LatLngTuple } from "leaflet";
+import parse from "date-fns/parse";
 
-type GpsRecord = {
+export type GpsRecord = {
   // type: ,
-  // date time: ,
+  datetime: Date;
   latitude: number;
   longitude: number;
   // accuracy: ,
   altitude: number;
   // geoid_height: number;
-  // speed: number;
+  speed: number;
   // bearing: number;
   // sat_used: ,
   // sat_inview: ,
@@ -27,15 +27,25 @@ const gpsRecordDecoder: Decoder.Decoder<Row, GpsRecord> = {
     E.right({
       latitude: Number(row[2]),
       longitude: Number(row[3]),
-      altitude: Number(row[5]),
+      altitude: Number(row[5]) * 3.28,
+      speed: (Number(row[7]) * 3.6) / 1.852,
+      datetime: parse(row[1], "yyyy-MM-dd HH:mm:ss", new Date()),
     }),
 };
 
-export const getFlightData = (fileName: string) => {
+export const getFlightData = ({
+  file,
+  start,
+  end,
+}: {
+  file: string;
+  start?: number;
+  end?: number;
+}) => {
   const parser = new Parser();
   return pipe(
     TE.tryCatch(
-      () => fetch(`/flightplot/flights/${fileName}`),
+      () => fetch(`/flightplot/flights/${file}`),
       (reason) => new Error(`Could not fetch: ${reason}`),
     ),
     TE.chain((file) =>
@@ -52,14 +62,16 @@ export const getFlightData = (fileName: string) => {
         ),
       ),
     ),
-    TE.map(([_headers, ...lines]) => lines.slice(4500, 8000)),
+    TE.map(([_headers, ...lines]) =>
+      lines.slice(start ? start : 0, end ? end : lines.length - 1),
+    ),
     TE.chainW(
       FPArray.traverse(TE.taskEither)(
         flow(gpsRecordDecoder.decode, TE.fromEither),
       ),
     ),
-    TE.map((x) =>
-      x.map(({ latitude, longitude }) => [latitude, longitude] as LatLngTuple),
-    ),
+    // TE.map((x) =>
+    //   x.map(({ latitude, longitude }) => [latitude, longitude] as LatLngTuple),
+    // ),
   );
 };

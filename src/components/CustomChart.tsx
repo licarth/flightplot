@@ -1,10 +1,9 @@
-import { sequenceS } from "fp-ts/lib/Apply";
 import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
-import { getCenter, getDistance } from "geolib";
+import { getCenter } from "geolib";
 import { GeolibInputCoordinates } from "geolib/es/types";
-import { LatLng, LatLngTuple, Map, Point, PointExpression } from "leaflet";
-import React, { createRef, useState } from "react";
+import Leaflet, { LatLng, LatLngTuple, Map, Point } from "leaflet";
+import React, { useRef, useState } from "react";
 import { ImageOverlay, Marker } from "react-leaflet";
 import LFMT_PNG from "../LFMT.png";
 
@@ -56,86 +55,54 @@ const calculateScalingFactor = (
   return Math.sqrt(newRadiusSquared / formerRadiusSquared);
 };
 
+const translate = ({
+  previousChartPosition,
+  previousMarkerPosition,
+  newMarkerPosition,
+}: {
+  previousChartPosition: ChartPosition;
+  previousMarkerPosition: LatLngTuple;
+  newMarkerPosition: LatLngTuple;
+}): ChartPosition => {
+  const deltaLat = newMarkerPosition[0] - previousMarkerPosition[0];
+  const deltaLng = newMarkerPosition[1] - previousMarkerPosition[1];
+  return {
+    bottomRight: [
+      previousChartPosition.bottomRight[0] + deltaLat,
+      previousChartPosition.bottomRight[1] + deltaLng,
+    ],
+    topLeft: [
+      previousChartPosition.topLeft[0] + deltaLat,
+      previousChartPosition.topLeft[1] + deltaLng,
+    ],
+  };
+};
+
 const scale = ({
   lastPosition,
-  newTopLeft = null,
-  newTopRight = null,
+  newTopLeft,
   map,
 }: {
   lastPosition: ChartPosition;
-  newTopLeft?: LatLngTuple | null;
-  newTopRight?: LatLngTuple | null;
+  newTopLeft: LatLngTuple;
   map: Map;
 }): E.Either<Error, ChartPosition> => {
-  const center = centerOf([lastPosition.topLeft, lastPosition.bottomRight]);
-  const centerPoint = pipe(center, map.latLngToLayerPoint.bind(map));
-  const lastPoint = newTopLeft
-    ? lastPosition.topLeft
-    : lastPosition.bottomRight;
-  const newPoint = newTopLeft ? newTopLeft : newTopRight;
-
-  if (newPoint === null) {
-    return E.left(new Error("Should never happen"));
-  }
-
-  const scalingFactor = calculateScalingFactor(
-    lastPoint,
-    newPoint,
-    {
-      lat: center[0],
-      lng: center[1],
-    } as LatLng,
-    map,
-  );
-
-  const calculateNewPosition = (
-    latLng: LatLngTuple,
-    centerPoint: PointExpression,
-    scalingFactor: number,
-  ) => {
-    const a = map
-      .latLngToLayerPoint(latLng)
-      .subtract(centerPoint)
-      .multiplyBy(scalingFactor)
-      .add(centerPoint);
-    return map.layerPointToLatLng(a);
-    // return { lat: latLng[0], lng: latLng[1] };
-  };
-
-  const result = pipe(
-    {
-      bottomRight: calculateNewPosition(
-        lastPosition.bottomRight,
-        centerPoint,
-        scalingFactor,
-      ),
-      topLeft: calculateNewPosition(
-        lastPosition.topLeft,
-        centerPoint,
-        scalingFactor,
-      ),
-    },
-    ({ topLeft, bottomRight }) => ({
-      topLeft: [topLeft.lat, topLeft.lng],
-      bottomRight: [bottomRight.lat, bottomRight.lng],
-    }),
-  );
-
-  //@ts-ignore
-  return E.right(result);
+  return E.right({
+    topLeft: newTopLeft,
+    bottomRight: lastPosition.bottomRight,
+  });
 };
 
 export const Chart = ({ map }: { map: Map }) => {
   const [chartPosition, setChartPosition] = useState<ChartPosition>({
-    topLeft: [43.88, 3.5],
-    bottomRight: [43.15, 4.2],
+    topLeft: [43.922119317999055, 3.764877319335938],
+    bottomRight: [43.42300370191848, 4.205703735351563],
   });
-  const topLeftMarkerRef = createRef<Marker>();
-  const bottomRightMarkerRef = createRef<Marker>();
-  const imageOverlayRef = createRef<ImageOverlay>();
+  const topLeftMarkerRef = useRef<Leaflet.Marker>(null);
+  const translationMarkerRef = useRef<Leaflet.Marker>(null);
+  const imageOverlayRef = useRef<Leaflet.ImageOverlay>(null);
   const { topLeft, bottomRight } = chartPosition;
   const bounds = [topLeft, bottomRight];
-
   return (
     <>
       <ImageOverlay
@@ -143,32 +110,63 @@ export const Chart = ({ map }: { map: Map }) => {
         bounds={bounds}
         url={LFMT_PNG}
         opacity={1}
-        interactive
+        // zIndex={1000}
+      />
+      {/* <Rectangle
+        bounds={bounds}
+        fill
+        stroke
+        fillColor="white"
+        fillOpacity={1}
+        /> */}
+      <Marker
+        draggable
+        // icon={}
+        ref={translationMarkerRef}
+        position={chartPosition.bottomRight}
+        eventHandlers={{
+          drag: (e) => {
+            if (translationMarkerRef.current) {
+              const { lat, lng } = translationMarkerRef.current.getLatLng();
+
+              const newMarkerPosition = [lat, lng] as LatLngTuple;
+              const newPosition = translate({
+                previousChartPosition: chartPosition,
+                newMarkerPosition,
+                previousMarkerPosition: chartPosition.bottomRight,
+              });
+              setChartPosition(newPosition);
+            }
+          },
+        }}
       />
       <Marker
         draggable
         position={chartPosition.topLeft}
         ref={topLeftMarkerRef}
-        ondrag={(e) => {
-          if (topLeftMarkerRef.current) {
-            const {
-              lat,
-              lng,
-            } = topLeftMarkerRef.current.leafletElement.getLatLng();
-            const newTopLeft = [lat, lng] as LatLngTuple;
-            const newPositions = pipe(
-              scale({
-                lastPosition: chartPosition,
-                newTopLeft,
-                map,
-              }),
-              E.fold(
-                () => chartPosition,
-                (a) => a,
-              ),
-            );
-            setChartPosition(newPositions);
-          }
+        eventHandlers={{
+          drag: (e) => {
+            if (topLeftMarkerRef.current) {
+              const { lat, lng } = topLeftMarkerRef.current.getLatLng();
+              const newTopLeft = [lat, lng] as LatLngTuple;
+              const newPositions = pipe(
+                scale({
+                  lastPosition: chartPosition,
+                  newTopLeft,
+                  map,
+                }),
+                E.fold(
+                  () => chartPosition,
+                  (a) => a,
+                ),
+              );
+              // setChartPosition({newPositions});
+              setChartPosition({
+                topLeft: newTopLeft,
+                bottomRight: newPositions.bottomRight,
+              });
+            }
+          },
         }}
       />
       {/* <Marker

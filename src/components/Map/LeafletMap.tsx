@@ -2,8 +2,6 @@ import { Layout, notification } from "antd";
 import "antd/dist/antd.css";
 import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
-import "geoportal-extensions-leaflet/dist/GpPluginLeaflet";
-import "geoportal-extensions-leaflet/dist/GpPluginLeaflet.css";
 import { LatLngTuple } from "leaflet";
 import React, { useEffect, useRef, useState } from "react";
 import { MapContainer, Marker, Polyline, useMap } from "react-leaflet";

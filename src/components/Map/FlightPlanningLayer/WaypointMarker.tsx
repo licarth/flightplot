@@ -1,16 +1,17 @@
-import Leaflet, { LatLngExpression } from "leaflet";
+import Leaflet, { LatLng, LatLngExpression } from "leaflet";
 import React, { useRef, useState } from "react";
 // import { showMenu } from "react-contextmenu/modules/actions";
 import { Circle, Marker } from "react-leaflet";
 
 export const WaypointMarker = ({
-  initialPosition,
+  position,
   onDelete,
+  onDrag,
 }: {
-  initialPosition: LatLngExpression;
+  position: LatLngExpression;
   onDelete?: () => void;
+  onDrag?: (latLng: LatLng) => void;
 }) => {
-  const [position, setPosition] = useState(initialPosition);
   const markerRef = useRef<Leaflet.Marker>(null);
 
   return (
@@ -23,7 +24,7 @@ export const WaypointMarker = ({
           onDelete && onDelete();
         },
         drag: (event) => {
-          setPosition(event.target.getLatLng());
+          onDrag && onDrag(event.target.getLatLng());
         },
       }}
     >

@@ -7,9 +7,19 @@ export class Route {
     this.waypoints = [...waypoints];
   }
 
-  addWaypoint(waypoint: Waypoint): Route {
+  addWaypoint({
+    position = this.waypoints.length + 1,
+    waypoint,
+  }: {
+    position?: number;
+    waypoint: Waypoint;
+  }): Route {
     return new Route({
-      waypoints: [...this.waypoints, waypoint],
+      waypoints: [
+        ...this.waypoints.slice(0, position),
+        waypoint,
+        ...this.waypoints.slice(position, this.waypoints.length),
+      ],
     });
   }
 
@@ -22,15 +32,15 @@ export class Route {
   }
 
   replaceWaypoint({
-    waypointPostion,
+    waypointPosition,
     newWaypoint,
   }: {
-    waypointPostion: number;
+    waypointPosition: number;
     newWaypoint: Waypoint;
   }): Route {
     const newWaypoints = [...this.waypoints];
 
-    newWaypoints[waypointPostion] = newWaypoint;
+    newWaypoints[waypointPosition] = newWaypoint;
     return new Route({
       waypoints: newWaypoints,
     });

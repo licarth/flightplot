@@ -4,9 +4,9 @@ import { Waypoint } from "./Waypoint";
 
 describe("Route", () => {
   it("should add a waypoint properly", () => {
-    const route = Route.create().addWaypoint(
-      Waypoint.fromLatLng(new LatLng(0, 0)),
-    );
+    const route = Route.create().addWaypoint({
+      waypoint: Waypoint.fromLatLng(new LatLng(0, 0)),
+    });
 
     expect(route.waypoints).toHaveLength(1);
   });

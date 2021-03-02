@@ -2,15 +2,17 @@ import { Layout, notification } from "antd";
 import "antd/dist/antd.css";
 import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
-import { LatLngTuple } from "leaflet";
+import { LatLng, LatLngTuple } from "leaflet";
 import React, { useEffect, useRef, useState } from "react";
-import { MapContainer, Marker, Polyline, useMap } from "react-leaflet";
+import { MapContainer, useMap } from "react-leaflet";
 import { DisplayedLayers } from "../../App";
+import { Route, Waypoint } from "../../domain";
 import { getFlightData, GpsRecord } from "../../flightData";
 import { AltitudeChart } from "../AltitudeChart";
 import { Chart } from "../CustomChart";
 import { OaciLayer, OpenStreetMapLayer } from "../layer";
 import { FlightPlanningLayer } from "./FlightPlanningLayer";
+import { RouteDescription } from "./RouteDescription";
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 11;
@@ -29,7 +31,11 @@ export const LeafletMap = ({
   const [gpsRecords, setLines] = useState<GpsRecord[] | null>(null);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [currentPoint, setCurrentPoint] = useState<number | null>(null);
-
+  const [route, setRoute] = useState<Route>(
+    new Route({
+      waypoints: [],
+    }),
+  );
   const pathRef = useRef(null);
   const openNotificationWithIcon = ({
     title,
@@ -42,6 +48,37 @@ export const LeafletMap = ({
       message: title,
       description: message,
     });
+  };
+
+  const addWaypoint = ({
+    latLng,
+    position,
+  }: {
+    latLng: LatLng;
+    position?: number;
+  }) => {
+    setRoute(
+      route.addWaypoint({ position, waypoint: Waypoint.fromLatLng(latLng) }),
+    );
+  };
+
+  const repositionWaypoint = ({
+    waypointPosition,
+    waypointLatLng,
+  }: {
+    waypointPosition: number;
+    waypointLatLng: LatLng;
+  }) =>
+    setRoute(
+      route.replaceWaypoint({
+        waypointPosition,
+        newWaypoint: Waypoint.fromLatLng(waypointLatLng),
+      }),
+    );
+
+  const removeWaypoint = (waypointPosition: number) => {
+    console.log(`removing waypoint ${waypointPosition}`);
+    setRoute(route.removeWaypoint(waypointPosition));
   };
 
   useEffect(() => {
@@ -67,14 +104,14 @@ export const LeafletMap = ({
     currentPoint && gpsRecords ? gpsRecords[currentPoint] : null;
   return (
     <>
-      <div onContextMenu={(e)=> e.preventDefault()}>
+      <div onContextMenu={(e) => e.preventDefault()}>
         <Layout>
           <MapContainer id="mapId" center={defaultLatLng} zoom={zoom}>
             <Layers
               displayedLayers={displayedLayers}
               displayLFMT={displayLFMT}
             />
-            {gpsRecords && (
+            {/* {gpsRecords && (
               <Polyline
                 ref={pathRef}
                 opacity={10}
@@ -94,8 +131,13 @@ export const LeafletMap = ({
                   lng: currentGpsRecord.longitude,
                 }}
               />
-            )}
-            <FlightPlanningLayer />
+            )} */}
+            <FlightPlanningLayer
+              addWaypoint={addWaypoint}
+              route={route}
+              removeWaypoint={removeWaypoint}
+              repositionWaypoint={repositionWaypoint}
+            />
           </MapContainer>
           <div style={{ height: "20vh" }}>
             {gpsRecords && (
@@ -110,6 +152,7 @@ export const LeafletMap = ({
           </div>
         </Layout>
       </div>
+      <RouteDescription route={route} />
     </>
   );
 };

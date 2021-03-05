@@ -1,8 +1,8 @@
 import CheapRuler, { Line } from "cheap-ruler";
 import { LatLng } from "leaflet";
 import { useState } from "react";
-import { Polyline, useMapEvent } from "react-leaflet";
-import { Route } from "../../../domain";
+import { Circle, Polyline, useMapEvent } from "react-leaflet";
+import { Route, Waypoint } from "../../../domain";
 import { WaypointMarker, WaypointType } from "./WaypointMarker";
 
 const ruler = new CheapRuler(43, "nauticalmiles");
@@ -11,7 +11,7 @@ export const FlightPlanningLayer = ({
   route,
   addWaypoint,
   removeWaypoint,
-  repositionWaypoint,
+  replaceWaypoint,
 }: {
   route: Route;
   addWaypoint: ({
@@ -22,12 +22,12 @@ export const FlightPlanningLayer = ({
     position?: number;
   }) => void;
   removeWaypoint: (waypointPosition: number) => void;
-  repositionWaypoint: ({
+  replaceWaypoint: ({
     waypointPosition,
-    waypointLatLng,
+    newWaypoint,
   }: {
     waypointPosition: number;
-    waypointLatLng: LatLng;
+    newWaypoint: Waypoint;
   }) => void;
 }) => {
   const [previewWaypoint, setPreviewWaypoint] = useState<LatLng | null>(null);
@@ -36,6 +36,17 @@ export const FlightPlanningLayer = ({
     console.log("using map event");
     addWaypoint({ latLng: e.latlng });
   });
+
+  type TemporaryWaypoint = {
+    waypointBefore?: Waypoint;
+    waypoint: Waypoint;
+    waypointAfter?: Waypoint;
+  };
+
+  const [
+    temporaryWaypoint,
+    setTemporaryWaypoint,
+  ] = useState<TemporaryWaypoint | null>(null);
 
   const waypointType = (i: number): WaypointType => {
     if (i === 0) {
@@ -52,18 +63,32 @@ export const FlightPlanningLayer = ({
       {route.waypoints.map((w, i) => (
         <>
           <WaypointMarker
-            key={`waypoint-${i}`}
-            label={`${i}`}
+            key={`waypoint-${w.id}`}
+            label={w.name}
             waypointNumber={i}
             type={waypointType(i)}
             position={w.latLng}
             onDelete={() => removeWaypoint(i)}
-            onDrag={(latLng) =>
-              repositionWaypoint({
+            onDragEnd={(latLng) => {
+              setTemporaryWaypoint(null);
+              return replaceWaypoint({
                 waypointPosition: i,
-                waypointLatLng: latLng,
-              })
-            }
+                newWaypoint: w.clone({ latLng }),
+              });
+            }}
+            setName={(name) => {
+              replaceWaypoint({
+                waypointPosition: i,
+                newWaypoint: w.clone({ name }),
+              });
+            }}
+            onDrag={(latLng) => {
+              return setTemporaryWaypoint({
+                waypoint: w.clone({ latLng }),
+                waypointAfter: route.waypoints[i + 1],
+                waypointBefore: route.waypoints[i - 1],
+              });
+            }}
           />
           {route.waypoints[i + 1] && (
             <Polyline
@@ -101,20 +126,64 @@ export const FlightPlanningLayer = ({
               positions={createLineForRouteSegment(route, i)}
             />
           )}
+          {temporaryWaypoint && (
+            <>
+              <Circle
+                key={`circle-temporary`}
+                fill={false}
+                center={temporaryWaypoint.waypoint.latLng}
+                radius={1000 * 2.5 * 1.852}
+                pathOptions={{
+                  color: "black",
+                  dashArray: "20",
+                }}
+                fillOpacity={0}
+              />
+              {temporaryWaypoint.waypointBefore && (
+                <Polyline
+                  color={"black"}
+                  dashArray="20"
+                  lineCap={"square"}
+                  positions={lineBetweenWaypoints(
+                    temporaryWaypoint.waypointBefore,
+                    temporaryWaypoint.waypoint,
+                  )}
+                />
+              )}
+              {temporaryWaypoint.waypointAfter && (
+                <Polyline
+                  color={"black"}
+                  dashArray="20"
+                  lineCap={"square"}
+                  positions={lineBetweenWaypoints(
+                    temporaryWaypoint.waypoint,
+                    temporaryWaypoint.waypointAfter,
+                  )}
+                />
+              )}
+            </>
+          )}
         </>
       ))}
     </>
   );
 };
+
 function createLineForRouteSegment(route: Route, segmentNumber: number) {
-  const pointA = [
-    route.waypoints[segmentNumber].latLng.lng,
-    route.waypoints[segmentNumber].latLng.lat,
-  ] as [number, number];
-  const pointB = [
-    route.waypoints[segmentNumber + 1].latLng.lng,
-    route.waypoints[segmentNumber + 1].latLng.lat,
-  ] as [number, number];
+  const waypoint1 = route.waypoints[segmentNumber];
+  const waypoint2 = route.waypoints[segmentNumber + 1];
+  return lineBetweenWaypoints(waypoint1, waypoint2);
+}
+
+const lineBetweenWaypoints = (waypoint1: Waypoint, waypoint2: Waypoint) => {
+  const pointA = [waypoint1.latLng.lng, waypoint1.latLng.lat] as [
+    number,
+    number,
+  ];
+  const pointB = [waypoint2.latLng.lng, waypoint2.latLng.lat] as [
+    number,
+    number,
+  ];
   const aLine = [pointA, pointB];
   const lineDistance = ruler.lineDistance(aLine);
 
@@ -127,7 +196,7 @@ function createLineForRouteSegment(route: Route, segmentNumber: number) {
       { lat: line[1][1], lng: line[1][0] },
     ];
   } else return [];
-}
+};
 
 const toLatLng = ([x, y]: [number, number]) => new LatLng(y, x);
 const toPoint = (latLng: LatLng): [number, number] => [latLng.lng, latLng.lat];

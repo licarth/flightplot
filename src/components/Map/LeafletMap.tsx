@@ -62,17 +62,17 @@ export const LeafletMap = ({
     );
   };
 
-  const repositionWaypoint = ({
+  const replaceWaypoint = ({
     waypointPosition,
-    waypointLatLng,
+    newWaypoint,
   }: {
     waypointPosition: number;
-    waypointLatLng: LatLng;
+    newWaypoint: Waypoint;
   }) =>
     setRoute(
       route.replaceWaypoint({
         waypointPosition,
-        newWaypoint: Waypoint.fromLatLng(waypointLatLng),
+        newWaypoint,
       }),
     );
 
@@ -136,7 +136,7 @@ export const LeafletMap = ({
               addWaypoint={addWaypoint}
               route={route}
               removeWaypoint={removeWaypoint}
-              repositionWaypoint={repositionWaypoint}
+              replaceWaypoint={replaceWaypoint}
             />
           </MapContainer>
           <div style={{ height: "20vh" }}>

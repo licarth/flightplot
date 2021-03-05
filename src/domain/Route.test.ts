@@ -1,6 +1,7 @@
 import { LatLng } from "leaflet";
 import { Route } from "./Route";
 import { Waypoint } from "./Waypoint";
+import { waypointFactory } from "./Waypoint.factory";
 
 describe("Route", () => {
   it("should add a waypoint properly", () => {
@@ -19,27 +20,30 @@ describe("Route", () => {
   });
 
   it("should remove a waypoint in the middle properly", () => {
+    const wp0 = wp(0);
+    const wp1 = wp(1);
+    const wp2 = wp(2);
+    const wp3 = wp(3);
     const route = Route.create({
-      waypoints: [wp(0), wp(1), wp(2), wp(3), wp(4), wp(5)],
+      waypoints: [wp0, wp1, wp2, wp3],
     });
 
-    expect(route.removeWaypoint(4).waypoints).toEqual([
-      wp(0),
-      wp(1),
-      wp(2),
-      wp(3),
-      wp(5),
-    ]);
+    expect(route.removeWaypoint(2).waypoints).toEqual([wp0, wp1, wp3]);
   });
   it("should remove first waypoint properly", () => {
+    const wp0 = wp(0);
+    const wp1 = wp(1);
+    const wp2 = wp(2);
+    const wp3 = wp(3);
+
     const route = Route.create({
-      waypoints: [wp(0), wp(1), wp(2), wp(3)],
+      waypoints: [wp0, wp1, wp2, wp3],
     });
 
-    expect(route.removeWaypoint(0).waypoints).toEqual([wp(1), wp(2), wp(3)]);
+    expect(route.removeWaypoint(0).waypoints).toEqual([wp1, wp2, wp3]);
   });
 });
 
 const wp = (lat: number): Waypoint => {
-  return Waypoint.fromLatLng(new LatLng(lat, 0));
+  return waypointFactory({ latLng: new LatLng(lat, 0) });
 };

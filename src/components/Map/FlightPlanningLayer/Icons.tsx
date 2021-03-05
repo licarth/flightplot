@@ -14,7 +14,6 @@ const IconContainer = styled.div`
 `;
 
 const icon = (iconName: IconProp) => {
-  console.log(iconName);
   //@ts-ignore
   library.add(Icons[`fa${pascalize(iconName)}`]);
 

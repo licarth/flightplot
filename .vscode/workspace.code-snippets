@@ -1,0 +1,70 @@
+{
+  "FPTSImport": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "fpts, fp-ts",
+    "body": ["import * as ${0:Option} from 'fp-ts/lib/${0:Option}';"]
+  },
+  "UUIDV4Import": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "uuidv4",
+    "body": ["import { v4 as uuidv4 } from 'uuid';"]
+  },
+  "IOTSImport": {
+    "scope": "typescript",
+    "prefix": "iots, io-ts",
+    "description": "import io-ts lib",
+    "body": ["import * as ${0:Codec} from 'io-ts/lib/${0:Codec}';"]
+  },
+  "DomainObjectFactory": {
+    "scope": "typescript",
+    "prefix": "fac, domain-object-factory",
+    "body": [
+      "import { v4 as uuidv4 } from 'uuid';",
+      "",
+      "import { to${TM_FILENAME_BASE/(.*)Factory(.*)/${1:/capitalize}/}Id, ${TM_FILENAME_BASE/(.*)Factory(.*)/${1:/capitalize}/}, ${TM_FILENAME_BASE/(.*)Factory(.*)/${1:/capitalize}/}Props } from './${TM_FILENAME_BASE/(.*)Factory(.*)/${1:/capitalize}/}';",
+      "",
+      "export const ${TM_FILENAME_BASE/(.*)Factory(.*)/$1/}IdFactory = (id = uuidv4()) => to${TM_FILENAME_BASE/(.*)Factory(.*)/${1:/capitalize}/}Id(id);",
+      "",
+      "export const ${TM_FILENAME_BASE} = ({",
+      "  id = ${TM_FILENAME_BASE/(.*)Factory(.*)/$1/}IdFactory(),",
+      "}: Partial<${TM_FILENAME_BASE/(.*)Factory(.*)/${1:/capitalize}/}Props> = {}) => ${TM_FILENAME_BASE/(.*)Factory(.*)/${1:/capitalize}/}.create({ id });",
+      ""
+    ],
+    "description": "Define a factory for a domain object"
+  },
+  "DomainObject": {
+    "scope": "typescript",
+    "prefix": "dom, domain-object",
+    "body": [
+      "import { Opaque } from '../Opaque';",
+      "",
+      "export type ${TM_FILENAME_BASE}Id = Opaque<'${TM_FILENAME_BASE}Id', string>;",
+      "",
+      "export const to${TM_FILENAME_BASE}Id = (id: string) => id as ${TM_FILENAME_BASE}Id;",
+      "",
+      "export interface ${TM_FILENAME_BASE}Props {",
+      "  readonly id: ${TM_FILENAME_BASE}Id;",
+      "}",
+      "",
+      "export class ${TM_FILENAME_BASE} {",
+      "  readonly id: ${TM_FILENAME_BASE}Id;",
+      "",
+      "  private constructor(props: ${TM_FILENAME_BASE}Props) {",
+      "    this.id = props.id;",
+      "  }",
+      "",
+      "  static create(props: ${TM_FILENAME_BASE}Props) {",
+      "    return new ${TM_FILENAME_BASE}(props);",
+      "  }",
+      "",
+      "  clone({id = this.id}: Partial<${TM_FILENAME_BASE}Props> = {}): ${TM_FILENAME_BASE} {",
+      "    return new ${TM_FILENAME_BASE}({",
+      "      id,",
+      "    });",
+      "  }",
+      "}",
+      ""
+    ],
+    "description": "Define a domain object"
+  },
+}

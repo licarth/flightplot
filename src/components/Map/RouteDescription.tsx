@@ -1,3 +1,4 @@
+import { Input } from "antd";
 import styled from "styled-components";
 import { Route } from "../../domain";
 
@@ -80,10 +81,13 @@ export const RouteDescription = ({ route }: { route: Route }) => {
       <div>
         <ul>
           {route.waypoints.map((wp, i) => (
-            <li>{i}</li>
+            <li>
+              {i} {wp.name}
+            </li>
           ))}
         </ul>
       </div>
+      <Input autoFocus={true} placeholder={"LFMT"} />
     </RouteDescriptionContainer>
   );
 };

@@ -1,3 +1,5 @@
+import CheapRuler from "cheap-ruler";
+import { toPoint } from "../components/Map/FlightPlanningLayer";
 import { Waypoint } from "./Waypoint";
 
 export class Route {
@@ -48,5 +50,43 @@ export class Route {
 
   static create({ waypoints = [] }: { waypoints?: Array<Waypoint> } = {}) {
     return new Route({ waypoints });
+  }
+
+  get length() {
+    return this.waypoints.length === 0 ? 0 : this.waypoints.length - 1;
+  }
+
+  get departure() {
+    return this.waypoints.length > 0 ? this.waypoints[0] : undefined;
+  }
+
+  get legs() {
+    const legs = [];
+    for (let i = 0; i < this.waypoints.length; i++) {
+      if (this.length > i) {
+        const departureWaypoint = this.waypoints[i];
+        const arrivalWaypoint = this.waypoints[i + 1];
+        const ruler = new CheapRuler(
+          (departureWaypoint.latLng.lat + arrivalWaypoint.latLng.lat) / 2,
+          "nauticalmiles",
+        );
+        const line = [
+          toPoint(departureWaypoint.latLng),
+          toPoint(arrivalWaypoint.latLng),
+        ];
+        const distanceInNm = ruler.lineDistance(line);
+        legs.push({
+          trueHdg: ruler.bearing(
+            toPoint(departureWaypoint.latLng),
+            toPoint(arrivalWaypoint.latLng),
+          ),
+          distanceInNm,
+          durationInMinutes: distanceInNm * 0.55,
+          departureWaypoint,
+          arrivalWaypoint,
+        });
+      }
+    }
+    return legs;
   }
 }

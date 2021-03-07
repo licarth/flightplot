@@ -30,8 +30,6 @@ export const FlightPlanningLayer = ({
     newWaypoint: Waypoint;
   }) => void;
 }) => {
-  const [previewWaypoint, setPreviewWaypoint] = useState<LatLng | null>(null);
-
   useMapEvent("click", (e) => {
     console.log("using map event");
     addWaypoint({ latLng: e.latlng });
@@ -96,17 +94,7 @@ export const FlightPlanningLayer = ({
               // weight={5}
               lineCap={"square"}
               eventHandlers={{
-                mouseover: (e) => {
-                  setPreviewWaypoint(e.latlng);
-                },
-                mouseout: (e) => {
-                  setPreviewWaypoint(null);
-                },
-                mousemove: (e) => {
-                  setPreviewWaypoint(e.latlng);
-                },
                 click: (e) => {
-                  setPreviewWaypoint(null);
                   //@ts-ignore
                   e.originalEvent.view?.L?.DomEvent.stopPropagation(e);
                   return addWaypoint({
@@ -176,14 +164,8 @@ function createLineForRouteSegment(route: Route, segmentNumber: number) {
 }
 
 const lineBetweenWaypoints = (waypoint1: Waypoint, waypoint2: Waypoint) => {
-  const pointA = [waypoint1.latLng.lng, waypoint1.latLng.lat] as [
-    number,
-    number,
-  ];
-  const pointB = [waypoint2.latLng.lng, waypoint2.latLng.lat] as [
-    number,
-    number,
-  ];
+  const pointA = toPoint(waypoint1.latLng);
+  const pointB = toPoint(waypoint2.latLng);
   const aLine = [pointA, pointB];
   const lineDistance = ruler.lineDistance(aLine);
 
@@ -198,7 +180,10 @@ const lineBetweenWaypoints = (waypoint1: Waypoint, waypoint2: Waypoint) => {
   } else return [];
 };
 
-const toLatLng = ([x, y]: [number, number]) => new LatLng(y, x);
-const toPoint = (latLng: LatLng): [number, number] => [latLng.lng, latLng.lat];
-const toLine = (latLngs: Array<LatLng>): Line =>
+export const toLatLng = ([x, y]: [number, number]) => new LatLng(y, x);
+export const toPoint = (latLng: LatLng): [number, number] => [
+  latLng.lng,
+  latLng.lat,
+];
+export const toLine = (latLngs: Array<LatLng>): Line =>
   latLngs.map((latLng) => [latLng.lng, latLng.lat]);

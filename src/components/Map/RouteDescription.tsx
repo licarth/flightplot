@@ -12,14 +12,12 @@ const RouteDescriptionContainer = styled.div`
   top: 50px;
   right: 50px;
   height: 600px;
-  width: 20%;
+  width: 80%;
+  max-width: 800px;
 `;
 
 export const RouteDescription = ({ route }: { route: Route }) => {
   const print = () => {
-    // const newLocal = window.document.getElementById("printArea");
-    // if (newLocal)
-    //   newLocal.innerHTML = renderToString(<NavigationLog route={route} />);
     window.print();
   };
 

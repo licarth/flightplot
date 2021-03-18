@@ -76,10 +76,13 @@ export class Route {
         ];
         const distanceInNm = ruler.lineDistance(line);
         legs.push({
-          trueHdg: ruler.bearing(
-            toPoint(departureWaypoint.latLng),
-            toPoint(arrivalWaypoint.latLng),
-          ),
+          trueHdg:
+            (360 +
+              ruler.bearing(
+                toPoint(departureWaypoint.latLng),
+                toPoint(arrivalWaypoint.latLng),
+              )) %
+            360,
           distanceInNm,
           durationInMinutes: distanceInNm * 0.55,
           departureWaypoint,

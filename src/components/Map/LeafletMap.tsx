@@ -1,10 +1,14 @@
 import { Layout, notification } from "antd";
 import "antd/dist/antd.css";
+import * as Either from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
+import { draw } from "io-ts/lib/Decoder";
 import { LatLng, LatLngTuple } from "leaflet";
+import { debounce } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
-import { MapContainer, useMap } from "react-leaflet";
+import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
+import { AiracCycles, AiracData } from "sia-data";
 import { DisplayedLayers } from "../../App";
 import { Route, Waypoint } from "../../domain";
 import { getFlightData, GpsRecord } from "../../flightData";
@@ -28,6 +32,17 @@ export const LeafletMap = ({
   displayedLayers,
   flightPlanningMode,
 }: LeafletMapProps) => {
+  const [airacData, setAiracData] = useState<AiracData>();
+
+  useEffect(() => {
+    pipe(
+      AiracData.loadCycle(AiracCycles.MARCH_25_2021),
+      Either.fold((e) => {
+        console.error(draw(e));
+      }, setAiracData),
+    );
+  }, []);
+
   const [gpsRecords, setLines] = useState<GpsRecord[] | null>(null);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [currentPoint, setCurrentPoint] = useState<number | null>(null);
@@ -111,6 +126,8 @@ export const LeafletMap = ({
               displayedLayers={displayedLayers}
               displayLFMT={displayLFMT}
             />
+            <Aerodromes airacData={airacData} />
+
             {/* {gpsRecords && (
               <Polyline
                 ref={pathRef}
@@ -170,6 +187,38 @@ const Layers = ({
       {displayedLayers.open_street_map && <OpenStreetMapLayer />}
       {displayedLayers.icao && <OaciLayer />}
       {displayLFMT && leafletMap && <Chart map={leafletMap} />}
+    </>
+  );
+};
+
+const Aerodromes = ({ airacData }: { airacData?: AiracData }) => {
+  const [mapBounds, setMapBounds] = useState<
+    [number, number, number, number]
+  >();
+  const leafletMap = useMap();
+  const refreshMapBounds = () =>
+    setMapBounds([
+      leafletMap.getBounds().getWest(),
+      leafletMap.getBounds().getSouth(),
+      leafletMap.getBounds().getEast(),
+      leafletMap.getBounds().getNorth(),
+    ]);
+  useMapEvents({
+    moveend: refreshMapBounds,
+    move: debounce(refreshMapBounds, 100),
+  });
+  return (
+    <>
+      {airacData &&
+        mapBounds &&
+        airacData?.getAerodromesInBbox(...mapBounds).map(({ latLng }) => (
+          <Marker
+            position={{
+              lat: (latLng.lat as unknown) as number,
+              lng: (latLng.lng as unknown) as number,
+            }}
+          />
+        ))}
     </>
   );
 };

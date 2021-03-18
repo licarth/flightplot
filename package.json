@@ -10,6 +10,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@gregoranders/csv": "^0.0.8",
+    "@types/lodash": "^4.14.168",
     "@types/styled-components": "^5.1.7",
     "@types/uuid": "^8.3.0",
     "antd": "^4.7.2",
@@ -23,6 +24,7 @@
     "leaflet-path-transform": "^1.1.3",
     "leaflet.awesome-markers": "^2.0.5",
     "leaflet.locatecontrol": "^0.72.0",
+    "lodash": "^4.17.21",
     "pdfjs": "^2.4.2",
     "pdfjs-dist": "^2.5.207",
     "react": "^17.0.1",
@@ -33,6 +35,7 @@
     "react-scripts": "^4.0.3",
     "react-virtualized": "^9.22.2",
     "react-vis": "^1.11.7",
+    "sia-data": "file:../aero-data-pipeline",
     "styled-components": "^5.2.1",
     "typescript": "^4.2.2",
     "uuid": "^8.3.2"

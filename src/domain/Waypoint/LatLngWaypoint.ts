@@ -1,17 +1,7 @@
 import { LatLng } from "leaflet";
-import { v4 as uuidv4 } from "uuid";
-import { Opaque } from "./Opaque";
+import { Waypoint, WaypointId, WaypointProps } from "./Waypoint";
 
-export type WaypointId = Opaque<string, "UUID">;
-export const toWaypointId = (id: string) => id as WaypointId;
-
-export type WaypointProps = {
-  latLng: LatLng;
-  name?: string;
-  id: WaypointId;
-};
-
-export class Waypoint {
+export class LatLngWaypoint implements Waypoint {
   private _latLng;
   public name;
   private _id: WaypointId;
@@ -23,7 +13,7 @@ export class Waypoint {
   }
 
   static create(props: WaypointProps) {
-    return new Waypoint(props);
+    return new LatLngWaypoint(props);
   }
 
   clone({
@@ -31,15 +21,11 @@ export class Waypoint {
     latLng = this._latLng,
     name = this.name,
   }: Partial<WaypointProps> = {}) {
-    return new Waypoint({
+    return new LatLngWaypoint({
       latLng,
       name,
       id,
     });
-  }
-
-  static fromLatLng(latLng: LatLng) {
-    return new Waypoint({ latLng, id: toWaypointId(uuidv4()) });
   }
 
   get latLng() {

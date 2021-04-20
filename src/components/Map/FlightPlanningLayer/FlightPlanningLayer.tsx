@@ -3,7 +3,10 @@ import { LatLng } from "leaflet";
 import { useState } from "react";
 import { Circle, Polyline, useMapEvent } from "react-leaflet";
 import { Route, Waypoint } from "../../../domain";
-import { WaypointMarker, WaypointType } from "./WaypointMarker";
+import { LatLngWaypoint } from "../../../domain/Waypoint";
+import { preventDefault } from "../preventDefault";
+import { AerodromeWaypointMarker } from "./AerodromeWaypointMarker";
+import { LatLngWaypointMarker, WaypointType } from "./LatLngWaypointMarker";
 
 const ruler = new CheapRuler(43, "nauticalmiles");
 
@@ -60,34 +63,46 @@ export const FlightPlanningLayer = ({
     <>
       {route.waypoints.map((w, i) => (
         <>
-          <WaypointMarker
-            key={`waypoint-${w.id}`}
-            label={w.name}
-            waypointNumber={i}
-            type={waypointType(i)}
-            position={w.latLng}
-            onDelete={() => removeWaypoint(i)}
-            onDragEnd={(latLng) => {
-              setTemporaryWaypoint(null);
-              return replaceWaypoint({
-                waypointPosition: i,
-                newWaypoint: w.clone({ latLng }),
-              });
-            }}
-            setName={(name) => {
-              replaceWaypoint({
-                waypointPosition: i,
-                newWaypoint: w.clone({ name }),
-              });
-            }}
-            onDrag={(latLng) => {
-              return setTemporaryWaypoint({
-                waypoint: w.clone({ latLng }),
-                waypointAfter: route.waypoints[i + 1],
-                waypointBefore: route.waypoints[i - 1],
-              });
-            }}
-          />
+          {isLatLngWaypoint(w) && (
+            <LatLngWaypointMarker
+              key={`waypoint-${w.id}`}
+              label={w.name}
+              waypointNumber={i}
+              type={waypointType(i)}
+              position={w.latLng}
+              onDelete={() => removeWaypoint(i)}
+              onDragEnd={(latLng) => {
+                setTemporaryWaypoint(null);
+                return replaceWaypoint({
+                  waypointPosition: i,
+                  newWaypoint: w.clone({ latLng }),
+                });
+              }}
+              setName={(name) => {
+                replaceWaypoint({
+                  waypointPosition: i,
+                  newWaypoint: w.clone({ name }),
+                });
+              }}
+              onDrag={(latLng) => {
+                return setTemporaryWaypoint({
+                  waypoint: w.clone({ latLng }),
+                  waypointAfter: route.waypoints[i + 1],
+                  waypointBefore: route.waypoints[i - 1],
+                });
+              }}
+            />
+          )}
+          {!isLatLngWaypoint(w) && (
+            <AerodromeWaypointMarker
+              key={`waypoint-${w.id}`}
+              label={w.name}
+              onDelete={() => removeWaypoint(i)}
+              waypointNumber={i}
+              type={waypointType(i)}
+              position={w.latLng}
+            />
+          )}
           {route.waypoints[i + 1] && (
             <Polyline
               color={"black"}
@@ -95,8 +110,7 @@ export const FlightPlanningLayer = ({
               lineCap={"square"}
               eventHandlers={{
                 click: (e) => {
-                  //@ts-ignore
-                  e.originalEvent.view?.L?.DomEvent.stopPropagation(e);
+                  preventDefault(e);
                   return addWaypoint({
                     latLng: toLatLng(
                       ruler.pointOnLine(
@@ -187,3 +201,7 @@ export const toPoint = (latLng: LatLng): [number, number] => [
 ];
 export const toLine = (latLngs: Array<LatLng>): Line =>
   latLngs.map((latLng) => [latLng.lng, latLng.lat]);
+
+const isLatLngWaypoint = (w: any): w is LatLngWaypoint => {
+  return w.clone !== undefined;
+};

@@ -1,6 +1,6 @@
 import CheapRuler from "cheap-ruler";
 import { toPoint } from "../components/Map/FlightPlanningLayer";
-import { Waypoint } from "./Waypoint";
+import { Waypoint } from "./Waypoint/Waypoint";
 
 export class Route {
   readonly waypoints: ReadonlyArray<Waypoint>;
@@ -58,6 +58,12 @@ export class Route {
 
   get departure() {
     return this.waypoints.length > 0 ? this.waypoints[0] : undefined;
+  }
+
+  get arrival() {
+    return this.waypoints.length > 1
+      ? this.waypoints[this.waypoints.length - 1]
+      : undefined;
   }
 
   get legs() {

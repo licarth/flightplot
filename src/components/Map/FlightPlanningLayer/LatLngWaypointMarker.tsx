@@ -3,11 +3,12 @@ import Leaflet, { LatLng, LatLngExpression } from "leaflet";
 import { useRef, useState } from "react";
 import { Circle, Marker, Tooltip, useMap } from "react-leaflet";
 import styled from "styled-components";
+import { preventDefault } from "../preventDefault";
 import { circle, planeArrival, planeDeparture } from "./Icons";
 
 export type WaypointType = "departure" | "arrival" | "intermediate";
 
-export const WaypointMarker = ({
+export const LatLngWaypointMarker = ({
   position,
   onDelete,
   onDrag,
@@ -64,12 +65,9 @@ export const WaypointMarker = ({
           onDragEnd && onDragEnd(event.target.getLatLng());
         },
         dblclick: () => {
-          // tooltipRef.current?.;
           setEditingName(true);
         },
-        click: (e) => {
-          e.originalEvent.preventDefault();
-        },
+        click: preventDefault,
       }}
     >
       <Circle
@@ -88,20 +86,11 @@ export const WaypointMarker = ({
         ref={tooltipRef}
         key={`tooltip-${waypointNumber}-${editingName}`}
         eventHandlers={{
-          loading: (e) => {
-            console.log("Tooltip Loaded");
-          },
-          click: (e) => {
-            console.log("CLICK");
-            e.originalEvent.stopPropagation();
-            e.originalEvent.preventDefault();
-            //@ts-ignore
-            e.originalEvent.view?.L?.DomEvent.stopPropagation(e);
-          },
+          click: preventDefault,
         }}
       >
-        <NameInputContainer>
-          {editingName && (
+        {editingName && (
+          <NameInputContainer>
             <Input
               autoFocus={true}
               defaultValue={label || ""}
@@ -123,9 +112,9 @@ export const WaypointMarker = ({
                 e.preventDefault();
               }}
             />
-          )}
-          {!editingName && label}
-        </NameInputContainer>
+          </NameInputContainer>
+        )}
+        {!editingName && label}
       </Tooltip>
     </Marker>
   );

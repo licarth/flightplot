@@ -12,8 +12,6 @@ export type DisplayedLayers = {
 
 const App: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [displayLFMT, setDisplayLFMT] = useState(false);
-  const [flightPlanningMode, setFlightPlanningMode] = useState(false);
 
   const [displayedLayers, setDisplayedLayers] = useState<DisplayedLayers>({
     icao: true,
@@ -25,20 +23,14 @@ const App: React.FC = () => {
       <Layout id="app" style={{ minHeight: "100vh" }}>
         <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
           <LeftMenu
-            displayLFMT={displayLFMT}
-            setDisplayLFMT={setDisplayLFMT}
             displayedLayers={displayedLayers}
             setLayer={({ layer, displayed }) =>
               setDisplayedLayers({ ...displayedLayers, [layer]: displayed })
             }
-            flightPlanningMode={flightPlanningMode}
-            setFlightPlanningMode={setFlightPlanningMode}
           />
         </Sider>
         <LeafletMap
-          displayLFMT={displayLFMT}
           displayedLayers={displayedLayers}
-          flightPlanningMode={flightPlanningMode}
         />
       </Layout>
       <PrintContent>

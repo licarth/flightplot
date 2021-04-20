@@ -26,7 +26,7 @@ export const RouteDescription = ({ route }: { route: Route }) => {
     <RouteDescriptionContainer>
       <Button onClick={print}>PRINT</Button>
       <NavigationLog route={route} />
-      {printArea && createPortal(<NavigationLog route={route} />, printArea)}
+      {printArea && createPortal(<NavigationLog route={route} paperVersion/>, printArea)}
     </RouteDescriptionContainer>
   );
 };

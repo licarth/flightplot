@@ -1,6 +1,5 @@
 import { IconProp, library } from "@fortawesome/fontawesome-svg-core";
 import * as Icons from "@fortawesome/free-solid-svg-icons";
-// import { faPlaneArrival } from "@fortawesome/free-solid-svg-icons/faPlaneArrival";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // FontAwesome requirements
 import Leaflet, { Point } from "leaflet";

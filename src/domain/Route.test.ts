@@ -1,7 +1,7 @@
 import { LatLng } from "leaflet";
 import { Route } from "./Route";
 import { Waypoint } from "./Waypoint";
-import { waypointFactory } from "./Waypoint.factory";
+import { latLngWaypointFactory } from "./Waypoint/LatLngWaypoint.factory";
 
 describe("Route", () => {
   it("should add a waypoint properly", () => {
@@ -45,5 +45,5 @@ describe("Route", () => {
 });
 
 const wp = (lat: number): Waypoint => {
-  return waypointFactory({ latLng: new LatLng(lat, 0) });
+  return latLngWaypointFactory({ latLng: new LatLng(lat, 0) });
 };

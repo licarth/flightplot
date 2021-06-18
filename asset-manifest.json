@@ -1,26 +1,24 @@
 {
   "files": {
-    "main.css": "/flightplot/static/css/main.531b356e.chunk.css",
-    "main.js": "/flightplot/static/js/main.a95d44ea.chunk.js",
-    "main.js.map": "/flightplot/static/js/main.a95d44ea.chunk.js.map",
-    "runtime-main.js": "/flightplot/static/js/runtime-main.3b055fa1.js",
-    "runtime-main.js.map": "/flightplot/static/js/runtime-main.3b055fa1.js.map",
-    "static/css/2.a84c336d.chunk.css": "/flightplot/static/css/2.a84c336d.chunk.css",
-    "static/js/2.3b3c7cd0.chunk.js": "/flightplot/static/js/2.3b3c7cd0.chunk.js",
-    "static/js/2.3b3c7cd0.chunk.js.map": "/flightplot/static/js/2.3b3c7cd0.chunk.js.map",
-    "index.html": "/flightplot/index.html",
-    "precache-manifest.d8936d714ba8eaf3542723d4a2e02a19.js": "/flightplot/precache-manifest.d8936d714ba8eaf3542723d4a2e02a19.js",
-    "service-worker.js": "/flightplot/service-worker.js",
-    "static/css/2.a84c336d.chunk.css.map": "/flightplot/static/css/2.a84c336d.chunk.css.map",
-    "static/css/main.531b356e.chunk.css.map": "/flightplot/static/css/main.531b356e.chunk.css.map",
-    "static/js/2.3b3c7cd0.chunk.js.LICENSE.txt": "/flightplot/static/js/2.3b3c7cd0.chunk.js.LICENSE.txt",
-    "static/media/LFMT.png": "/flightplot/static/media/LFMT.dd50fc97.png"
+    "main.css": "/static/css/main.da888165.chunk.css",
+    "main.js": "/static/js/main.74a789b9.chunk.js",
+    "main.js.map": "/static/js/main.74a789b9.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.20bea495.js",
+    "runtime-main.js.map": "/static/js/runtime-main.20bea495.js.map",
+    "static/css/2.1398ecca.chunk.css": "/static/css/2.1398ecca.chunk.css",
+    "static/js/2.3ebc7474.chunk.js": "/static/js/2.3ebc7474.chunk.js",
+    "static/js/2.3ebc7474.chunk.js.map": "/static/js/2.3ebc7474.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/2.1398ecca.chunk.css.map": "/static/css/2.1398ecca.chunk.css.map",
+    "static/css/main.da888165.chunk.css.map": "/static/css/main.da888165.chunk.css.map",
+    "static/js/2.3ebc7474.chunk.js.LICENSE.txt": "/static/js/2.3ebc7474.chunk.js.LICENSE.txt",
+    "static/media/aerodrome.min.b867388e.svg": "/static/media/aerodrome.min.b867388e.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.3b055fa1.js",
-    "static/css/2.a84c336d.chunk.css",
-    "static/js/2.3b3c7cd0.chunk.js",
-    "static/css/main.531b356e.chunk.css",
-    "static/js/main.a95d44ea.chunk.js"
+    "static/js/runtime-main.20bea495.js",
+    "static/css/2.1398ecca.chunk.css",
+    "static/js/2.3ebc7474.chunk.js",
+    "static/css/main.da888165.chunk.css",
+    "static/js/main.74a789b9.chunk.js"
   ]
 }

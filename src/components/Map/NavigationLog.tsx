@@ -15,7 +15,7 @@ export const NavigationLog = ({
       AerodromeWaypoint.isAerodromeWaypoint(route.departure) && (
         <AirportDetails aerodrome={route.departure.aerodrome} />
       )}
-    <LegTable>
+    <LegTable route={route}>
       <HeaderRow>
         <LegHeader>Altitude</LegHeader>
         <LegHeader>Rm</LegHeader>
@@ -66,6 +66,15 @@ export const NavigationLog = ({
           </NavRow>
         ),
       )}
+      <TotalNavRow>
+        <TotalBlackCell></TotalBlackCell>
+        <TotalBlackCell></TotalBlackCell>
+        <TotalLegCell>{Math.round(route.totalDistance)} NM</TotalLegCell>
+        <TotalLegCell>
+          {Math.round(route.totalDurationInMinutes)} min
+        </TotalLegCell>
+        <TotalBlackCell></TotalBlackCell>
+      </TotalNavRow>
     </LegTable>
     {route.arrival && AerodromeWaypoint.isAerodromeWaypoint(route.arrival) && (
       <AirportDetails aerodrome={route.arrival.aerodrome} />
@@ -80,7 +89,7 @@ const AirportDetails = ({ aerodrome }: { aerodrome: Aerodrome }) => (
         <div>{aerodrome.name}</div>
         <div>{aerodrome.icaoCode}</div>
         <div>{aerodrome.aerodromeAltitude} ft.</div>
-        <div>{aerodrome.runways.runways.map((r) => r.name).join(", ")}</div>
+        <div>{aerodrome.runways.runways.map(({name, lengthInMeters, surface}) => `${name}(${lengthInMeters}m - ${surface})`).join(", ")}</div>
       </AerodromeNameCell>
       <FrequenciesCell>
         <div>
@@ -124,7 +133,8 @@ const AirportTable = styled.div`
   flex-direction: column;
   @media print {
     width: 20cm;
-    border-width: 0.6mm;
+    break-inside: avoid;
+    /* border-width: 0.6mm; */
   }
   background-color: black;
 
@@ -133,7 +143,9 @@ const AirportTable = styled.div`
   }
 `;
 
-const LegTable = styled.div`
+const LegTable = styled.div<{
+  route: Route;
+}>`
   display: flex;
   flex-direction: column;
   @media print {
@@ -145,6 +157,9 @@ const LegTable = styled.div`
   :last-child {
     border-bottom: solid;
   }
+  
+  height: ${({ route }) =>
+    route.length < 1 ? 1 : route.legs.length * 2 + 3}cm;
 `;
 
 const Row = styled.div`
@@ -158,6 +173,11 @@ const Row = styled.div`
 
 const NavRow = styled(Row)`
   height: 2cm;
+`;
+
+const TotalNavRow = styled(NavRow)`
+  transform: translateY(-1cm);
+  height: 1cm;
 `;
 
 const AirportRow = styled(Row)`
@@ -197,6 +217,7 @@ const CenteredContentCell = styled(Cell)`
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
 `;
 
 const LegTableCell = styled(CenteredContentCell)`
@@ -215,14 +236,25 @@ const LegCell = styled(LegTableCell)`
   transform: translateY(-1cm);
 `;
 
+const TotalLegCell = styled(LegTableCell)`
+  height: 1cm;
+  border-bottom: solid;
+`;
+
 const WaypointCell = styled(LegTableCell)`
-  @media print {
+  /* @media print {
     border-width: 0.05cm;
-  }
+  } */
+  z-index: 1;
 `;
 
 const BlackCell = styled(LegTableCell)`
   background-color: black;
+  z-index: -10;
+`;
+
+const TotalBlackCell = styled(BlackCell)`
+  height: 1cm;
 `;
 
 const EmptyCell = styled(LegTableCell)``;

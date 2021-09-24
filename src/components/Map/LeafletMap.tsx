@@ -1,4 +1,3 @@
-import { Layout } from "antd";
 import "antd/dist/antd.css";
 import * as Either from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
@@ -14,11 +13,13 @@ import {
   Longitude,
 } from "sia-data";
 import { DisplayedLayers } from "../../App";
-import { Route, Waypoint } from "../../domain";
+import { Route, toLeafletLatLng, Waypoint } from "../../domain";
 import { OaciLayer, OpenStreetMapLayer } from "../layer";
 import { Aerodromes } from "./Aerodromes";
 import { FlightPlanningLayer } from "./FlightPlanningLayer";
 import { RouteDescription } from "./RouteDescription";
+import { VfrPoints } from "./VfrPoints";
+import { NmScale } from "@marfle/react-leaflet-nmscale";
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 11;
@@ -48,13 +49,18 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
   const addLatLngWaypoint = ({
     latLng,
     position,
+    name,
   }: {
     latLng: LatLng;
     position?: number;
+    name?: string;
   }) => {
     console.log(`adding latlng waypoint`);
     setRoute(
-      route.addWaypoint({ position, waypoint: Waypoint.fromLatLng(latLng) }),
+      route.addWaypoint({
+        position,
+        waypoint: Waypoint.create({ latLng, name }),
+      }),
     );
   };
 
@@ -96,21 +102,26 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
   return (
     <>
       <div onContextMenu={(e) => e.preventDefault()}>
-        <Layout>
-          <MapContainer id="mapId" center={defaultLatLng} zoom={zoom}>
-            <Layers displayedLayers={displayedLayers} />
-            <Aerodromes
-              airacData={airacData}
-              onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
-            />
-            <FlightPlanningLayer
-              addWaypoint={addLatLngWaypoint}
-              route={route}
-              removeWaypoint={removeWaypoint}
-              replaceWaypoint={replaceWaypoint}
-            />
-          </MapContainer>
-        </Layout>
+        <MapContainer id="mapId" center={defaultLatLng} zoom={zoom}>
+          <Layers displayedLayers={displayedLayers} />
+          <Aerodromes
+            airacData={airacData}
+            onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
+          />
+          <VfrPoints
+            airacData={airacData}
+            onClick={({ latLng, name }) =>
+              addLatLngWaypoint({ latLng: toLeafletLatLng(latLng), name })
+            }
+          />
+          <FlightPlanningLayer
+            addWaypoint={addLatLngWaypoint}
+            route={route}
+            removeWaypoint={removeWaypoint}
+            replaceWaypoint={replaceWaypoint}
+          />
+          <NmScale />
+        </MapContainer>
       </div>
       <RouteDescription route={route} />
     </>
@@ -127,6 +138,6 @@ const Layers = ({ displayedLayers }: { displayedLayers: DisplayedLayers }) => {
 };
 
 export const toLatLng = (latLng: { lat: Latitude; lng: Longitude }) => ({
-  lat: (latLng.lat as unknown) as number,
-  lng: (latLng.lng as unknown) as number,
+  lat: latLng.lat as unknown as number,
+  lng: latLng.lng as unknown as number,
 });

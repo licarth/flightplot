@@ -112,7 +112,7 @@ export const FlightPlanningLayer = ({
                 click: (e) => {
                   preventDefault(e);
                   return addWaypoint({
-                    latLng: toLatLng(
+                    latLng: pointToLeafletLatLng(
                       ruler.pointOnLine(
                         toLine([
                           route.waypoints[i].latLng,
@@ -194,7 +194,7 @@ const lineBetweenWaypoints = (waypoint1: Waypoint, waypoint2: Waypoint) => {
   } else return [];
 };
 
-export const toLatLng = ([x, y]: [number, number]) => new LatLng(y, x);
+export const pointToLeafletLatLng = ([x, y]: [number, number]) => new LatLng(y, x);
 export const toPoint = (latLng: LatLng): [number, number] => [
   latLng.lng,
   latLng.lat,

@@ -67,7 +67,9 @@ export const LatLngWaypointMarker = ({
         dblclick: () => {
           setEditingName(true);
         },
-        click: preventDefault,
+        click: (event) => {
+          preventDefault(event);
+        },
       }}
     >
       <Circle

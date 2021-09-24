@@ -46,7 +46,9 @@ export const AerodromeWaypointMarker = ({
       title={label}
       icon={getIcon(type)}
       eventHandlers={{
-        click: preventDefault,
+        click: (event) => {
+          onDelete && onDelete();
+        },
         contextmenu: (event) => {
           onDelete && onDelete();
         },

@@ -5,6 +5,17 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-print-color-adjust: exact;
+
+  @page {
+    size: A5;
+    margin: 0
+  }
+
+}
+
+#root {
+  height: 100%;
 }
 
 code {
@@ -15,4 +26,8 @@ code {
 #mapId {
    height:100vh;
    width:100vw;
+}
+
+.map-svg-text-label {
+  overflow: visible !important;
 }

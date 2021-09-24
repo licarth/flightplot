@@ -66,6 +66,18 @@ export class Route {
       : undefined;
   }
 
+  get totalDistance() {
+    return this.waypoints.length > 1
+      ? this.legs.reduce((p, c) => p + c.distanceInNm, 0)
+      : 0;
+  }
+
+  get totalDurationInMinutes() {
+    return this.waypoints.length > 1
+      ? this.legs.reduce((p, c) => p + c.durationInMinutes, 0)
+      : 0;
+  }
+
   get legs() {
     const legs = [];
     for (let i = 0; i < this.waypoints.length; i++) {

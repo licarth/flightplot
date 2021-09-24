@@ -1,4 +1,5 @@
 import "antd/dist/antd.css";
+import CheapRuler from "cheap-ruler";
 import { debounce } from "lodash";
 import { useState } from "react";
 import { SVGOverlay, useMap, useMapEvents } from "react-leaflet";
@@ -8,6 +9,7 @@ import styled from "styled-components";
 import { ReactComponent as AerodromeLogo } from "../../icons/aerodrome.min.svg";
 import { toLatLng } from "./LeafletMap";
 import { preventDefault } from "./preventDefault";
+const ruler = new CheapRuler(43, "nauticalmiles");
 
 export const Aerodromes = ({
   airacData,
@@ -16,9 +18,8 @@ export const Aerodromes = ({
   airacData?: AiracData;
   onClick: (aerodrome: Aerodrome) => void;
 }) => {
-  const [mapBounds, setMapBounds] = useState<
-    [number, number, number, number]
-  >();
+  const [mapBounds, setMapBounds] =
+    useState<[number, number, number, number]>();
   const leafletMap = useMap();
   const refreshMapBounds = () =>
     setMapBounds([
@@ -54,6 +55,7 @@ export const Aerodromes = ({
                   [l.lat + 0.02, l.lng - 0.02],
                   [l.lat - 0.02, l.lng + 0.02],
                 ]}
+                attributes={{ class: "map-svg-text-label" }}
                 eventHandlers={{
                   click: (e) => {
                     preventDefault(e);
@@ -67,6 +69,14 @@ export const Aerodromes = ({
                     magneticOrientation={magneticOrientation}
                   />
                 }
+                <text
+                  x="50%"
+                  y="120%"
+                  style={{ textAnchor: "middle" }}
+                  stroke="#002e94"
+                >
+                  {aerodrome.mapShortName}
+                </text>
               </SVGOverlay>
             </>
           );
@@ -88,5 +98,3 @@ const StyledAerodromeLogo = styled(AerodromeLogo)<{
     transform: ${(props) => `rotate(${props.magneticOrientation}deg)`};
   }
 `;
-
-

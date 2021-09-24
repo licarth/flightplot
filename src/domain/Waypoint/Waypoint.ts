@@ -22,8 +22,8 @@ export interface Waypoint {
 }
 
 export namespace Waypoint {
-  export const fromLatLng = (latLng: LatLng) => {
-    return new LatLngWaypoint({ latLng, id: toWaypointId(uuidv4()) });
+  export const create = (props: Omit<WaypointProps, "id">) => {
+    return new LatLngWaypoint({ ...props, id: toWaypointId(uuidv4()) });
   };
   export const fromAerodrome = (aerodrome: Aerodrome) => {
     return new AerodromeWaypoint(aerodrome);

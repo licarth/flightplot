@@ -14,6 +14,7 @@ const RouteDescriptionContainer = styled.div`
   height: 600px;
   width: 80%;
   max-width: 800px;
+  overflow-y: auto;
 `;
 
 export const RouteDescription = ({ route }: { route: Route }) => {

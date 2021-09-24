@@ -6,14 +6,14 @@ import { latLngWaypointFactory } from "./Waypoint/LatLngWaypoint.factory";
 describe("Route", () => {
   it("should add a waypoint properly", () => {
     const route = Route.create().addWaypoint({
-      waypoint: Waypoint.fromLatLng(new LatLng(0, 0)),
+      waypoint: Waypoint.create({ latLng: new LatLng(0, 0) }),
     });
 
     expect(route.waypoints).toHaveLength(1);
   });
   it("should remove a waypoint properly", () => {
     const route = Route.create({
-      waypoints: [Waypoint.fromLatLng(new LatLng(0, 0))],
+      waypoints: [Waypoint.create({ latLng: new LatLng(0, 0) })],
     });
 
     expect(route.removeWaypoint(0).waypoints).toHaveLength(0);

@@ -1,5 +1,5 @@
 import { LatLng } from "leaflet";
-import { Aerodrome, IcaoCode, LatLng as SiaLatLng } from "sia-data";
+import { Aerodrome, IcaoCode, LatLng as SiaLatLng } from "ts-aerodata-france";
 import { toLatLng } from "../../components/Map/LeafletMap";
 import { Waypoint } from "./Waypoint";
 

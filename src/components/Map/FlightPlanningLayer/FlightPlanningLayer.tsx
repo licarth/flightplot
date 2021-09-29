@@ -1,6 +1,6 @@
 import CheapRuler, { Line } from "cheap-ruler";
 import { LatLng } from "leaflet";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Circle, Polyline, useMapEvent } from "react-leaflet";
 import { Route, Waypoint } from "../../../domain";
 import { LatLngWaypoint } from "../../../domain/Waypoint";
@@ -44,10 +44,8 @@ export const FlightPlanningLayer = ({
     waypointAfter?: Waypoint;
   };
 
-  const [
-    temporaryWaypoint,
-    setTemporaryWaypoint,
-  ] = useState<TemporaryWaypoint | null>(null);
+  const [temporaryWaypoint, setTemporaryWaypoint] =
+    useState<TemporaryWaypoint | null>(null);
 
   const waypointType = (i: number): WaypointType => {
     if (i === 0) {
@@ -62,10 +60,10 @@ export const FlightPlanningLayer = ({
   return (
     <>
       {route.waypoints.map((w, i) => (
-        <>
+        <Fragment key={`wp-${w.id}`}>
           {isLatLngWaypoint(w) && (
             <LatLngWaypointMarker
-              key={`waypoint-${w.id}`}
+              key={`wpmarker-${w.id}`}
               label={w.name}
               waypointNumber={i}
               type={waypointType(i)}
@@ -165,7 +163,7 @@ export const FlightPlanningLayer = ({
               )}
             </>
           )}
-        </>
+        </Fragment>
       ))}
     </>
   );
@@ -194,7 +192,8 @@ const lineBetweenWaypoints = (waypoint1: Waypoint, waypoint2: Waypoint) => {
   } else return [];
 };
 
-export const pointToLeafletLatLng = ([x, y]: [number, number]) => new LatLng(y, x);
+export const pointToLeafletLatLng = ([x, y]: [number, number]) =>
+  new LatLng(y, x);
 export const toPoint = (latLng: LatLng): [number, number] => [
   latLng.lng,
   latLng.lat,

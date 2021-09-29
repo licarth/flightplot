@@ -1,10 +1,10 @@
 import "antd/dist/antd.css";
 import CheapRuler from "cheap-ruler";
 import { debounce } from "lodash";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Polygon, SVGOverlay, useMap, useMapEvents } from "react-leaflet";
-import { AiracData } from "sia-data";
-import { VfrPoint } from "sia-data/build/types/domain/VfrPoint";
+import { AiracData } from "ts-aerodata-france";
+import { VfrPoint } from "ts-aerodata-france/build/types/domain/VfrPoint";
 import { toLeafletLatLng } from "../../domain";
 import { pointToLeafletLatLng, toPoint } from "./FlightPlanningLayer";
 import { preventDefault } from "./preventDefault";
@@ -35,7 +35,7 @@ export const VfrPoints = ({
     <>
       {mapBounds &&
         airacData?.getVfrPointsInBbox(...mapBounds).map((vfrPoint) => {
-          const { name, latLng } = vfrPoint;
+          const { name, latLng, icaoCode } = vfrPoint;
           const center = toPoint(toLeafletLatLng(latLng));
           const bottomRight = pointToLeafletLatLng(
             ruler.offset(center, 0.5, -0.5),
@@ -45,7 +45,7 @@ export const VfrPoints = ({
           const right = pointToLeafletLatLng(ruler.offset(center, 0.35, -0.2));
 
           return (
-            <>
+            <Fragment key={`${icaoCode}/${name}`}>
               {
                 <>
                   <SVGOverlay
@@ -78,7 +78,7 @@ export const VfrPoints = ({
                   </SVGOverlay>
                 </>
               }
-            </>
+            </Fragment>
           );
         })}
     </>

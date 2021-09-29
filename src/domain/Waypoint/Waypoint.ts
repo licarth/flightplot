@@ -1,5 +1,5 @@
 import { LatLng } from "leaflet";
-import { Aerodrome } from "sia-data";
+import { Aerodrome } from "ts-aerodata-france";
 import { v4 as uuidv4 } from "uuid";
 import { Opaque } from "../Opaque";
 import { AerodromeWaypoint, AerodromeWaypointId } from "./AerodromeWaypoint";

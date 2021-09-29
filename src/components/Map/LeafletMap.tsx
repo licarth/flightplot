@@ -1,7 +1,5 @@
+import { NmScale } from "@marfle/react-leaflet-nmscale";
 import "antd/dist/antd.css";
-import * as Either from "fp-ts/lib/Either";
-import { pipe } from "fp-ts/lib/function";
-import { draw } from "io-ts/lib/Decoder";
 import { LatLng, LatLngTuple } from "leaflet";
 import { useEffect, useState } from "react";
 import { MapContainer } from "react-leaflet";
@@ -11,15 +9,14 @@ import {
   AiracData,
   Latitude,
   Longitude,
-} from "sia-data";
+} from "ts-aerodata-france";
 import { DisplayedLayers } from "../../App";
 import { Route, toLeafletLatLng, Waypoint } from "../../domain";
 import { OaciLayer, OpenStreetMapLayer } from "../layer";
 import { Aerodromes } from "./Aerodromes";
+import { Airspaces } from "./Airspaces";
 import { FlightPlanningLayer } from "./FlightPlanningLayer";
-import { RouteDescription } from "./RouteDescription";
 import { VfrPoints } from "./VfrPoints";
-import { NmScale } from "@marfle/react-leaflet-nmscale";
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 11;
@@ -32,12 +29,7 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
   const [airacData, setAiracData] = useState<AiracData>();
 
   useEffect(() => {
-    pipe(
-      AiracData.loadCycle(AiracCycles.MARCH_25_2021),
-      Either.fold((e) => {
-        console.error(draw(e));
-      }, setAiracData),
-    );
+    setAiracData(AiracData.loadCycle(AiracCycles.NOV_04_2021));
   }, []);
 
   const [route, setRoute] = useState<Route>(
@@ -104,6 +96,8 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
       <div onContextMenu={(e) => e.preventDefault()}>
         <MapContainer id="mapId" center={defaultLatLng} zoom={zoom}>
           <Layers displayedLayers={displayedLayers} />
+          {/* <DangerZones airacData={airacData} /> */}
+          <Airspaces airacData={airacData} />
           <Aerodromes
             airacData={airacData}
             onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
@@ -123,7 +117,7 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
           <NmScale />
         </MapContainer>
       </div>
-      <RouteDescription route={route} />
+      {/* <RouteDescription route={route} /> */}
     </>
   );
 };

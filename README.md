@@ -1,12 +1,6 @@
 # FlightPlot
-A website to display your flights, recorded with GPS trackers.
+Outil de planification de vols VFR.
 
-### Display charts
-- altitude
-- speed
-
-Sync cursor with 🛩 on the map.
+![Screenshot from 2021-09-29 12-49-56](https://user-images.githubusercontent.com/5550241/135254645-2f1d7982-e22e-4421-add7-0f0e82ebb669.png)
 
 
-### 3d
-WRLD.js

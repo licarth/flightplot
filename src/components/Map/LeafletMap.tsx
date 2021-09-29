@@ -8,7 +8,7 @@ import {
   AiracCycles,
   AiracData,
   Latitude,
-  Longitude,
+  Longitude
 } from "ts-aerodata-france";
 import { DisplayedLayers } from "../../App";
 import { Route, toLeafletLatLng, Waypoint } from "../../domain";
@@ -16,6 +16,7 @@ import { OaciLayer, OpenStreetMapLayer } from "../layer";
 import { Aerodromes } from "./Aerodromes";
 import { Airspaces } from "./Airspaces";
 import { FlightPlanningLayer } from "./FlightPlanningLayer";
+import { VerticalProfileLayer } from "./VerticalProfileLayer";
 import { VfrPoints } from "./VfrPoints";
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
@@ -47,7 +48,7 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
     position?: number;
     name?: string;
   }) => {
-    console.log(`adding latlng waypoint`);
+    // console.log(`adding latlng waypoint`);
     setRoute(
       route.addWaypoint({
         position,
@@ -63,7 +64,7 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
     aerodrome: Aerodrome;
     position?: number;
   }) => {
-    console.log(`adding aerodrome waypoint ${aerodrome.icaoCode}`);
+    // console.log(`adding aerodrome waypoint ${aerodrome.icaoCode}`);
     setRoute(
       route.addWaypoint({
         position,
@@ -87,7 +88,7 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
     );
 
   const removeWaypoint = (waypointPosition: number) => {
-    console.log(`removing waypoint ${waypointPosition}`);
+    // console.log(`removing waypoint ${waypointPosition}`);
     setRoute(route.removeWaypoint(waypointPosition));
   };
 
@@ -113,6 +114,10 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
             route={route}
             removeWaypoint={removeWaypoint}
             replaceWaypoint={replaceWaypoint}
+          />
+          <VerticalProfileLayer
+            route={route}
+            airacData={airacData}
           />
           <NmScale />
         </MapContainer>

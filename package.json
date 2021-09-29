@@ -11,6 +11,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@gregoranders/csv": "^0.0.8",
     "@marfle/react-leaflet-nmscale": "^2.0.0",
+    "@turf/turf": "^6.5.0",
     "@types/lodash": "^4.14.168",
     "@types/styled-components": "^5.1.7",
     "@types/uuid": "^8.3.0",

@@ -34,7 +34,7 @@ export const FlightPlanningLayer = ({
   }) => void;
 }) => {
   useMapEvent("click", (e) => {
-    console.log("using map event");
+    // console.log("using map event");
     addWaypoint({ latLng: e.latlng });
   });
 
@@ -181,7 +181,7 @@ const lineBetweenWaypoints = (waypoint1: Waypoint, waypoint2: Waypoint) => {
   const aLine = [pointA, pointB];
   const lineDistance = ruler.lineDistance(aLine);
 
-  console.log(lineDistance);
+  // console.log(lineDistance);
 
   if (lineDistance > 5) {
     const line = ruler.lineSliceAlong(2.6, lineDistance - 2.6, aLine);

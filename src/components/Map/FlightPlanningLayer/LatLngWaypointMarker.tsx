@@ -36,14 +36,14 @@ export const LatLngWaypointMarker = ({
   const tooltipRef = useRef<Leaflet.Tooltip>(null);
   const map = useMap();
   const mapPane = map.getPane("mapPane");
-  console.log(mapPane);
+  // console.log(mapPane);
   if (mapPane) {
-    console.log("Seetting pointerEvents");
+    // console.log("Seetting pointerEvents");
     mapPane.style.pointerEvents = "none";
   }
   const tooltipElement = tooltipRef.current?.getElement();
   if (tooltipElement) {
-    console.log("Seetting tooltip props");
+    // console.log("Seetting tooltip props");
     tooltipElement.style.pointerEvents = "auto";
   }
 
@@ -109,7 +109,7 @@ export const LatLngWaypointMarker = ({
                 }
               }}
               onClick={(e) => {
-                console.log("CLICK");
+                // console.log("CLICK");
                 e.stopPropagation();
                 e.preventDefault();
               }}

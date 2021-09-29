@@ -80,6 +80,7 @@ export class Route {
 
   get legs() {
     const legs = [];
+    let startingPointInNm = 0;
     for (let i = 0; i < this.waypoints.length; i++) {
       if (this.length > i) {
         const departureWaypoint = this.waypoints[i];
@@ -101,13 +102,35 @@ export class Route {
                 toPoint(arrivalWaypoint.latLng),
               )) %
             360,
+          startingPointInNm,
           distanceInNm,
           durationInMinutes: distanceInNm * 0.55,
           departureWaypoint,
           arrivalWaypoint,
         });
+        startingPointInNm = startingPointInNm + distanceInNm;
       }
     }
     return legs;
+  }
+
+  get boundingBox(): [number, number, number, number] {
+    const lats: number[] = [];
+    const lngs: number[] = [];
+
+    for (let i = 0; i < this.waypoints.length; i++) {
+      const w = this.waypoints[i];
+      lats.push(w.latLng.lat);
+      lngs.push(w.latLng.lng);
+    }
+
+    // calc the min and max lng and lat
+    const minlat = Math.min(...lats);
+    const maxlat = Math.max(...lats);
+    const minlng = Math.min(...lngs);
+    const maxlng = Math.max(...lngs);
+
+    // create a bounding rectangle that can be used in leaflet
+    return [minlng, minlat, maxlng, maxlat];
   }
 }

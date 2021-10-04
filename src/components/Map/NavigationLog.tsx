@@ -50,9 +50,9 @@ export const NavigationLog = ({
           trueHdg,
           distanceInNm,
           durationInMinutes,
-        }) => (
+        }, i) => (
           <NavRow>
-            <LegCell>...... ft</LegCell>
+            <LegCell>{route.inferredAltitudes[i]} ft</LegCell>
             <LegCell>{formatHeading(trueHdg)}°T</LegCell>
             <LegCell>{Math.round(distanceInNm)} NM</LegCell>
             <LegCell>{Math.round(durationInMinutes)} min</LegCell>

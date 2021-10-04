@@ -1,21 +1,21 @@
 import * as turf from "@turf/turf";
 import CheapRuler from "cheap-ruler";
 import { LatLng } from "leaflet";
-import { Airspace, Latitude, Longitude } from "ts-aerodata-france";
+import { Airspace, DangerZone, Latitude, Longitude } from "ts-aerodata-france";
 import { toPoint } from "../components/Map/FlightPlanningLayer";
 import { Route } from "./Route";
 
-type Props = { airspaces: Airspace[]; route: Route };
+type Props = { airspaces: (Airspace | DangerZone)[]; route: Route };
 
 const toArrayCoords = (
   latLng: LatLng | { lat: Latitude; lng: Longitude },
 ): [number, number] => [Number(latLng.lng), Number(latLng.lat)];
 
-const airspaceAsPolygon = (airspace: Airspace) =>
+const airspaceAsPolygon = (airspace: Airspace | DangerZone) =>
   turf.polygon([airspace.geometry.map((latlng) => toArrayCoords(latlng))]);
 
 type AirspaceSegmentOverlap = {
-  airspace: Airspace;
+  airspace: Airspace | DangerZone;
   segments: [number, number][];
 };
 

@@ -133,4 +133,14 @@ export class Route {
     // create a bounding rectangle that can be used in leaflet
     return [minlng, minlat, maxlng, maxlat];
   }
+
+  get inferredAltitudes() {
+    return this.waypoints.reduce(
+      (prev, curr) =>
+        !!curr.altitude
+          ? [...prev, curr.altitude]
+          : [...prev, prev[prev.length - 1] || 0],
+      [] as number[],
+    );
+  }
 }

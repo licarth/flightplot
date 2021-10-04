@@ -1,5 +1,10 @@
 import { LatLng } from "leaflet";
-import { Aerodrome, IcaoCode, LatLng as SiaLatLng } from "ts-aerodata-france";
+import {
+  Aerodrome,
+  AltitudeInFeet,
+  IcaoCode,
+  LatLng as SiaLatLng,
+} from "ts-aerodata-france";
 import { toLatLng } from "../../components/Map/LeafletMap";
 import { Waypoint } from "./Waypoint";
 
@@ -28,6 +33,10 @@ export class AerodromeWaypoint implements Waypoint {
 
   get aerodrome() {
     return this._aerodrome;
+  }
+
+  get altitude() {
+    return AltitudeInFeet.getValue(this.aerodrome.aerodromeAltitude);
   }
 
   static isAerodromeWaypoint(waypoint: any): waypoint is AerodromeWaypoint {

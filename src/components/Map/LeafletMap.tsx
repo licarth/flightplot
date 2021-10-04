@@ -1,22 +1,23 @@
 import { NmScale } from "@marfle/react-leaflet-nmscale";
 import "antd/dist/antd.css";
 import { LatLng, LatLngTuple } from "leaflet";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MapContainer } from "react-leaflet";
 import {
   Aerodrome,
   AiracCycles,
   AiracData,
   Latitude,
-  Longitude
+  Longitude,
 } from "ts-aerodata-france";
 import { DisplayedLayers } from "../../App";
 import { Route, toLeafletLatLng, Waypoint } from "../../domain";
 import { OaciLayer, OpenStreetMapLayer } from "../layer";
+import { VerticalProfileChart } from "../VerticalProfileChart";
 import { Aerodromes } from "./Aerodromes";
 import { Airspaces } from "./Airspaces";
-import { FlightPlanningLayer } from "./FlightPlanningLayer";
-import { VerticalProfileLayer } from "./VerticalProfileLayer";
+import { FlightPlanningLayer, isLatLngWaypoint } from "./FlightPlanningLayer";
+import { RouteDescription } from "./RouteDescription";
 import { VfrPoints } from "./VfrPoints";
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
@@ -73,22 +74,42 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
     );
   };
 
-  const replaceWaypoint = ({
-    waypointPosition,
-    newWaypoint,
-  }: {
-    waypointPosition: number;
-    newWaypoint: Waypoint;
-  }) =>
-    setRoute(
-      route.replaceWaypoint({
-        waypointPosition,
-        newWaypoint,
-      }),
-    );
+  const replaceWaypoint = useCallback(
+    ({
+      waypointPosition,
+      newWaypoint,
+    }: {
+      waypointPosition: number;
+      newWaypoint: Waypoint;
+    }) =>
+      setRoute(
+        route.replaceWaypoint({
+          waypointPosition,
+          newWaypoint,
+        }),
+      ),
+    [route],
+  );
+
+  const setWaypointAltitude = useCallback(
+    ({
+      waypointPosition,
+      altitude,
+    }: {
+      waypointPosition: number;
+      altitude: number;
+    }) => {
+      const w = route.waypoints[waypointPosition];
+      if (isLatLngWaypoint(w)) {
+        const newWaypoint = w.clone({ altitude });
+        // console.log(newWaypoint);
+        replaceWaypoint({ waypointPosition, newWaypoint });
+      }
+    },
+    [route, replaceWaypoint],
+  );
 
   const removeWaypoint = (waypointPosition: number) => {
-    // console.log(`removing waypoint ${waypointPosition}`);
     setRoute(route.removeWaypoint(waypointPosition));
   };
 
@@ -115,14 +136,15 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
             removeWaypoint={removeWaypoint}
             replaceWaypoint={replaceWaypoint}
           />
-          <VerticalProfileLayer
-            route={route}
-            airacData={airacData}
-          />
           <NmScale />
         </MapContainer>
+        <VerticalProfileChart
+          route={route}
+          airacData={airacData}
+          setWaypointAltitude={setWaypointAltitude}
+        />
       </div>
-      {/* <RouteDescription route={route} /> */}
+      <RouteDescription route={route} />
     </>
   );
 };

@@ -3930,9 +3930,9 @@
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
 "@types/node@*":
-  version "16.10.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.10.1.tgz#f3647623199ca920960006b3dccf633ea905f243"
-  integrity sha512-4/Z9DMPKFexZj/Gn3LylFgamNKHm4K3QDi0gz9B26Uk0c8izYf97B5fxfpspMNkWlFupblKM/nV8+NA9Ffvr+w==
+  version "16.10.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.10.2.tgz#5764ca9aa94470adb4e1185fe2e9f19458992b2e"
+  integrity sha512-zCclL4/rx+W5SQTzFs9wyvvyCwoK9QtBpratqz2IYJ3O8Umrn0m3nsTv0wQBk9sRGpvUe9CwPDrQFB10f1FIjQ==
 
 "@types/node@>=12.12.47", "@types/node@>=13.7.0":
   version "15.12.2"
@@ -5640,6 +5640,25 @@ char-regex@^1.0.2:
   resolved "https://registry.yarnpkg.com/char-regex/-/char-regex-1.0.2.tgz#d744358226217f981ed58f479b1d6bcc29545dcf"
   integrity sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==
 
+chart.js@^3.0.1, chart.js@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-3.5.1.tgz#73e24d23a4134a70ccdb5e79a917f156b6f3644a"
+  integrity sha512-m5kzt72I1WQ9LILwQC4syla/LD/N413RYv2Dx2nnTkRS9iv/ey1xLTt0DnPc/eWV4zI+BgEgDYBIzbQhZHc/PQ==
+
+chartjs-plugin-annotation@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/chartjs-plugin-annotation/-/chartjs-plugin-annotation-1.0.2.tgz#59ea0971b52b91c78690a5ba328e4ed38940f864"
+  integrity sha512-asqP2/B+9tv105e3rwkzqoIgzhDBQRMzFRh/0ZTKqormxDXMP68uzxI5t3Fx8bxZSMNeEph0sY+0GIXXU0PeBQ==
+
+chartjs-plugin-dragdata@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/chartjs-plugin-dragdata/-/chartjs-plugin-dragdata-2.1.0.tgz#0be0f4034a68fa796edecfc175486b1c97bf9b23"
+  integrity sha512-wywUTyaOWrUVEP88hj45HlPPDYbvnhCt9drP805KPhKD1q1lzLsxfY2sVuVk9A3ozdNJYsVl52RX6QVHWdq++A==
+  dependencies:
+    chart.js "^3.0.1"
+    d3-drag "^2.0.0"
+    d3-selection "^2.0.0"
+
 cheap-ruler@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/cheap-ruler/-/cheap-ruler-3.0.1.tgz#3df3bd6fe664d8cab9e9e826bba24d7271e7645a"
@@ -6500,6 +6519,19 @@ d3-contour@^1.1.0:
   dependencies:
     d3-array "^1.1.1"
 
+"d3-dispatch@1 - 2":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-2.0.0.tgz#8a18e16f76dd3fcaef42163c97b926aa9b55e7cf"
+  integrity sha512-S/m2VsXI7gAti2pBoLClFFTMOO1HTtT0j99AuXLoGFKO6deHDdnv6ZGTxSTTUTgO1zVcv82fCOtDjYK4EECmWA==
+
+d3-drag@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/d3-drag/-/d3-drag-2.0.0.tgz#9eaf046ce9ed1c25c88661911c1d5a4d8eb7ea6d"
+  integrity sha512-g9y9WbMnF5uqB9qKqwIIa/921RYWzlUDv9Jl1/yONQwxbOfszAWTCm8u7HOTgJgRDXiRZN56cHT9pd24dmXs8w==
+  dependencies:
+    d3-dispatch "1 - 2"
+    d3-selection "2"
+
 d3-format@1, d3-format@^1.2.0:
   version "1.4.5"
   resolved "https://registry.yarnpkg.com/d3-format/-/d3-format-1.4.5.tgz#374f2ba1320e3717eb74a9356c67daee17a7edb4"
@@ -6562,6 +6594,11 @@ d3-scale@^1.0.5:
     d3-interpolate "1"
     d3-time "1"
     d3-time-format "2"
+
+d3-selection@2, d3-selection@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-2.0.0.tgz#94a11638ea2141b7565f883780dabc7ef6a61066"
+  integrity sha512-XoGGqhLUN/W14NmaqcO/bb1nqjDAw5WtSYb2X8wiuQWvSZUsUVYsOSkOybUrNvcBjaywBdYPy03eXHMXjk9nZA==
 
 d3-shape@^1.1.0, d3-shape@^1.2.0:
   version "1.3.7"
@@ -13215,6 +13252,13 @@ react-app-polyfill@^2.0.0:
     raf "^3.4.1"
     regenerator-runtime "^0.13.7"
     whatwg-fetch "^3.4.1"
+
+react-chartjs-2@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-3.0.5.tgz#afc23993a32e146bdcc9addff16a28d8964b98ad"
+  integrity sha512-fYr4E82agaZi9IFMe5GtOZ6WE/HWdxy/KywLNOzXsqgPkD2oo1IlrQLKMLUki/2UXko3p95TR2L8Q2rEss/opQ==
+  dependencies:
+    lodash "^4.17.19"
 
 react-dev-utils@^11.0.3:
   version "11.0.3"

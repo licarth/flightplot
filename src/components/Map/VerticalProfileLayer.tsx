@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Polyline, useMap, useMapEvents } from "react-leaflet";
 import { AiracData, AirspaceType } from "ts-aerodata-france";
 import { Route } from "../../domain";
-import { routeAirspaceOverlaps } from "../../domain/VerticalProfile";
 import { routeAirspaceOverlapsGraphical } from "../../domain/VerticalProfileGraphical";
 
 export const VerticalProfileLayer = ({
@@ -29,16 +28,6 @@ export const VerticalProfileLayer = ({
     move: debounce(refreshMapBounds, 100),
   });
   const routeBbox = route.boundingBox;
-  airacData &&
-    mapBounds &&
-    console.log(
-      routeAirspaceOverlaps({
-        route,
-        airspaces: airacData
-          .getAirspacesInBbox(...routeBbox)
-          .filter(({ type, name }) => type === AirspaceType.CTR),
-      }),
-    );
   return (
     <>
       {airacData &&

@@ -13,12 +13,14 @@ export type WaypointProps = {
   latLng: LatLng;
   name?: string;
   id: WaypointId;
+  altitude?: number;
 };
 
 export interface Waypoint {
   latLng: LatLng;
   name?: string;
   id: WaypointId;
+  altitude?: number;
 }
 
 export namespace Waypoint {

@@ -103,8 +103,8 @@ export const FlightPlanningLayer = ({
           )}
           {route.waypoints[i + 1] && (
             <Polyline
-              color={"black"}
-              // weight={5}
+              color={"#000000a2"}
+              weight={10}
               lineCap={"square"}
               eventHandlers={{
                 click: (e) => {
@@ -201,6 +201,6 @@ export const toPoint = (latLng: LatLng): [number, number] => [
 export const toLine = (latLngs: Array<LatLng>): Line =>
   latLngs.map((latLng) => [latLng.lng, latLng.lat]);
 
-const isLatLngWaypoint = (w: any): w is LatLngWaypoint => {
+export const isLatLngWaypoint = (w: any): w is LatLngWaypoint => {
   return w.clone !== undefined;
 };

@@ -47,7 +47,7 @@ export const VfrPoints = ({
           return (
             <Fragment key={`${icaoCode}/${name}`}>
               {
-                <>
+                <div title={`${icaoCode}`}>
                   <SVGOverlay
                     attributes={{
                       stroke: "red",
@@ -76,7 +76,7 @@ export const VfrPoints = ({
                       }}
                     ></Polygon>
                   </SVGOverlay>
-                </>
+                </div>
               }
             </Fragment>
           );

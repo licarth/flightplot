@@ -63,6 +63,7 @@ export const Aerodromes = ({
               >
                 {
                   <StyledAerodromeLogo
+                    title={`${icaoCode}`}
                     $magneticVariation={magneticVariation}
                     $magneticOrientation={magneticOrientation}
                   />

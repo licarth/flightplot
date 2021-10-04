@@ -4,11 +4,13 @@ import { Waypoint, WaypointId, WaypointProps } from "./Waypoint";
 export class LatLngWaypoint implements Waypoint {
   private _latLng;
   public name;
+  public altitude?;
   private _id: WaypointId;
 
-  constructor({ latLng, name, id }: WaypointProps) {
+  constructor({ latLng, name, id, altitude }: WaypointProps) {
     this._latLng = latLng;
     this.name = name;
+    this.altitude = altitude;
     this._id = id;
   }
 
@@ -20,11 +22,13 @@ export class LatLngWaypoint implements Waypoint {
     id = this._id,
     latLng = this._latLng,
     name = this.name,
+    altitude = this.altitude,
   }: Partial<WaypointProps> = {}) {
     return new LatLngWaypoint({
       latLng,
       name,
       id,
+      altitude,
     });
   }
 

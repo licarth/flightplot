@@ -3,8 +3,7 @@ import CheapRuler from "cheap-ruler";
 import { debounce } from "lodash";
 import { Fragment, useState } from "react";
 import { Polygon, SVGOverlay, useMap, useMapEvents } from "react-leaflet";
-import { AiracData } from "ts-aerodata-france";
-import { VfrPoint } from "ts-aerodata-france/build/types/domain/VfrPoint";
+import { AiracData, VfrPoint } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
 import { pointToLeafletLatLng, toPoint } from "./FlightPlanningLayer";
 import { getMapBounds } from "./getMapBounds";
@@ -77,5 +76,3 @@ export const VfrPoints = ({
   }
   return <>{components}</>;
 };
-
-

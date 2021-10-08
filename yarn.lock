@@ -15578,10 +15578,10 @@ tryer@^1.0.1:
   resolved "https://registry.yarnpkg.com/tryer/-/tryer-1.0.1.tgz#f2c85406800b9b0f74c9f7465b81eaad241252f8"
   integrity sha512-c3zayb8/kWWpycWYg87P71E1S1ZL6b6IJxfb5fvsUgsf0S2MVGaDhDXXjDMpdCpfWXqptc+4mXwmiy1ypXqRAA==
 
-ts-aerodata-france@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/ts-aerodata-france/-/ts-aerodata-france-0.0.3.tgz#c3a3713fb6efb2a20d39cd029e458a87addbe0f2"
-  integrity sha512-kwkI5f6w4Wgf8pMC2JX7ezDmBjuZ0xaiMlvjDe6ClDY4y3XxpDduzczqgGOsoSWms/xxaz6CDcGUIbCoJmGyGA==
+ts-aerodata-france@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/ts-aerodata-france/-/ts-aerodata-france-0.0.4.tgz#4aece362dcb71709229dd1d8fb4d0f487b677a2a"
+  integrity sha512-LTh/E7VD2ZKbXvLEgAmnznhXP58My0dSuFYGxC4S9Te6Jd42dXAdO3luG2PkpKJSO7SDW3l62STVwNW8zFLmWQ==
   dependencies:
     "@types/he" "^1.1.1"
     "@types/iconv" "^3.0.0"

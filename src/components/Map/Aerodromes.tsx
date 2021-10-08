@@ -4,7 +4,7 @@ import { Fragment, useState } from "react";
 import { SVGOverlay, useMap, useMapEvents } from "react-leaflet";
 import styled from "styled-components";
 import { Aerodrome, AiracData } from "ts-aerodata-france";
-import { MagneticRunwayOrientation } from "ts-aerodata-france/build/types/domain/Runway";
+import { MagneticRunwayOrientation } from "ts-aerodata-france";
 import { ReactComponent as AerodromeLogo } from "../../icons/aerodrome.min.svg";
 import { getMapBounds } from "./getMapBounds";
 import { toLatLng } from "./LeafletMap";

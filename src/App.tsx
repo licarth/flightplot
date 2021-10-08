@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { AiracCycles, AiracData } from "ts-aerodata-france";
 import { LayerEnum } from "./components/layer/Layer";
 import { LeafletMap } from "./components/Map/LeafletMap";
 import { PrintContent } from "./components/Map/PrintContent";
@@ -20,11 +21,17 @@ const App = ({ disabled }: { disabled: boolean }) => {
     open_street_map: false,
   });
 
+  const [airacData, setAiracData] = useState<AiracData>();
+
+  useEffect(() => {
+    setAiracData(AiracData.loadCycle(AiracCycles.NOV_04_2021));
+  }, []);
+
   return (
     <>
       <AppContainer id="app" disabled={disabled}>
-        <LeafletMap displayedLayers={displayedLayers} />
-      </AppContainer>
+        {airacData && <LeafletMap displayedLayers={displayedLayers} airacData={airacData} />
+      }</AppContainer>
       <PrintContent>
         <div id="printArea"></div>
       </PrintContent>

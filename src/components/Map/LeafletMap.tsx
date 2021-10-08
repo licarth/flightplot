@@ -1,14 +1,16 @@
 import { NmScale } from "@marfle/react-leaflet-nmscale";
 import "antd/dist/antd.css";
 import { LatLng, LatLngTuple } from "leaflet";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { MapContainer } from "react-leaflet";
+import { Rnd } from "react-rnd";
+import styled from "styled-components";
 import {
   Aerodrome,
-  AiracCycles,
+
   AiracData,
   Latitude,
-  Longitude,
+  Longitude
 } from "ts-aerodata-france";
 import { DisplayedLayers } from "../../App";
 import { Route, toLeafletLatLng, Waypoint } from "../../domain";
@@ -25,15 +27,16 @@ const zoom: number = 11;
 
 type LeafletMapProps = {
   displayedLayers: DisplayedLayers;
+  airacData: AiracData;
 };
 
-export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
-  const [airacData, setAiracData] = useState<AiracData>();
+const TopBar = styled.div`
+  width: 100%;
+  height: 30px;
+  background-color: grey;
+`;
 
-  useEffect(() => {
-    setAiracData(AiracData.loadCycle(AiracCycles.NOV_04_2021));
-  }, []);
-
+export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
   const [route, setRoute] = useState<Route>(
     new Route({
       waypoints: [],
@@ -138,12 +141,20 @@ export const LeafletMap = ({ displayedLayers }: LeafletMapProps) => {
           />
           <NmScale />
         </MapContainer>
+      </div>
+      <Rnd
+        style={{ zIndex: 10000, backgroundColor: "grey" }}
+        enableResizing
+        dragHandleClassName={"dragg"}
+        // resizeHandleComponent={{top: <TopBar />}}
+      >
+        <TopBar className={"dragg"} />
         <VerticalProfileChart
           route={route}
           airacData={airacData}
           setWaypointAltitude={setWaypointAltitude}
         />
-      </div>
+      </Rnd>
       <RouteDescription route={route} />
     </>
   );

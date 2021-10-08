@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { Aerodrome, AiracData } from "ts-aerodata-france";
 import { MagneticRunwayOrientation } from "ts-aerodata-france/build/types/domain/Runway";
 import { ReactComponent as AerodromeLogo } from "../../icons/aerodrome.min.svg";
+import { getMapBounds } from "./getMapBounds";
 import { toLatLng } from "./LeafletMap";
 import { preventDefault } from "./preventDefault";
 
@@ -16,16 +17,11 @@ export const Aerodromes = ({
   airacData?: AiracData;
   onClick: (aerodrome: Aerodrome) => void;
 }) => {
-  const [mapBounds, setMapBounds] =
-    useState<[number, number, number, number]>();
   const leafletMap = useMap();
-  const refreshMapBounds = () =>
-    setMapBounds([
-      leafletMap.getBounds().getWest(),
-      leafletMap.getBounds().getSouth(),
-      leafletMap.getBounds().getEast(),
-      leafletMap.getBounds().getNorth(),
-    ]);
+  const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
+    leafletMap && getMapBounds(leafletMap),
+  );
+  const refreshMapBounds = () => setMapBounds(getMapBounds(leafletMap));
   useMapEvents({
     moveend: refreshMapBounds,
     move: debounce(refreshMapBounds, 100),

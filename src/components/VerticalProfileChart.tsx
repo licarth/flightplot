@@ -16,12 +16,11 @@ Chart.register(annotationPlugin);
 Chart.register(dragData);
 
 const VerticalProfileDiv = styled.div`
-  position: absolute;
-  right: 0px;
-  bottom: 150px;
-  /* height: 200px; */
-  width: 1000px;
-  z-index: 99999;
+  /* position: absolute; */
+  /* right: 0px; */
+  /* bottom: 150px; */
+  height: 100%;
+  /* width: 1000px; */
   background-color: white;
 `;
 
@@ -182,6 +181,7 @@ export const VerticalProfileChart = ({
         key={`vertical-profile-${hashCode(JSON.stringify(route.waypoints))}`}
         data={data}
         options={{
+          maintainAspectRatio: false,
           animation: false,
           elements: {
             line: {

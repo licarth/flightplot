@@ -6,13 +6,15 @@ import {
   SVGOverlay,
   Tooltip,
   useMap,
-  useMapEvents
+  useMapEvents,
 } from "react-leaflet";
 import { AiracData, Airspace, AirspaceType } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
+import { getMapBounds } from "./getMapBounds";
 
 const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
-  const { geometry, name, lowerLimit, higherLimit, airspaceClass, type } = airspace;
+  const { geometry, name, lowerLimit, higherLimit, airspaceClass, type } =
+    airspace;
   const leafletLatLngs = geometry.map(toLeafletLatLng);
   const [mouseOver, setMouseOver] = useState(false);
   const color = "#002e94";
@@ -53,7 +55,9 @@ const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
                 offset={[10, 0]}
                 key={`tooltip-airspace-${name}`}
               >
-                <b>{name} [{airspaceClass}]</b>
+                <b>
+                  {name} [{airspaceClass}]
+                </b>
                 <br />
                 <div
                   style={{
@@ -77,16 +81,11 @@ const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
 };
 
 export const Airspaces = ({ airacData }: { airacData?: AiracData }) => {
-  const [mapBounds, setMapBounds] =
-    useState<[number, number, number, number]>();
   const leafletMap = useMap();
-  const refreshMapBounds = () =>
-    setMapBounds([
-      leafletMap.getBounds().getWest(),
-      leafletMap.getBounds().getSouth(),
-      leafletMap.getBounds().getEast(),
-      leafletMap.getBounds().getNorth(),
-    ]);
+  const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
+    leafletMap && getMapBounds(leafletMap),
+  );
+  const refreshMapBounds = () => setMapBounds(getMapBounds(leafletMap));
   useMapEvents({
     moveend: refreshMapBounds,
     move: debounce(refreshMapBounds, 100),

@@ -219,7 +219,7 @@ export const VerticalProfileChart = ({
 
 const hashCode = (s: string) => {
   let hash = 0;
-  if (s.length == 0) {
+  if (s.length === 0) {
     return hash;
   }
   for (var i = 0; i < s.length; i++) {

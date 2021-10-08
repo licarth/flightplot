@@ -13,7 +13,7 @@ import { toLeafletLatLng } from "../../domain";
 import { getMapBounds } from "./getMapBounds";
 
 const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
-  const { geometry, name, lowerLimit, higherLimit, airspaceClass, type } =
+  const { geometry, name, lowerLimit, higherLimit, airspaceClass } =
     airspace;
   const leafletLatLngs = geometry.map(toLeafletLatLng);
   const [mouseOver, setMouseOver] = useState(false);

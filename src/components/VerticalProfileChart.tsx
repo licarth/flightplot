@@ -1,16 +1,17 @@
-import { ChartData } from "chart.js";
+import { ChartData, ChartDataset } from "chart.js";
 import annotationPlugin, { AnnotationOptions } from "chartjs-plugin-annotation";
 import "chartjs-plugin-dragdata";
 //@ts-ignore
 import dragData from "chartjs-plugin-dragdata";
 import * as _ from "lodash";
-import { max, min } from "lodash";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Chart, Scatter } from "react-chartjs-2";
 import styled from "styled-components";
 import { AiracData, AirspaceType, DangerZoneType } from "ts-aerodata-france";
 import { Route } from "../domain";
 import { routeAirspaceOverlaps } from "../domain/VerticalProfile";
+import { ElevationAtPoint, elevationOnRoute } from "../elevationOnRoute";
+import { openElevationApiElevationService } from "../ElevationService/openElevationApiElevationService";
 import { isLatLngWaypoint } from "./Map/FlightPlanningLayer";
 Chart.register(annotationPlugin);
 Chart.register(dragData);
@@ -43,7 +44,17 @@ export const VerticalProfileChart = ({
     [setWaypointAltitude],
   );
 
-  console.log(route);
+  useEffect(() => {
+    if (route.length > 1) {
+      elevationOnRoute({ elevationService: openElevationApiElevationService })(
+        route,
+      ).then((e) => setElevation(e));
+    } else {
+      setElevation(undefined);
+    }
+  }, [route]);
+
+  const [elevation, setElevation] = useState<ElevationAtPoint>();
 
   const overlaps = airacData
     ? routeAirspaceOverlaps({
@@ -101,20 +112,41 @@ export const VerticalProfileChart = ({
     }),
   );
 
-  const data: ChartData = {
-    datasets: [
-      {
-        label: "Flight Path",
-        data: pointData,
-        fill: false,
-        showLine: true,
-        backgroundColor: "rgb(255, 99, 132)",
-        borderColor: "rgb(0, 0, 0)",
-        borderWidth: 2,
-        segment: { borderColor: "#00000", borderWidth: 2 },
-      },
-    ],
+  const datasets: ChartDataset<"scatter">[] = [
+    {
+      label: "Flight Path",
+      data: pointData,
+      fill: false,
+      showLine: true,
+      backgroundColor: "rgb(255, 99, 132)",
+      borderColor: "rgb(0, 0, 0)",
+      borderWidth: 2,
+      pointRadius: 5,
+    },
+  ];
+
+  if (elevation) {
+    //@ts-ignore
+    datasets.push({
+      label: "Terrain Elevation",
+      data: elevation.distancesFromStartInNm.map((x, i) => ({
+        x,
+        y: elevation.elevations[i],
+        r: 0,
+      })),
+      fill: true,
+      showLine: false,
+      backgroundColor: "rgb(141, 63, 0)",
+      borderColor: "rgb(0, 0, 0)",
+      borderWidth: 0,
+      pointRadius: 0,
+      pointHitRadius: 0,
+    });
+  }
+  const data: ChartData<"scatter"> = {
+    datasets: datasets,
   };
+
   const boxes: Record<string, AnnotationOptions<"box"> & { name: string }> =
     _.keyBy(
       overlaps.flatMap(
@@ -148,7 +180,7 @@ export const VerticalProfileChart = ({
     },
     // @ts-ignore
     onDragStart: (e, datasetIndex, index, value) => {
-      if (!isLatLngWaypoint(route.waypoints[index])) {
+      if (datasetIndex !== 0 || !isLatLngWaypoint(route.waypoints[index])) {
         // console.log(route.length);
         return false;
       }
@@ -187,6 +219,7 @@ export const VerticalProfileChart = ({
               segment: { borderColor: "#000000F", borderWidth: 2 },
               borderColor: "black",
             },
+            point: { radius: 0 },
           },
           plugins: {
             annotation: {
@@ -204,8 +237,8 @@ export const VerticalProfileChart = ({
           },
           scales: {
             y: {
-              min: (min(altitudes) || 0) - 200,
-              max: (max(altitudes) || 0) + 1000,
+              grace: 20,
+              // max: (max(altitudes) || 0) + 1000,
               //@ts-ignore
               // dragData: false,
             },

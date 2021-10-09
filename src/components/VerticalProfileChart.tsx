@@ -16,12 +16,11 @@ Chart.register(annotationPlugin);
 Chart.register(dragData);
 
 const VerticalProfileDiv = styled.div`
-  /* position: absolute; */
-  /* right: 0px; */
-  /* bottom: 150px; */
-  height: 100%;
-  /* width: 1000px; */
   background-color: white;
+  flex: 1 1 auto;
+  display: flex;
+  flex-flow: column;
+  overflow: hidden;
 `;
 
 export const VerticalProfileChart = ({

@@ -32,8 +32,9 @@ type LeafletMapProps = {
 
 const TopBar = styled.div`
   width: 100%;
-  height: 30px;
+  min-height: 30px;
   background-color: grey;
+  flex: 0 1 30px;
 `;
 
 export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
@@ -143,10 +144,10 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
         </MapContainer>
       </div>
       <Rnd
-        style={{ zIndex: 10000, backgroundColor: "grey" }}
+        style={{ zIndex: 10000, backgroundColor: "grey", display: "flex", flexFlow: "column"}}
         enableResizing
+        // lockAspectRatio={false}
         dragHandleClassName={"dragg"}
-        // resizeHandleComponent={{top: <TopBar />}}
       >
         <TopBar className={"dragg"} />
         <VerticalProfileChart

@@ -8,13 +8,8 @@ import { NavigationLog } from "./NavigationLog";
 const RouteDescriptionContainer = styled.div`
   background-color: white;
   z-index: 1000;
-  /* position: fixed; */
-  /* padding: 20px; */
-  /* top: 50px;
-  right: 50px;
-  height: 600px;
-  width: 80%; */
-  /* max-width: 800px; */
+  height: 100%;
+  width: 100%;
   overflow-y: auto;
 `;
 
@@ -26,12 +21,6 @@ export const RouteDescription = ({ route }: { route: Route }) => {
   const printArea = window.document.getElementById("printArea");
   return (
     <Rnd
-      default={{
-        x: 0,
-        y: 0,
-        width: 320,
-        height: 500,
-      }}
       style={{ zIndex: 10000 }}
       enableResizing
     >

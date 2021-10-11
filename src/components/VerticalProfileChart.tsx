@@ -4,6 +4,7 @@ import "chartjs-plugin-dragdata";
 //@ts-ignore
 import dragData from "chartjs-plugin-dragdata";
 import * as _ from "lodash";
+import { min } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { Chart, Scatter } from "react-chartjs-2";
 import styled from "styled-components";
@@ -238,9 +239,9 @@ export const VerticalProfileChart = ({
           scales: {
             y: {
               grace: 20,
-              // max: (max(altitudes) || 0) + 1000,
-              //@ts-ignore
-              // dragData: false,
+              suggestedMax: 1500,
+              suggestedMin: 0,
+              min: (elevation && min(elevation.elevations)) || 0,
             },
           },
         }}

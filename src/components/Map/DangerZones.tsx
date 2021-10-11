@@ -1,4 +1,3 @@
-import "antd/dist/antd.css";
 import { debounce } from "lodash";
 import { useState } from "react";
 import { Polygon, SVGOverlay, useMap, useMapEvents } from "react-leaflet";
@@ -23,36 +22,40 @@ export const DangerZones = ({ airacData }: { airacData?: AiracData }) => {
   return (
     <>
       {mapBounds &&
-        airacData?.getDangerZonesInBbox(...mapBounds).map((zone) => {
-          const { geometry, name, lowerLimit, higherLimit } = zone;
-          const leafletLatLngs = geometry.map(toLeafletLatLng);
+        airacData
+          ?.getDangerZonesInBbox(...mapBounds)
+          .filter(({ type }) => ["D", "P"].includes(type))
+          .map((zone) => {
+            const { geometry } = zone;
+            const leafletLatLngs = geometry.map(toLeafletLatLng);
 
-          return (
-            <>
-              {
-                <>
-                  <SVGOverlay
-                    attributes={{
-                      stroke: "red",
-                      class: "map-svg-text-label",
-                    }}
-                    bounds={leafletLatLngs[0].toBounds(100)}
-                    interactive={false}
-                  >
-                    <text x="0%" y="0%" stroke="#940000" height="100%">
-                      {name} ({lowerLimit.toString()} - {higherLimit.toString()})
-                    </text>
-                    <Polygon
-                      color="#940000"
-                      positions={leafletLatLngs}
+            return (
+              <>
+                {
+                  <>
+                    <SVGOverlay
+                      attributes={{
+                        stroke: "red",
+                        class: "map-svg-text-label",
+                      }}
+                      bounds={leafletLatLngs[0].toBounds(100)}
                       interactive={false}
-                    ></Polygon>
-                  </SVGOverlay>
-                </>
-              }
-            </>
-          );
-        })}
+                    >
+                      {/* <text x="0%" y="0%" stroke="#940000" height="100%">
+                      {name} ({lowerLimit.toString()} - {higherLimit.toString()})
+                    </text> */}
+                      <Polygon
+                        color="#940000"
+                        positions={leafletLatLngs}
+                        interactive={false}
+                        fill={false}
+                      ></Polygon>
+                    </SVGOverlay>
+                  </>
+                }
+              </>
+            );
+          })}
     </>
   );
 };

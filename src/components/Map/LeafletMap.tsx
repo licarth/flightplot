@@ -1,5 +1,4 @@
 import { NmScale } from "@marfle/react-leaflet-nmscale";
-import "antd/dist/antd.css";
 import { LatLng, LatLngTuple } from "leaflet";
 import { useCallback, useState } from "react";
 import { MapContainer } from "react-leaflet";
@@ -119,11 +118,11 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
 
   return (
     <>
-      <div onContextMenu={(e) => e.preventDefault()}>
+      <BackgroundContainer onContextMenu={(e) => e.preventDefault()}>
         <MapContainer id="mapId" center={defaultLatLng} zoom={zoom}>
           <Layers displayedLayers={displayedLayers} />
-          {/* <DangerZones airacData={airacData} /> */}
           <Airspaces airacData={airacData} />
+          {/* <DangerZones airacData={airacData} /> */}
           <Aerodromes
             airacData={airacData}
             onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
@@ -142,7 +141,7 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
           />
           <NmScale />
         </MapContainer>
-      </div>
+      </BackgroundContainer>
       <Rnd
         style={{ zIndex: 10000, backgroundColor: "grey", display: "flex", flexFlow: "column"}}
         enableResizing
@@ -174,3 +173,7 @@ export const toLatLng = (latLng: { lat: Latitude; lng: Longitude }) => ({
   lat: latLng.lat as unknown as number,
   lng: latLng.lng as unknown as number,
 });
+
+const BackgroundContainer = styled.div`
+  display: flex;
+`;

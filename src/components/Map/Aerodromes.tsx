@@ -1,4 +1,3 @@
-import "antd/dist/antd.css";
 import { debounce } from "lodash";
 import { Fragment, useState } from "react";
 import { SVGOverlay, useMap, useMapEvents } from "react-leaflet";

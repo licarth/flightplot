@@ -1,4 +1,3 @@
-import { Button } from "antd";
 import { createPortal } from "react-dom";
 import { Rnd } from "react-rnd";
 import styled from "styled-components";
@@ -23,9 +22,10 @@ export const RouteDescription = ({ route }: { route: Route }) => {
     <Rnd
       style={{ zIndex: 10000 }}
       enableResizing
+      default={{ x: 10, y: 500, height: 100, width: 100 }}
     >
       <RouteDescriptionContainer>
-        <Button onClick={print}>PRINT</Button>
+        <button onClick={print}>PRINT</button>
         <NavigationLog route={route} />
         {printArea &&
           createPortal(<NavigationLog route={route} paperVersion />, printArea)}

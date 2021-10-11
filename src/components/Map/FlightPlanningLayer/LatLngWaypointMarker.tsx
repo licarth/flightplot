@@ -1,4 +1,3 @@
-import { Input } from "antd";
 import Leaflet, { LatLng, LatLngExpression } from "leaflet";
 import { useRef, useState } from "react";
 import { Circle, Marker, Tooltip, useMap } from "react-leaflet";
@@ -82,7 +81,7 @@ export const LatLngWaypointMarker = ({
       />
       <Tooltip
         permanent={editingName}
-        offset={[15,0]}
+        offset={[15, 0]}
         ref={tooltipRef}
         interactive={!!editingName}
         key={`tooltip-${waypointNumber}-${editingName}`}
@@ -92,19 +91,19 @@ export const LatLngWaypointMarker = ({
       >
         {editingName && (
           <NameInputContainer>
-            <Input
+            <input
               autoFocus={true}
               defaultValue={label || ""}
               placeholder={"Name here"}
-              onPressEnter={(e) => {
-                //@ts-ignore
-                setName(e.target.value);
-                setEditingName(false);
-                tooltipRef.current?.openTooltip();
-              }}
+              size={5}
               onKeyDown={(e) => {
                 if (e.key === "Escape") {
                   setEditingName(false);
+                } else if (e.key === "Enter") {
+                  //@ts-ignore
+                  setName(e.target.value);
+                  setEditingName(false);
+                  tooltipRef.current?.openTooltip();
                 }
               }}
               onClick={(e) => {
@@ -120,9 +119,7 @@ export const LatLngWaypointMarker = ({
   );
 };
 
-const NameInputContainer = styled.div`
-  width: 100px;
-`;
+const NameInputContainer = styled.div``;
 
 const getIcon = (waypointType: WaypointType) => {
   switch (waypointType) {

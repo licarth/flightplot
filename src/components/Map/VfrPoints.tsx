@@ -1,4 +1,3 @@
-import "antd/dist/antd.css";
 import CheapRuler from "cheap-ruler";
 import { debounce } from "lodash";
 import { Fragment, useState } from "react";

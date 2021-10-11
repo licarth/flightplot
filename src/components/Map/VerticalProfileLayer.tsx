@@ -1,4 +1,3 @@
-import "antd/dist/antd.css";
 import { debounce } from "lodash";
 import { useState } from "react";
 import { Polyline, useMap, useMapEvents } from "react-leaflet";

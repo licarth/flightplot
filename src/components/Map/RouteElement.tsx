@@ -15,11 +15,12 @@ export const RouteElement = ({
   waypointPosition: i,
   removeWaypoint,
 }: RouteElementProps) => {
-  const { attributes, listeners, setNodeRef, transform } =
-    useSortable({ id: `${i}` });
+  const { attributes, listeners, setNodeRef, transform } = useSortable({
+    id: `${i}`,
+  });
   const style = { transform: CSS.Transform.toString(transform) };
   return (
-    <RouteElementContainer style={style} ref={setNodeRef}>
+    <RouteElementContainer key={`${w.id}`} style={style} ref={setNodeRef}>
       <span>
         {w.name}{" "}
         {i === 0 &&
@@ -27,6 +28,16 @@ export const RouteElement = ({
           `(T/O) - ${w.altitude} ft.`}
       </span>
       <span>
+        {AerodromeWaypoint.isAerodromeWaypoint(w) && (
+          <select
+            name={`select-waypoint-type-${w.id}`}
+            id={`select-waypoint-type-${w.id}`}
+            defaultValue={"overfly"}
+          >
+            <option value="touch_go">touch'n'go</option>
+            <option value="overfly">overfly</option>
+          </select>
+        )}
         <button onClick={() => removeWaypoint(i)}>❌</button>
         <button {...listeners} {...attributes}>
           ≡

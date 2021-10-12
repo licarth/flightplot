@@ -17,12 +17,15 @@ export const LatLngWaypointMarker = ({
   preview = false,
   type = "intermediate",
   waypointNumber,
+  onClick,
   setName,
 }: {
   position: LatLngExpression;
   onDelete?: () => void;
   onDrag?: (latLng: LatLng) => void;
   onDragEnd?: (latLng: LatLng) => void;
+  onClick?: () => void;
+
   setName: (name: string) => void;
   label?: string;
   type: WaypointType;
@@ -64,7 +67,7 @@ export const LatLngWaypointMarker = ({
           setEditingName(true);
         },
         click: (event) => {
-          preventDefault(event);
+          onClick && onClick()
         },
       }}
     >

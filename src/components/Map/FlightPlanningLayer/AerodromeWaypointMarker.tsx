@@ -11,6 +11,7 @@ export const AerodromeWaypointMarker = ({
   label,
   circleColor,
   onDelete,
+  onClick,
   preview = false,
   type = "intermediate",
   waypointNumber,
@@ -20,6 +21,7 @@ export const AerodromeWaypointMarker = ({
   type: WaypointType;
   circleColor?: string;
   onDelete?: () => void;
+  onClick?: () => void;
   preview?: boolean;
   waypointNumber: number;
 }) => {
@@ -47,7 +49,11 @@ export const AerodromeWaypointMarker = ({
       icon={getIcon(type)}
       eventHandlers={{
         click: (event) => {
-          onDelete && onDelete();
+          onClick && onClick();
+        },
+        dblclick: (event) => {
+          event.originalEvent.preventDefault();
+          return false;
         },
         contextmenu: (event) => {
           onDelete && onDelete();

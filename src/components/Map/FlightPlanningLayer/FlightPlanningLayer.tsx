@@ -8,7 +8,7 @@ import {
   AerodromeWaypointType,
   LatLngWaypoint,
 } from "../../../domain/Waypoint";
-import { RemoveWaypoint } from "../LeafletMap";
+import { AddSameWaypointAgain, RemoveWaypoint, ReplaceWaypoint } from "../LeafletMap";
 import { preventDefault } from "../preventDefault";
 import { AerodromeWaypointMarker } from "./AerodromeWaypointMarker";
 import { LatLngWaypointMarker, WaypointType } from "./LatLngWaypointMarker";
@@ -20,6 +20,7 @@ export const FlightPlanningLayer = ({
   addWaypoint,
   removeWaypoint,
   replaceWaypoint,
+  addSameWaypointAgain
 }: {
   route: Route;
   addWaypoint: ({
@@ -30,13 +31,8 @@ export const FlightPlanningLayer = ({
     position?: number;
   }) => void;
   removeWaypoint: RemoveWaypoint;
-  replaceWaypoint: ({
-    waypointPosition,
-    newWaypoint,
-  }: {
-    waypointPosition: number;
-    newWaypoint: Waypoint;
-  }) => void;
+  replaceWaypoint: ReplaceWaypoint;
+  addSameWaypointAgain: AddSameWaypointAgain;
 }) => {
   useMapEvent("click", (e) => {
     // console.log("using map event");
@@ -73,6 +69,7 @@ export const FlightPlanningLayer = ({
               type={waypointType(w, i)}
               position={w.latLng}
               onDelete={() => removeWaypoint(i)}
+              onClick={() => addSameWaypointAgain(i)}
               onDragEnd={(latLng) => {
                 setTemporaryWaypoint(null);
                 return replaceWaypoint({
@@ -100,6 +97,7 @@ export const FlightPlanningLayer = ({
               key={`waypoint-${w.id}`}
               label={w.name}
               onDelete={() => removeWaypoint(i)}
+              onClick={() => addSameWaypointAgain(i)}
               waypointNumber={i}
               type={waypointType(w, i)}
               position={w.latLng}

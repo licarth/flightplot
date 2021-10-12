@@ -5,12 +5,12 @@ import {
   KeyboardSensor,
   PointerSensor,
   useSensor,
-  useSensors
+  useSensors,
 } from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useCallback } from "react";
 import styled from "styled-components";
@@ -20,12 +20,12 @@ import { VerticalProfileChart } from "../VerticalProfileChart";
 import {
   MoveWaypoint,
   RemoveWaypoint,
-  SetWaypointAltitude
+  SetWaypointAltitude,
 } from "./LeafletMap";
 import { RouteElement } from "./RouteElement";
 
 const ContainerDiv = styled.div`
-  width: 300px;
+  width: 400px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -85,17 +85,24 @@ const RouteDisplay = ({
     },
     [moveWaypoint],
   );
+  const print = () => {
+    window.print();
+  };
 
   return (
-    <div>
+    <RouteContainer>
       <H2>ROUTE</H2>
-      <hr />
+      {route.waypoints.length === 0 && (
+        <div style={{ textAlign: "center" }}>
+          ⚠️ Your route is empty !<br />
+          🖱️ Click on the map to add a waypoint
+        </div>
+      )}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        {" "}
         <SortableContext items={items} strategy={verticalListSortingStrategy}>
           {route.waypoints.map((w, i) => (
             <RouteElement
@@ -106,14 +113,61 @@ const RouteDisplay = ({
           ))}{" "}
         </SortableContext>{" "}
       </DndContext>
-      {/* <hr /> */}
-      {/* <H2>PRINT</H2> */}
-      {/* <input type="checkbox">Navigation Log</input> */}
       <hr />
-    </div>
+      <Tips />
+      <hr />
+      <H2>IMPRIMER</H2>
+      <div>
+        <label htmlFor="print-navlog">Log de Navigation</label>
+        <input type="checkbox" disabled checked id="print-navlog" />
+      </div>
+      <div>
+        <label htmlFor="print-map">Carte 1 / 500 000 ème (soon)</label>
+        <input type="checkbox" disabled id="print-map" />
+      </div>
+      <div>
+        <label htmlFor="print-vertical-profile">Profile Vertical (soon)</label>
+        <input type="checkbox" disabled id="print-vertical-profile" />
+      </div>
+      <button onClick={print}>IMPRIMER</button>
+      <hr />
+    </RouteContainer>
   );
 };
 
+const RouteContainer = styled.div`
+  margin: 10px;
+  border: 1px black;
+`;
+
 const H2 = styled.h2`
   text-align: center;
+`;
+
+const Tips = () => (
+  <TipsContainer>
+    <H2>TIPS</H2>
+    <ul>
+      <li>❌ Faites un click droit sur un waypoint pour le supprimer</li>
+      <li>🖨️ Imprimez votre log de navigation avec le menu ci-dessous 👇️</li>
+    </ul>
+  </TipsContainer>
+);
+
+const TipsContainer = styled.div`
+  ul {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  li {
+    padding-left: 1em;
+    text-indent: -1em;
+  }
+
+  li:before {
+    content: "->";
+    padding-right: 5px;
+  }
 `;

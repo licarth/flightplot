@@ -9,7 +9,7 @@ import {
   AerodromeWaypointType,
   Route,
   toLeafletLatLng,
-  Waypoint,
+  Waypoint
 } from "../../domain";
 import { OaciLayer, OpenStreetMapLayer } from "../layer";
 import { Aerodromes } from "./Aerodromes";
@@ -26,13 +26,6 @@ type LeafletMapProps = {
   airacData: AiracData;
 };
 
-const TopBar = styled.div`
-  width: 100%;
-  min-height: 30px;
-  background-color: grey;
-  flex: 0 1 30px;
-`;
-
 export type SetWaypointAltitude = ({
   waypointPosition,
   altitude,
@@ -46,7 +39,17 @@ export type MoveWaypoint = (
   newWaypointPosition: number,
 ) => void;
 
+export type AddSameWaypointAgain = (waypointPosition: number) => void;
+
 export type RemoveWaypoint = (waypointPosition: number) => void;
+
+export type ReplaceWaypoint = ({
+  waypointPosition,
+  newWaypoint,
+}: {
+  waypointPosition: number;
+  newWaypoint: Waypoint;
+}) => void;
 
 export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
   const [route, setRoute] = useState<Route>(
@@ -130,6 +133,14 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
     [route, replaceWaypoint],
   );
 
+  const addSameWaypointAgain: AddSameWaypointAgain = useCallback(
+    (waypointPosition) => {
+      const w = route.waypoints[waypointPosition];
+      setRoute(route.addWaypoint({ waypoint: w }));
+    },
+    [route],
+  );
+
   const removeWaypoint: RemoveWaypoint = (waypointPosition) => {
     setRoute(route.removeWaypoint(waypointPosition));
   };
@@ -163,11 +174,11 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
             route={route}
             removeWaypoint={removeWaypoint}
             replaceWaypoint={replaceWaypoint}
+            addSameWaypointAgain={addSameWaypointAgain}
           />
           <NmScale />
         </MapContainer>
       </BackgroundContainer>
-      <TopBar className={"dragg"} />
       <RouteDescription route={route} />
     </>
   );

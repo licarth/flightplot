@@ -10,11 +10,24 @@ import { Waypoint } from "./Waypoint";
 
 export type AerodromeWaypointId = IcaoCode;
 
+export enum AerodromeWaypointType {
+  OVERFLY = "OVERFLY",
+  RUNWAY = "RUNWAY",
+}
+
 export class AerodromeWaypoint implements Waypoint {
   private readonly _aerodrome;
+  readonly waypointType;
 
-  constructor(aerodrome: Aerodrome) {
+  constructor({
+    aerodrome,
+    waypointType,
+  }: {
+    aerodrome: Aerodrome;
+    waypointType: AerodromeWaypointType;
+  }) {
     this._aerodrome = aerodrome;
+    this.waypointType = waypointType;
   }
 
   get latLng() {

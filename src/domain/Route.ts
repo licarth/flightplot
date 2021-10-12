@@ -48,6 +48,13 @@ export class Route {
     });
   }
 
+  moveWaypoint(currentWaypointPosition: number, newWaypointPosition: number) {
+    const newWaypoints = [...this.waypoints];
+    const f = newWaypoints.splice(currentWaypointPosition, 1)[0];
+    newWaypoints.splice(newWaypointPosition, 0, f);
+    return new Route({ waypoints: newWaypoints });
+  }
+
   static create({ waypoints = [] }: { waypoints?: Array<Waypoint> } = {}) {
     return new Route({ waypoints });
   }
@@ -143,4 +150,17 @@ export class Route {
       [] as number[],
     );
   }
+
+  // get inferred({ aircraft }: { aircraft: Aircraft }): {
+  //   distances: number[];
+  //   altitudesInFeet: number[];
+  // } {
+  //   return this.waypoints.reduce(
+  //     (prev, curr) =>
+  //       !!curr.altitude
+  //         ? [...prev, curr.altitude]
+  //         : [...prev, prev[prev.length - 1] || 0],
+  //     [] as number[],
+  //   );
+  // }
 }

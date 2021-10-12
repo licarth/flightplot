@@ -2,25 +2,22 @@ import { NmScale } from "@marfle/react-leaflet-nmscale";
 import { LatLng, LatLngTuple } from "leaflet";
 import { useCallback, useState } from "react";
 import { MapContainer } from "react-leaflet";
-import { Rnd } from "react-rnd";
 import styled from "styled-components";
-import {
-  Aerodrome,
-
-  AiracData,
-  Latitude,
-  Longitude
-} from "ts-aerodata-france";
+import { Aerodrome, AiracData, Latitude, Longitude } from "ts-aerodata-france";
 import { DisplayedLayers } from "../../App";
-import { Route, toLeafletLatLng, Waypoint } from "../../domain";
+import {
+  AerodromeWaypointType,
+  Route,
+  toLeafletLatLng,
+  Waypoint,
+} from "../../domain";
 import { OaciLayer, OpenStreetMapLayer } from "../layer";
-import { VerticalProfileChart } from "../VerticalProfileChart";
 import { Aerodromes } from "./Aerodromes";
 import { Airspaces } from "./Airspaces";
 import { FlightPlanningLayer, isLatLngWaypoint } from "./FlightPlanningLayer";
+import { LeftMenu } from "./LeftMenu";
 import { RouteDescription } from "./RouteDescription";
 import { VfrPoints } from "./VfrPoints";
-
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 11;
 
@@ -35,6 +32,21 @@ const TopBar = styled.div`
   background-color: grey;
   flex: 0 1 30px;
 `;
+
+export type SetWaypointAltitude = ({
+  waypointPosition,
+  altitude,
+}: {
+  waypointPosition: number;
+  altitude: number;
+}) => void;
+
+export type MoveWaypoint = (
+  currentWaypointPosition: number,
+  newWaypointPosition: number,
+) => void;
+
+export type RemoveWaypoint = (waypointPosition: number) => void;
 
 export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
   const [route, setRoute] = useState<Route>(
@@ -68,11 +80,16 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
     aerodrome: Aerodrome;
     position?: number;
   }) => {
-    // console.log(`adding aerodrome waypoint ${aerodrome.icaoCode}`);
     setRoute(
       route.addWaypoint({
         position,
-        waypoint: Waypoint.fromAerodrome(aerodrome),
+        waypoint: Waypoint.fromAerodrome({
+          aerodrome,
+          waypointType:
+            position === 0
+              ? AerodromeWaypointType.RUNWAY
+              : AerodromeWaypointType.OVERFLY,
+        }),
       }),
     );
   };
@@ -93,15 +110,16 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
       ),
     [route],
   );
+  const moveWaypoint: MoveWaypoint = useCallback(
+    (currentWaypointPosition, newWaypointPosition) =>
+      setRoute(
+        route.moveWaypoint(currentWaypointPosition, newWaypointPosition),
+      ),
+    [route],
+  );
 
-  const setWaypointAltitude = useCallback(
-    ({
-      waypointPosition,
-      altitude,
-    }: {
-      waypointPosition: number;
-      altitude: number;
-    }) => {
+  const setWaypointAltitude: SetWaypointAltitude = useCallback(
+    ({ waypointPosition, altitude }) => {
       const w = route.waypoints[waypointPosition];
       if (isLatLngWaypoint(w)) {
         const newWaypoint = w.clone({ altitude });
@@ -112,13 +130,20 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
     [route, replaceWaypoint],
   );
 
-  const removeWaypoint = (waypointPosition: number) => {
+  const removeWaypoint: RemoveWaypoint = (waypointPosition) => {
     setRoute(route.removeWaypoint(waypointPosition));
   };
 
   return (
     <>
       <BackgroundContainer onContextMenu={(e) => e.preventDefault()}>
+        <LeftMenu
+          route={route}
+          airacData={airacData}
+          setWaypointAltitude={setWaypointAltitude}
+          removeWaypoint={removeWaypoint}
+          moveWaypoint={moveWaypoint}
+        />
         <MapContainer id="mapId" center={defaultLatLng} zoom={zoom}>
           <Layers displayedLayers={displayedLayers} />
           <Airspaces airacData={airacData} />
@@ -142,19 +167,7 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
           <NmScale />
         </MapContainer>
       </BackgroundContainer>
-      <Rnd
-        style={{ zIndex: 10000, backgroundColor: "grey", display: "flex", flexFlow: "column"}}
-        enableResizing
-        // lockAspectRatio={false}
-        dragHandleClassName={"dragg"}
-      >
-        <TopBar className={"dragg"} />
-        <VerticalProfileChart
-          route={route}
-          airacData={airacData}
-          setWaypointAltitude={setWaypointAltitude}
-        />
-      </Rnd>
+      <TopBar className={"dragg"} />
       <RouteDescription route={route} />
     </>
   );

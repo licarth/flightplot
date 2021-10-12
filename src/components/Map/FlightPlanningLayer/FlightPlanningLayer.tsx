@@ -3,7 +3,12 @@ import { LatLng } from "leaflet";
 import { Fragment, useState } from "react";
 import { Circle, Polyline, useMapEvent } from "react-leaflet";
 import { Route, Waypoint } from "../../../domain";
-import { LatLngWaypoint } from "../../../domain/Waypoint";
+import {
+  AerodromeWaypoint,
+  AerodromeWaypointType,
+  LatLngWaypoint,
+} from "../../../domain/Waypoint";
+import { RemoveWaypoint } from "../LeafletMap";
 import { preventDefault } from "../preventDefault";
 import { AerodromeWaypointMarker } from "./AerodromeWaypointMarker";
 import { LatLngWaypointMarker, WaypointType } from "./LatLngWaypointMarker";
@@ -24,7 +29,7 @@ export const FlightPlanningLayer = ({
     latLng: LatLng;
     position?: number;
   }) => void;
-  removeWaypoint: (waypointPosition: number) => void;
+  removeWaypoint: RemoveWaypoint;
   replaceWaypoint: ({
     waypointPosition,
     newWaypoint,
@@ -47,14 +52,13 @@ export const FlightPlanningLayer = ({
   const [temporaryWaypoint, setTemporaryWaypoint] =
     useState<TemporaryWaypoint | null>(null);
 
-  const waypointType = (i: number): WaypointType => {
-    if (i === 0) {
-      return "departure";
-    } else if (i < route.waypoints.length - 1) {
-      return "intermediate";
-    } else {
-      return "arrival";
+  const waypointType = (w: Waypoint, i: number): WaypointType => {
+    if (AerodromeWaypoint.isAerodromeWaypoint(w)) {
+      if (w.waypointType === AerodromeWaypointType.RUNWAY) {
+        return i === 0 ? "departure" : "arrival";
+      }
     }
+    return "intermediate";
   };
 
   return (
@@ -66,7 +70,7 @@ export const FlightPlanningLayer = ({
               key={`wpmarker-${w.id}`}
               label={w.name}
               waypointNumber={i}
-              type={waypointType(i)}
+              type={waypointType(w, i)}
               position={w.latLng}
               onDelete={() => removeWaypoint(i)}
               onDragEnd={(latLng) => {
@@ -91,13 +95,13 @@ export const FlightPlanningLayer = ({
               }}
             />
           )}
-          {!isLatLngWaypoint(w) && (
+          {AerodromeWaypoint.isAerodromeWaypoint(w) && (
             <AerodromeWaypointMarker
               key={`waypoint-${w.id}`}
               label={w.name}
               onDelete={() => removeWaypoint(i)}
               waypointNumber={i}
-              type={waypointType(i)}
+              type={waypointType(w, i)}
               position={w.latLng}
             />
           )}

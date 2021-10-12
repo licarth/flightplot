@@ -19,9 +19,6 @@ Chart.register(dragData);
 
 const VerticalProfileDiv = styled.div`
   background-color: white;
-  flex: 1 1 auto;
-  display: flex;
-  flex-flow: column;
   overflow: hidden;
 `;
 

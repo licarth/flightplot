@@ -94,8 +94,8 @@ const RouteDisplay = ({
       <H2>ROUTE</H2>
       {route.waypoints.length === 0 && (
         <div style={{ textAlign: "center" }}>
-          ⚠️ Your route is empty !<br />
-          🖱️ Click on the map to add a waypoint
+          ⚠️ La route est vide<br />
+          🖱️ Cliquez sur la carte pour ajouter un point de report ou un terrain de départ.
         </div>
       )}
       <DndContext

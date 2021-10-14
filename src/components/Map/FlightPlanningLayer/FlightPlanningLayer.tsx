@@ -8,35 +8,24 @@ import {
   AerodromeWaypointType,
   LatLngWaypoint,
 } from "../../../domain/Waypoint";
-import { AddSameWaypointAgain, RemoveWaypoint, ReplaceWaypoint } from "../LeafletMap";
+import { useRoute } from "../../useRoute";
 import { preventDefault } from "../preventDefault";
 import { AerodromeWaypointMarker } from "./AerodromeWaypointMarker";
 import { LatLngWaypointMarker, WaypointType } from "./LatLngWaypointMarker";
 
 const ruler = new CheapRuler(43, "nauticalmiles");
 
-export const FlightPlanningLayer = ({
-  route,
-  addWaypoint,
-  removeWaypoint,
-  replaceWaypoint,
-  addSameWaypointAgain
-}: {
-  route: Route;
-  addWaypoint: ({
-    latLng,
-    position,
-  }: {
-    latLng: LatLng;
-    position?: number;
-  }) => void;
-  removeWaypoint: RemoveWaypoint;
-  replaceWaypoint: ReplaceWaypoint;
-  addSameWaypointAgain: AddSameWaypointAgain;
-}) => {
+export const FlightPlanningLayer = () => {
+  const {
+    route,
+    addSameWaypointAgain,
+    replaceWaypoint,
+    removeWaypoint,
+    addLatLngWaypoint,
+  } = useRoute();
   useMapEvent("click", (e) => {
     // console.log("using map event");
-    addWaypoint({ latLng: e.latlng });
+    addLatLngWaypoint({ latLng: e.latlng });
   });
 
   type TemporaryWaypoint = {
@@ -111,7 +100,7 @@ export const FlightPlanningLayer = ({
               eventHandlers={{
                 click: (e) => {
                   preventDefault(e);
-                  return addWaypoint({
+                  return addLatLngWaypoint({
                     latLng: pointToLeafletLatLng(
                       ruler.pointOnLine(
                         toLine([

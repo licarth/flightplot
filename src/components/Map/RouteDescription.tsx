@@ -18,11 +18,11 @@ export const RouteDescription = ({ route }: { route: Route }) => {
 
   const printArea = window.document.getElementById("printArea");
   return (
-    <RouteDescriptionContainer>
-      <button onClick={print}>PRINT</button>
-      <NavigationLog route={route} />
-      {printArea &&
-        createPortal(<NavigationLog route={route} paperVersion />, printArea)}
-    </RouteDescriptionContainer>
+      <RouteDescriptionContainer>
+        <button onClick={print}>PRINT</button>
+        <NavigationLog route={route} />
+        {printArea &&
+          createPortal(<NavigationLog route={route} paperVersion />, printArea)}
+      </RouteDescriptionContainer>
   );
 };

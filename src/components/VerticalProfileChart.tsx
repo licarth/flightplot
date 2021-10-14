@@ -9,11 +9,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Chart, Scatter } from "react-chartjs-2";
 import styled from "styled-components";
 import { AiracData, AirspaceType, DangerZoneType } from "ts-aerodata-france";
-import { Route } from "../domain";
 import { routeAirspaceOverlaps } from "../domain/VerticalProfile";
 import { ElevationAtPoint, elevationOnRoute } from "../elevationOnRoute";
 import { openElevationApiElevationService } from "../ElevationService/openElevationApiElevationService";
 import { isLatLngWaypoint } from "./Map/FlightPlanningLayer";
+import { useRoute } from "./useRoute";
 Chart.register(annotationPlugin);
 Chart.register(dragData);
 
@@ -23,18 +23,12 @@ const VerticalProfileDiv = styled.div`
 `;
 
 export const VerticalProfileChart = ({
-  route,
   airacData,
-  setWaypointAltitude,
 }: {
-  route: Route;
   airacData?: AiracData;
-  setWaypointAltitude: (params: {
-    waypointPosition: number;
-    altitude: number;
-  }) => void;
 }) => {
   //@ts-ignore
+  const { route, setWaypointAltitude } = useRoute();
   const onDragEnd = useCallback(
     (e, datasetIndex, index, value) => {
       setWaypointAltitude({ waypointPosition: index, altitude: value.y });

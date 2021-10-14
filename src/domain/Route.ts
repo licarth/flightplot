@@ -1,5 +1,5 @@
 import CheapRuler from "cheap-ruler";
-import { toPoint } from "../components/Map/FlightPlanningLayer";
+import { LatLng } from "leaflet";
 import { Waypoint } from "./Waypoint/Waypoint";
 
 export class Route {
@@ -8,6 +8,8 @@ export class Route {
   constructor({ waypoints }: { waypoints: Waypoint[] }) {
     this.waypoints = [...waypoints];
   }
+
+  static empty = () => new Route({ waypoints: [] });
 
   addWaypoint({
     position = this.waypoints.length + 1,
@@ -164,3 +166,8 @@ export class Route {
   //   );
   // }
 }
+
+export const toPoint = (latLng: LatLng): [number, number] => [
+  latLng.lng,
+  latLng.lat,
+];

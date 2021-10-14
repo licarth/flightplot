@@ -5,23 +5,18 @@ import {
   KeyboardSensor,
   PointerSensor,
   useSensor,
-  useSensors,
+  useSensors
 } from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { useCallback } from "react";
 import styled from "styled-components";
 import { AiracData } from "ts-aerodata-france";
-import { Route } from "../../domain";
+import { useRoute } from "../useRoute";
 import { VerticalProfileChart } from "../VerticalProfileChart";
-import {
-  MoveWaypoint,
-  RemoveWaypoint,
-  SetWaypointAltitude,
-} from "./LeafletMap";
 import { RouteElement } from "./RouteElement";
 
 const ContainerDiv = styled.div`
@@ -32,41 +27,18 @@ const ContainerDiv = styled.div`
 `;
 
 export const LeftMenu = ({
-  route,
   airacData,
-  setWaypointAltitude,
-  removeWaypoint,
-  moveWaypoint,
 }: {
-  route: Route;
   airacData: AiracData;
-  setWaypointAltitude: SetWaypointAltitude;
-  removeWaypoint: RemoveWaypoint;
-  moveWaypoint: MoveWaypoint;
 }) => (
   <ContainerDiv>
-    <RouteDisplay
-      route={route}
-      removeWaypoint={removeWaypoint}
-      moveWaypoint={moveWaypoint}
-    />
-    <VerticalProfileChart
-      route={route}
-      airacData={airacData}
-      setWaypointAltitude={setWaypointAltitude}
-    />
+    <RouteDisplay />
+    <VerticalProfileChart airacData={airacData} />
   </ContainerDiv>
 );
 
-const RouteDisplay = ({
-  route,
-  removeWaypoint,
-  moveWaypoint,
-}: {
-  route: Route;
-  removeWaypoint: RemoveWaypoint;
-  moveWaypoint: MoveWaypoint;
-}) => {
+const RouteDisplay = () => {
+  const { route, moveWaypoint, removeWaypoint } = useRoute();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -94,8 +66,10 @@ const RouteDisplay = ({
       <H2>ROUTE</H2>
       {route.waypoints.length === 0 && (
         <div style={{ textAlign: "center" }}>
-          ⚠️ La route est vide<br />
-          🖱️ Cliquez sur la carte pour ajouter un point de report ou un terrain de départ.
+          ⚠️ La route est vide
+          <br />
+          🖱️ Cliquez sur la carte pour ajouter un point de report ou un terrain
+          de départ.
         </div>
       )}
       <DndContext
@@ -111,7 +85,7 @@ const RouteDisplay = ({
               waypoint={w}
             />
           ))}{" "}
-        </SortableContext>{" "}
+        </SortableContext>
       </DndContext>
       <hr />
       <Tips />

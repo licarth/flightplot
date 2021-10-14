@@ -51,13 +51,6 @@ export const AerodromeWaypointMarker = ({
         click: (event) => {
           onClick && onClick();
         },
-        dblclick: (event) => {
-          event.originalEvent.preventDefault();
-          return false;
-        },
-        contextmenu: (event) => {
-          onDelete && onDelete();
-        },
       }}
     >
       <Circle

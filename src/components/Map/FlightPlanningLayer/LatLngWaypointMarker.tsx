@@ -55,16 +55,13 @@ export const LatLngWaypointMarker = ({
       icon={getIcon(type)}
       eventHandlers={{
         contextmenu: (event) => {
-          onDelete && onDelete();
+          setEditingName(true);
         },
         drag: (event) => {
           onDrag && onDrag(event.target.getLatLng());
         },
         dragend: (event) => {
           onDragEnd && onDragEnd(event.target.getLatLng());
-        },
-        dblclick: () => {
-          setEditingName(true);
         },
         click: (event) => {
           onClick && onClick()

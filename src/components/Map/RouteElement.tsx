@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import styled from "styled-components";
 import { AerodromeWaypoint, Waypoint } from "../../domain";
-import { RemoveWaypoint } from "./LeafletMap";
+import { RemoveWaypoint } from "../useRoute";
 
 type RouteElementProps = {
   waypoint: Waypoint;
@@ -21,11 +21,14 @@ export const RouteElement = ({
   const style = { transform: CSS.Transform.toString(transform) };
   return (
     <RouteElementContainer key={`${w.id}`} style={style} ref={setNodeRef}>
+      <NameContainer>{w.name} </NameContainer>
       <span>
-        {w.name}{" "}
-        {i === 0 &&
-          AerodromeWaypoint.isAerodromeWaypoint(w) &&
-          `(T/O) - ${w.altitude} ft.`}
+        <input
+          value={w.altitude}
+          size={1}
+          disabled={i === 0 && AerodromeWaypoint.isAerodromeWaypoint(w)}
+        />
+        ft.
       </span>
       <span>
         {AerodromeWaypoint.isAerodromeWaypoint(w) && (
@@ -50,4 +53,9 @@ export const RouteElement = ({
 export const RouteElementContainer = styled.span`
   display: flex;
   justify-content: space-between;
+`;
+
+const NameContainer = styled.div`
+  width: 50px;
+  text-overflow: ellipsis;
 `;

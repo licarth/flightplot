@@ -2,9 +2,9 @@ import { LatLng } from "leaflet";
 import { Waypoint, WaypointId, WaypointProps } from "./Waypoint";
 
 export class LatLngWaypoint implements Waypoint {
-  private _latLng;
+  protected _latLng;
   public name;
-  public altitude?;
+  public altitude?: number | null;
   private _id: WaypointId;
 
   constructor({ latLng, name, id, altitude }: WaypointProps) {

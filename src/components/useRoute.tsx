@@ -1,8 +1,7 @@
 import { LatLng } from "leaflet";
 import { useCallback, useContext } from "react";
 import { Aerodrome } from "ts-aerodata-france";
-import { AerodromeWaypointType, Waypoint } from "../domain";
-import { isLatLngWaypoint } from "./Map/FlightPlanningLayer";
+import { AerodromeWaypoint, AerodromeWaypointType, Waypoint } from "../domain";
 import { RouteContext } from "./RouteContext";
 
 export type SetWaypointAltitude = ({
@@ -10,7 +9,7 @@ export type SetWaypointAltitude = ({
   altitude,
 }: {
   waypointPosition: number;
-  altitude: number;
+  altitude: number | null;
 }) => void;
 
 export type MoveWaypoint = (
@@ -33,43 +32,43 @@ export type ReplaceWaypoint = ({
 export const useRoute = () => {
   const { route, setRoute } = useContext(RouteContext);
 
-  const addLatLngWaypoint = ({
-    latLng,
-    position,
-    name,
-  }: {
-    latLng: LatLng;
-    position?: number;
-    name?: string;
-  }) => {
-    setRoute(
-      route.addWaypoint({
-        position,
-        waypoint: Waypoint.create({ latLng, name }),
-      }),
-    );
-  };
-
-  const addAerodromeWaypoint = ({
-    aerodrome,
-    position,
-  }: {
-    aerodrome: Aerodrome;
-    position?: number;
-  }) => {
-    setRoute(
-      route.addWaypoint({
-        position,
-        waypoint: Waypoint.fromAerodrome({
-          aerodrome,
-          waypointType:
-            position === 0
-              ? AerodromeWaypointType.RUNWAY
-              : AerodromeWaypointType.OVERFLY,
+  const addLatLngWaypoint = useCallback(
+    ({
+      latLng,
+      position,
+      name,
+    }: {
+      latLng: LatLng;
+      position?: number;
+      name?: string;
+    }) => {
+      setRoute(
+        route.addWaypoint({
+          position,
+          waypoint: Waypoint.create({ latLng, name }),
         }),
-      }),
-    );
-  };
+      );
+    },
+    [route, setRoute],
+  );
+
+  const addAerodromeWaypoint = useCallback(
+    ({ aerodrome, position }: { aerodrome: Aerodrome; position?: number }) => {
+      setRoute(
+        route.addWaypoint({
+          position,
+          waypoint: Waypoint.fromAerodrome({
+            aerodrome,
+            waypointType:
+              position === 0
+                ? AerodromeWaypointType.RUNWAY
+                : AerodromeWaypointType.OVERFLY,
+          }),
+        }),
+      );
+    },
+    [route, setRoute],
+  );
 
   const replaceWaypoint = useCallback(
     ({
@@ -87,6 +86,26 @@ export const useRoute = () => {
       ),
     [route, setRoute],
   );
+
+  const setAerodromeWaypointType = useCallback(
+    ({
+      waypointPosition,
+      waypointType,
+    }: {
+      waypointPosition: number;
+      waypointType: AerodromeWaypointType;
+    }) => {
+      const currentWaypoint = route.waypoints[waypointPosition];
+      if (AerodromeWaypoint.isAerodromeWaypoint(currentWaypoint)) {
+        replaceWaypoint({
+          waypointPosition,
+          newWaypoint: currentWaypoint.clone({ waypointType }),
+        });
+      }
+    },
+    [route, replaceWaypoint],
+  );
+
   const moveWaypoint: MoveWaypoint = useCallback(
     (currentWaypointPosition, newWaypointPosition) =>
       setRoute(
@@ -98,11 +117,9 @@ export const useRoute = () => {
   const setWaypointAltitude: SetWaypointAltitude = useCallback(
     ({ waypointPosition, altitude }) => {
       const w = route.waypoints[waypointPosition];
-      if (isLatLngWaypoint(w)) {
-        const newWaypoint = w.clone({ altitude });
-        // console.log(newWaypoint);
-        replaceWaypoint({ waypointPosition, newWaypoint });
-      }
+      const newWaypoint = w.clone({ altitude });
+      console.log(JSON.stringify(newWaypoint))
+      replaceWaypoint({ waypointPosition, newWaypoint });
     },
     [route, replaceWaypoint],
   );
@@ -119,7 +136,7 @@ export const useRoute = () => {
     setRoute(route.removeWaypoint(waypointPosition));
   };
 
-return {
+  return {
     route,
     setRoute,
     removeWaypoint,
@@ -129,5 +146,6 @@ return {
     moveWaypoint,
     addAerodromeWaypoint,
     addLatLngWaypoint,
+    setAerodromeWaypointType,
   };
 };

@@ -5,7 +5,7 @@ import { Opaque } from "../Opaque";
 import {
   AerodromeWaypoint,
   AerodromeWaypointId,
-  AerodromeWaypointType
+  AerodromeWaypointType,
 } from "./AerodromeWaypoint";
 import { LatLngWaypoint } from "./LatLngWaypoint";
 
@@ -17,14 +17,15 @@ export type WaypointProps = {
   latLng: LatLng;
   name?: string;
   id: WaypointId;
-  altitude?: number;
+  altitude?: number | null;
 };
 
 export interface Waypoint {
   latLng: LatLng;
   name?: string;
   id: WaypointId;
-  altitude?: number;
+  altitude?: number | null;
+  clone: (props: Partial<WaypointProps>) => Waypoint;
 }
 
 export namespace Waypoint {

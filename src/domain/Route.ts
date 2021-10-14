@@ -146,7 +146,7 @@ export class Route {
   get inferredAltitudes() {
     return this.waypoints.reduce(
       (prev, curr) =>
-        !!curr.altitude
+        curr.altitude !== null && curr.altitude !== undefined
           ? [...prev, curr.altitude]
           : [...prev, prev[prev.length - 1] || 0],
       [] as number[],

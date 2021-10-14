@@ -193,5 +193,5 @@ export const toLine = (latLngs: Array<LatLng>): Line =>
   latLngs.map((latLng) => [latLng.lng, latLng.lat]);
 
 export const isLatLngWaypoint = (w: any): w is LatLngWaypoint => {
-  return w.clone !== undefined;
+  return w._latLng !== undefined;
 };

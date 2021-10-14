@@ -15,19 +15,21 @@ export enum AerodromeWaypointType {
   RUNWAY = "RUNWAY",
 }
 
+type AerodromeWaypointProps = {
+  aerodrome: Aerodrome;
+  waypointType: AerodromeWaypointType;
+  altitude?: number | null;
+};
+
 export class AerodromeWaypoint implements Waypoint {
   private readonly _aerodrome;
+  private _altitude?: number | null;
   readonly waypointType;
 
-  constructor({
-    aerodrome,
-    waypointType,
-  }: {
-    aerodrome: Aerodrome;
-    waypointType: AerodromeWaypointType;
-  }) {
+  constructor({ aerodrome, waypointType, altitude }: AerodromeWaypointProps) {
     this._aerodrome = aerodrome;
     this.waypointType = waypointType;
+    this._altitude = altitude;
   }
 
   get latLng() {
@@ -49,11 +51,29 @@ export class AerodromeWaypoint implements Waypoint {
   }
 
   get altitude() {
-    return AltitudeInFeet.getValue(this.aerodrome.aerodromeAltitude);
+    return this.waypointType === AerodromeWaypointType.OVERFLY
+      ? this._altitude
+      : AltitudeInFeet.getValue(this.aerodrome.aerodromeAltitude);
+  }
+
+  set altitude(altitude: number | undefined | null) {
+    this._altitude = altitude;
   }
 
   static isAerodromeWaypoint(waypoint: any): waypoint is AerodromeWaypoint {
     return waypoint._aerodrome !== undefined;
+  }
+
+  clone({
+    aerodrome = this._aerodrome,
+    waypointType = this.waypointType,
+    altitude = this._altitude,
+  }: Partial<AerodromeWaypointProps> = {}) {
+    return new AerodromeWaypoint({
+      aerodrome,
+      waypointType,
+      altitude,
+    });
   }
 }
 

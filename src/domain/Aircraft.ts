@@ -1,6 +1,6 @@
 export interface Aircraft {
-  climbRateFeetSecond: number;
-  descentRateFeetSecond: number;
+  climbRateFeetMin: number;
+  descentRateFeetMin: number;
   cruiseKIAS: number;
   climbKIAS: number;
   name: string;
@@ -9,9 +9,9 @@ export interface Aircraft {
 export const aircraftCollection: Aircraft[] = [
   {
     name: "DA-20",
-    cruiseKIAS: 110,
-    descentRateFeetSecond: 500,
-    climbRateFeetSecond: 800,
+    cruiseKIAS: 100,
+    descentRateFeetMin: 1000,
+    climbRateFeetMin: 1000,
     climbKIAS: 72,
   },
 ];

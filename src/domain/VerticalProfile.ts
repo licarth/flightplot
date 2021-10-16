@@ -1,8 +1,8 @@
 import * as turf from "@turf/turf";
 import CheapRuler from "cheap-ruler";
-import { LatLng } from "leaflet";
 import { Airspace, DangerZone, Latitude, Longitude } from "ts-aerodata-france";
-import { toPoint } from "../components/Map/FlightPlanningLayer";
+import { toCheapRulerPoint } from "../components/Map/FlightPlanningLayer";
+import { LatLng } from "../LatLng";
 import { Route } from "./Route";
 
 type Props = { airspaces: (Airspace | DangerZone)[]; route: Route };
@@ -62,14 +62,14 @@ export const routeAirspaceOverlaps = ({ airspaces, route }: Props) => {
               ).forEach((splitedPart, i) => {
                 if ((i + oddPair) % 2 === 0) {
                   const distanceToFirst = ruler.lineDistance([
-                    toPoint(departureWaypoint.latLng),
+                    toCheapRulerPoint(departureWaypoint.latLng),
                     [
                       splitedPart.geometry.coordinates[0][0],
                       splitedPart.geometry.coordinates[0][1],
                     ],
                   ]);
                   const distanceToSecond = ruler.lineDistance([
-                    toPoint(departureWaypoint.latLng),
+                    toCheapRulerPoint(departureWaypoint.latLng),
                     [
                       splitedPart.geometry.coordinates[1][0],
                       splitedPart.geometry.coordinates[1][1],

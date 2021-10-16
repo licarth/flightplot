@@ -1,4 +1,3 @@
-import { LatLng } from "leaflet";
 import { Route, Waypoint } from "./domain";
 import { elevationOnRoute } from "./elevationOnRoute";
 import { openElevationApiElevationService } from "./ElevationService/openElevationApiElevationService";
@@ -12,8 +11,8 @@ describe("elevationOnRoute", () => {
         })(
           new Route({
             waypoints: [
-              Waypoint.create({ latLng: new LatLng(43, -10) }),
-              Waypoint.create({ latLng: new LatLng(43, -10.1) }),
+              Waypoint.create({ latLng: {lat: 43, lng: -10} }),
+              Waypoint.create({ latLng: {lat: 43, lng: -10.1} }),
             ],
           }),
         )

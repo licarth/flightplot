@@ -1,6 +1,13 @@
 import CheapRuler from "cheap-ruler";
-import { LatLng } from "leaflet";
+import { LatLng } from "../LatLng";
+import { Aircraft } from "./Aircraft";
 import { Waypoint } from "./Waypoint/Waypoint";
+
+type VerticalProfile = {
+  distance: number;
+  altitudeInFeet: number;
+  name?: string;
+}[];
 
 export class Route {
   readonly waypoints: ReadonlyArray<Waypoint>;
@@ -153,21 +160,75 @@ export class Route {
     );
   }
 
-  // get inferred({ aircraft }: { aircraft: Aircraft }): {
-  //   distances: number[];
-  //   altitudesInFeet: number[];
-  // } {
-  //   return this.waypoints.reduce(
-  //     (prev, curr) =>
-  //       !!curr.altitude
-  //         ? [...prev, curr.altitude]
-  //         : [...prev, prev[prev.length - 1] || 0],
-  //     [] as number[],
-  //   );
-  // }
+  verticalProfile({ aircraft }: { aircraft: Aircraft }): VerticalProfile {
+    const verticalProfile: VerticalProfile = [];
+    const alts = this.inferredAltitudes;
+    for (let i = 0; i < this.legs.length; i++) {
+      const {
+        departureWaypoint,
+        arrivalWaypoint,
+        distanceInNm,
+        startingPointInNm,
+      } = this.legs[i];
+      verticalProfile.push({
+        distance: startingPointInNm,
+        altitudeInFeet: alts[i],
+        name: departureWaypoint.name,
+      });
+
+      const heightDiff = alts[i + 1] - alts[i];
+      if (heightDiff > 0) {
+        //Climb
+        const firstTerm = Math.pow(
+          knotsToMetersPerSecond(aircraft.climbKIAS) /
+            feetPerMinToMetersPerSecond(aircraft.climbRateFeetMin),
+          2,
+        );
+        const horizontalDistanceInNm = metersInNauticalMiles(
+          Math.sqrt(Math.pow(heightDiff, 2) * (firstTerm - 1)),
+        );
+        if (horizontalDistanceInNm < distanceInNm) {
+          verticalProfile.push({
+            distance: startingPointInNm + horizontalDistanceInNm,
+            altitudeInFeet: alts[i + 1],
+            name: "T/C",
+          });
+        }
+      } else if (heightDiff < 0) {
+        //Descent
+        const firstTerm = Math.pow(
+          knotsToMetersPerSecond(aircraft.cruiseKIAS) /
+            feetPerMinToMetersPerSecond(aircraft.descentRateFeetMin),
+          2,
+        );
+        const horizontalDistanceInNm = metersInNauticalMiles(
+          Math.sqrt(Math.pow(-heightDiff, 2) * (firstTerm - 1)),
+        );
+        if (horizontalDistanceInNm < distanceInNm) {
+          verticalProfile.push({
+            distance: startingPointInNm + distanceInNm - horizontalDistanceInNm,
+            altitudeInFeet: alts[i],
+            name: "T/D",
+          });
+        }
+      }
+      if (i === this.legs.length - 1) {
+        verticalProfile.push({
+          distance: startingPointInNm + distanceInNm,
+          altitudeInFeet: alts[i + 1],
+          name: arrivalWaypoint.name,
+        });
+      }
+    }
+    return verticalProfile;
+  }
 }
 
 export const toPoint = (latLng: LatLng): [number, number] => [
   latLng.lng,
   latLng.lat,
 ];
+
+const knotsToMetersPerSecond = (v: number) => (v * 1852) / 3600;
+const feetPerMinToMetersPerSecond = (v: number) => v / 60 / 3.28;
+const metersInNauticalMiles = (d: number) => d / 1852;

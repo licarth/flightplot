@@ -6,7 +6,7 @@ import {
   AerodromeWaypoint,
   AerodromeWaypointType,
   Route,
-  Waypoint,
+  Waypoint
 } from "../../domain";
 import { RemoveWaypoint, SetWaypointAltitude, useRoute } from "../useRoute";
 
@@ -39,7 +39,7 @@ export const RouteElement = ({
           setWaypointAltitude={setWaypointAltitude}
           w={w}
         />
-        ft.
+        {" ft."}
       </span>
       <span>
         {AerodromeWaypoint.isAerodromeWaypoint(w) && (
@@ -61,14 +61,14 @@ export const RouteElement = ({
               })
             }
           >
-            <option value="touch_go">touch'n'go</option>
-            <option value="overfly">overfly</option>
+            <option value="touch_go">land</option>
+            <option value="overfly">fly</option>
           </select>
         )}
-        <button onClick={() => removeWaypoint(i)}>❌</button>
-        <button {...listeners} {...attributes}>
+        <DeleteDiv onClick={() => removeWaypoint(i)}>❌</DeleteDiv>
+        <HandleDiv {...listeners} {...attributes}>
           ≡
-        </button>
+        </HandleDiv>
       </span>
     </RouteElementContainer>
   );
@@ -80,7 +80,7 @@ export const RouteElementContainer = styled.span`
 `;
 
 const NameContainer = styled.div`
-  width: 100px;
+  width: 70px;
   display: inline-block;
   text-overflow: ellipsis;
 `;
@@ -99,6 +99,20 @@ const ImmutableAltitude = styled.span`
   font-weight: bold;
   color: #5c2500;
   text-decoration: none;
+`;
+
+const HandleDiv = styled.div`
+  display: inline-block;
+  padding-left: 10px;
+  cursor: pointer;
+`;
+
+const DeleteDiv = styled.button`
+  background: none;
+  border: none;
+  display: inline-block;
+  padding-left: 10px;
+  cursor: pointer;
 `;
 
 const AltitudeDisplay = ({
@@ -124,6 +138,7 @@ const AltitudeDisplay = ({
         size={1}
         // type="number"
         step={500}
+        onBlur={() => setEditingAltitude(false)}
         onKeyDown={(e) => {
           if (e.key === "Escape") {
             setEditingAltitude(false);

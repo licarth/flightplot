@@ -1,12 +1,18 @@
 import { debounce } from "lodash";
 import { Fragment, useState } from "react";
-import { SVGOverlay, useMap, useMapEvents } from "react-leaflet";
+import {
+  Polygon,
+  SVGOverlay,
+  Tooltip,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 import styled from "styled-components";
 import { Aerodrome, AiracData } from "ts-aerodata-france";
 import { MagneticRunwayOrientation } from "ts-aerodata-france";
 import { ReactComponent as AerodromeLogo } from "../../icons/aerodrome.min.svg";
+import { toLatLng } from "../../LatLng";
 import { getMapBounds } from "./getMapBounds";
-import { toLatLng } from "./LeafletMap";
 import { preventDefault } from "./preventDefault";
 
 export const Aerodromes = ({
@@ -63,14 +69,28 @@ export const Aerodromes = ({
                     $magneticOrientation={magneticOrientation}
                   />
                 }
-                <text
+                {/* <text
                   x="50%"
                   y="120%"
                   style={{ textAnchor: "middle" }}
                   stroke="#002e94"
                 >
                   {aerodrome.mapShortName}
-                </text>
+                </text> */}
+                <Polygon
+                  fill={false}
+                  fillOpacity={0}
+                  opacity={0}
+                  positions={[[l.lat - 0.015, l.lng]]}
+                >
+                  <StyledTooltip
+                    key={`tooltip-wpt-${icaoCode}-${aerodrome.mapShortName}`}
+                    permanent
+                    direction={"bottom"}
+                  >
+                    {aerodrome.mapShortName}
+                  </StyledTooltip>
+                </Polygon>
               </SVGOverlay>
             </Fragment>
           );
@@ -90,5 +110,23 @@ const StyledAerodromeLogo = styled(AerodromeLogo)<{
   #runway {
     transform-origin: center;
     transform: ${(props) => `rotate(${props.$magneticOrientation}deg)`};
+  }
+`;
+
+const StyledTooltip = styled(Tooltip)`
+  background-color: transparent;
+  box-shadow: unset;
+  background-color: none;
+  border: none;
+  border-radius: none;
+  color: #002e94;
+  white-space: nowrap;
+  font-weight: bold;
+  text-align: left;
+  margin: 0px;
+  padding-top: 0px;
+
+  ::before {
+    display: none;
   }
 `;

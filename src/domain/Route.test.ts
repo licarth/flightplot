@@ -1,4 +1,4 @@
-import { LatLng } from "leaflet";
+import { aircraftCollection } from "./Aircraft";
 import { Route } from "./Route";
 import { Waypoint } from "./Waypoint";
 import { latLngWaypointFactory } from "./Waypoint/LatLngWaypoint.factory";
@@ -6,14 +6,14 @@ import { latLngWaypointFactory } from "./Waypoint/LatLngWaypoint.factory";
 describe("Route", () => {
   it("should add a waypoint properly", () => {
     const route = Route.create().addWaypoint({
-      waypoint: Waypoint.create({ latLng: new LatLng(0, 0) }),
+      waypoint: Waypoint.create({ latLng: { lat: 0, lng: 0 } }),
     });
 
     expect(route.waypoints).toHaveLength(1);
   });
   it("should remove a waypoint properly", () => {
     const route = Route.create({
-      waypoints: [Waypoint.create({ latLng: new LatLng(0, 0) })],
+      waypoints: [Waypoint.create({ latLng: { lat: 0, lng: 0 } })],
     });
 
     expect(route.removeWaypoint(0).waypoints).toHaveLength(0);
@@ -45,5 +45,19 @@ describe("Route", () => {
 });
 
 const wp = (lat: number): Waypoint => {
-  return latLngWaypointFactory({ latLng: new LatLng(lat, 0) });
+  return latLngWaypointFactory({ latLng: { lat, lng: 0 } });
 };
+
+describe.only("Route.verticalProfile()", () => {
+  it("should return correct climb calculations", () => {
+    const wp0 = wp(0);
+    const wp1 = wp(1).clone({ altitude: 1000 });
+    const route = Route.create({
+      waypoints: [wp0, wp1],
+    });
+
+    expect(
+      route.verticalProfile({ aircraft: aircraftCollection[0] }),
+    ).toHaveLength(3);
+  });
+});

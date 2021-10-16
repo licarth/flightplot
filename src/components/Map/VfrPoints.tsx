@@ -1,10 +1,17 @@
-import CheapRuler from "cheap-ruler";
+import CheapRuler, { Point } from "cheap-ruler";
 import { debounce } from "lodash";
 import { Fragment, useState } from "react";
-import { Polygon, SVGOverlay, useMap, useMapEvents } from "react-leaflet";
+import {
+  Polygon,
+  SVGOverlay,
+  Tooltip,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
+import styled from "styled-components";
 import { AiracData, VfrPoint } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
-import { pointToLeafletLatLng, toPoint } from "./FlightPlanningLayer";
+import { pointToLeafletLatLng, toCheapRulerPoint } from "./FlightPlanningLayer";
 import { getMapBounds } from "./getMapBounds";
 import { preventDefault } from "./preventDefault";
 const ruler = new CheapRuler(43, "nauticalmiles");
@@ -29,12 +36,13 @@ export const VfrPoints = ({
   if (!!mapBounds) {
     components = airacData?.getVfrPointsInBbox(...mapBounds).map((vfrPoint) => {
       const { name, latLng, icaoCode } = vfrPoint;
-      const center = toPoint(toLeafletLatLng(latLng));
+      const center = toCheapRulerPoint(toLeafletLatLng(latLng));
       const bottomRight = pointToLeafletLatLng(ruler.offset(center, 0.5, -0.5));
       const top = pointToLeafletLatLng(ruler.offset(center, 0, 0.4));
       const left = pointToLeafletLatLng(ruler.offset(center, -0.35, -0.2));
       const right = pointToLeafletLatLng(ruler.offset(center, 0.35, -0.2));
 
+      const bounds = boxAround(toCheapRulerPoint(bottomRight), 10);
       return (
         <Fragment key={`${icaoCode}/${name}`}>
           {
@@ -44,7 +52,7 @@ export const VfrPoints = ({
                   stroke: "red",
                   class: "map-svg-text-label",
                 }}
-                bounds={bottomRight.toBounds(100)}
+                bounds={bounds}
                 interactive={true}
                 eventHandlers={{
                   click: (e) => {
@@ -53,9 +61,6 @@ export const VfrPoints = ({
                   },
                 }}
               >
-                <text x="0%" y="0%" stroke="#002e94" height="100%">
-                  {name}
-                </text>
                 <Polygon
                   color="#002e94"
                   positions={[top, left, right]}
@@ -66,6 +71,15 @@ export const VfrPoints = ({
                     },
                   }}
                 ></Polygon>
+                <Polygon color="#002e94" positions={[right]}>
+                  <StyledTooltip
+                    key={`tooltip-wpt-${icaoCode}-${name}`}
+                    permanent
+                    direction={"right"}
+                  >
+                    {name}
+                  </StyledTooltip>
+                </Polygon>
               </SVGOverlay>
             </div>
           }
@@ -76,4 +90,27 @@ export const VfrPoints = ({
   return <>{components}</>;
 };
 
+const boxAround = (point: Point, radiusInMeters: number) => {
+  const ruler = new CheapRuler(point[1], "meters");
+  return [
+    ruler.destination(point, radiusInMeters, 225),
+    ruler.destination(point, radiusInMeters, 45),
+  ].map(([lng, lat]) => [lat, lng] as [number, number]);
+};
 
+const StyledTooltip = styled(Tooltip)`
+  background-color: transparent;
+  box-shadow: unset;
+  background-color: none;
+  border: none;
+  border-radius: none;
+  color: #002e94;
+  white-space: nowrap;
+  font-weight: bold;
+  text-align: left;
+  margin: 0px;
+
+  ::before {
+    display: none;
+  }
+`;

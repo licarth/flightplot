@@ -1,4 +1,3 @@
-import { LatLng } from "leaflet";
 import {
   Airspace,
   AirspaceClass,
@@ -35,8 +34,8 @@ describe("VerticalProfile", () => {
     ];
     const route = new Route({
       waypoints: [
-        latLngWaypointFactory({ latLng: new LatLng(0.1, 0.1) }),
-        latLngWaypointFactory({ latLng: new LatLng(0.3, 0.3) }),
+        latLngWaypointFactory({ latLng: {lat: 0.1, lng: 0.1} }),
+        latLngWaypointFactory({ latLng: {lat: 0.3, lng: 0.3} }),
       ],
     });
 
@@ -66,9 +65,9 @@ describe("VerticalProfile", () => {
     ];
     const route = new Route({
       waypoints: [
-        latLngWaypointFactory({ latLng: new LatLng(0.1, 0.1) }),
-        latLngWaypointFactory({ latLng: new LatLng(0.2, 0.2) }),
-        latLngWaypointFactory({ latLng: new LatLng(0.3, 0.3) }),
+        latLngWaypointFactory({ latLng: {lat: 0.1, lng: 0.1} }),
+        latLngWaypointFactory({ latLng: {lat: 0.2, lng: 0.2} }),
+        latLngWaypointFactory({ latLng: {lat: 0.3, lng: 0.3} }),
       ],
     });
 
@@ -98,8 +97,8 @@ describe("VerticalProfile", () => {
     ];
     const route = new Route({
       waypoints: [
-        latLngWaypointFactory({ latLng: new LatLng(-0.1, -0.1) }),
-        latLngWaypointFactory({ latLng: new LatLng(0.1, 0.1) }),
+        latLngWaypointFactory({ latLng: {lat: -0.1, lng: -0.1} }),
+        latLngWaypointFactory({ latLng: {lat: 0.1, lng: 0.1} }),
       ],
     });
 

@@ -1,4 +1,4 @@
-export type LatLng = { lat: number; lng: number };
+import { LatLng } from "../LatLng";
 
 export interface ElevationService {
   getElevationsForLatLngs(latLngs: LatLng[]): Promise<number[]>;

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Polygon, SVGOverlay, useMap, useMapEvents } from "react-leaflet";
 import { AiracData } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
+import { boundingBox } from "../../domain/boundingBox";
 
 export const DangerZones = ({ airacData }: { airacData?: AiracData }) => {
   const [mapBounds, setMapBounds] =
@@ -38,7 +39,7 @@ export const DangerZones = ({ airacData }: { airacData?: AiracData }) => {
                         stroke: "red",
                         class: "map-svg-text-label",
                       }}
-                      bounds={leafletLatLngs[0].toBounds(100)}
+                      bounds={boundingBox(leafletLatLngs)}
                       interactive={false}
                     >
                       {/* <text x="0%" y="0%" stroke="#940000" height="100%">

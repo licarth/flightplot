@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Chart, Scatter } from "react-chartjs-2";
 import styled from "styled-components";
 import { AiracData, AirspaceType, DangerZoneType } from "ts-aerodata-france";
+import { aircraftCollection } from "../domain/Aircraft";
 import { routeAirspaceOverlaps } from "../domain/VerticalProfile";
 import { ElevationAtPoint, elevationOnRoute } from "../elevationOnRoute";
 import { openElevationApiElevationService } from "../ElevationService/openElevationApiElevationService";
@@ -63,24 +64,12 @@ export const VerticalProfileChart = ({
         ],
       })
     : [];
-  const altitudes = route.inferredAltitudes;
-  const points = route.legs.flatMap(
-    ({ startingPointInNm, departureWaypoint, arrivalWaypoint }, i) => {
-      const points = [
-        {
-          x: startingPointInNm,
-          y: altitudes[i] || 0,
-          name: departureWaypoint.name,
-        },
-      ];
-      if (i === route.length - 1) {
-        points.push({
-          x: route.totalDistance,
-          y: altitudes[i + 1] || 0,
-          name: arrivalWaypoint.name,
-        });
-      }
-      return points;
+  const verticalProfile = route.verticalProfile({
+    aircraft: aircraftCollection[0],
+  });
+  const points = verticalProfile.map(
+    ({ distance, altitudeInFeet, name }, i) => {
+      return { x: distance, y: altitudeInFeet, name };
     },
   );
 

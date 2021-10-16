@@ -2,7 +2,7 @@ import { NmScale } from "@marfle/react-leaflet-nmscale";
 import { LatLngTuple } from "leaflet";
 import { MapContainer } from "react-leaflet";
 import styled from "styled-components";
-import { AiracData, Latitude, Longitude } from "ts-aerodata-france";
+import { AiracData } from "ts-aerodata-france";
 import { DisplayedLayers } from "../../App";
 import {
   toLeafletLatLng
@@ -61,11 +61,6 @@ const Layers = ({ displayedLayers }: { displayedLayers: DisplayedLayers }) => {
     </>
   );
 };
-
-export const toLatLng = (latLng: { lat: Latitude; lng: Longitude }) => ({
-  lat: latLng.lat as unknown as number,
-  lng: latLng.lng as unknown as number,
-});
 
 const BackgroundContainer = styled.div`
   display: flex;

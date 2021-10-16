@@ -9,11 +9,11 @@ import {
 } from "react-leaflet";
 import { AiracData, Airspace, AirspaceType } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
+import { boundingBox } from "../../domain/boundingBox";
 import { getMapBounds } from "./getMapBounds";
 
 const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
-  const { geometry, name, lowerLimit, higherLimit, airspaceClass } =
-    airspace;
+  const { geometry, name, lowerLimit, higherLimit, airspaceClass } = airspace;
   const leafletLatLngs = geometry.map(toLeafletLatLng);
   const [mouseOver, setMouseOver] = useState(false);
   const color = "#002e94";
@@ -26,7 +26,12 @@ const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
               stroke: "red",
               class: "map-svg-text-label",
             }}
-            bounds={leafletLatLngs[0].toBounds(100)}
+            bounds={boundingBox(
+              airspace.geometry.map(({ lat, lng }) => ({
+                lat: Number(lat),
+                lng: Number(lng),
+              })),
+            )}
           >
             <Polygon
               positions={leafletLatLngs}

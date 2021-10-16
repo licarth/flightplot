@@ -1,5 +1,4 @@
 import CheapRuler, { Line } from "cheap-ruler";
-import { LatLng } from "leaflet";
 import { Fragment, useState } from "react";
 import { Circle, Polyline, useMapEvent } from "react-leaflet";
 import { Route, Waypoint } from "../../../domain";
@@ -8,6 +7,7 @@ import {
   AerodromeWaypointType,
   LatLngWaypoint,
 } from "../../../domain/Waypoint";
+import { LatLng } from "../../../LatLng";
 import { useRoute } from "../../useRoute";
 import { preventDefault } from "../preventDefault";
 import { AerodromeWaypointMarker } from "./AerodromeWaypointMarker";
@@ -107,7 +107,7 @@ export const FlightPlanningLayer = () => {
                           route.waypoints[i].latLng,
                           route.waypoints[i + 1].latLng,
                         ]),
-                        toPoint(e.latlng),
+                        toCheapRulerPoint(e.latlng),
                       ).point,
                     ),
                     position: i + 1,
@@ -167,8 +167,8 @@ function createLineForRouteSegment(route: Route, segmentNumber: number) {
 }
 
 const lineBetweenWaypoints = (waypoint1: Waypoint, waypoint2: Waypoint) => {
-  const pointA = toPoint(waypoint1.latLng);
-  const pointB = toPoint(waypoint2.latLng);
+  const pointA = toCheapRulerPoint(waypoint1.latLng);
+  const pointB = toCheapRulerPoint(waypoint2.latLng);
   const aLine = [pointA, pointB];
   const lineDistance = ruler.lineDistance(aLine);
 
@@ -183,12 +183,16 @@ const lineBetweenWaypoints = (waypoint1: Waypoint, waypoint2: Waypoint) => {
   } else return [];
 };
 
-export const pointToLeafletLatLng = ([x, y]: [number, number]) =>
-  new LatLng(y, x);
-export const toPoint = (latLng: LatLng): [number, number] => [
+export const pointToLeafletLatLng = ([x, y]: [number, number]) => ({
+  lat: y,
+  lng: x,
+});
+
+export const toCheapRulerPoint = (latLng: LatLng): [number, number] => [
   latLng.lng,
   latLng.lat,
 ];
+
 export const toLine = (latLngs: Array<LatLng>): Line =>
   latLngs.map((latLng) => [latLng.lng, latLng.lat]);
 

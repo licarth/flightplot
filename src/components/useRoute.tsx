@@ -1,7 +1,7 @@
-import { LatLng } from "leaflet";
 import { useCallback, useContext } from "react";
 import { Aerodrome } from "ts-aerodata-france";
 import { AerodromeWaypoint, AerodromeWaypointType, Waypoint } from "../domain";
+import { LatLng } from "../LatLng";
 import { RouteContext } from "./RouteContext";
 
 export type SetWaypointAltitude = ({

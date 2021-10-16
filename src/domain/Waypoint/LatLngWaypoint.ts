@@ -1,4 +1,4 @@
-import { LatLng } from "leaflet";
+import { LatLng } from "../../LatLng";
 import { Waypoint, WaypointId, WaypointProps } from "./Waypoint";
 
 export class LatLngWaypoint implements Waypoint {

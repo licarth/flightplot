@@ -1,11 +1,10 @@
-import { LatLng } from "leaflet";
 import {
   Aerodrome,
   AltitudeInFeet,
   IcaoCode,
   LatLng as SiaLatLng,
 } from "ts-aerodata-france";
-import { toLatLng } from "../../components/Map/LeafletMap";
+import { LatLng, toLatLng } from "../../LatLng";
 import { Waypoint } from "./Waypoint";
 
 export type AerodromeWaypointId = IcaoCode;
@@ -79,6 +78,6 @@ export class AerodromeWaypoint implements Waypoint {
 
 export const toLeafletLatLng = (aerodromeLatLng: SiaLatLng): LatLng => {
   const latLng = toLatLng(aerodromeLatLng);
-  const res = new LatLng(latLng.lat, latLng.lng);
+  const res = {lat: latLng.lat, lng: latLng.lng};
   return res;
 };

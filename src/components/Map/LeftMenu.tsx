@@ -5,18 +5,20 @@ import {
   KeyboardSensor,
   PointerSensor,
   useSensor,
-  useSensors
+  useSensors,
 } from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import styled from "styled-components";
 import { AiracData } from "ts-aerodata-france";
+import Modal from "../../Modal";
 import { useRoute } from "../useRoute";
 import { VerticalProfileChart } from "../VerticalProfileChart";
+import { PrintPreview } from "./PrintPreview";
 import { RouteElement } from "./RouteElement";
 
 const ContainerDiv = styled.div`
@@ -26,18 +28,26 @@ const ContainerDiv = styled.div`
   justify-content: space-between;
 `;
 
-export const LeftMenu = ({
-  airacData,
-}: {
-  airacData: AiracData;
-}) => (
-  <ContainerDiv>
-    <RouteDisplay />
-    <VerticalProfileChart airacData={airacData} />
-  </ContainerDiv>
-);
+export const LeftMenu = ({ airacData }: { airacData: AiracData }) => {
+  const vpModal = useRef(null);
+  return (
+    <ContainerDiv>
+      <RouteDisplay airacData={airacData} />
+      {/* @ts-ignore */}
+      <VerticalProfileDiv onClick={() => vpModal.current?.open()}>
+        <VerticalProfileChart airacData={airacData} />
+      </VerticalProfileDiv>
+      <Modal fade={false} defaultOpened={false} ref={vpModal}>
+        <VerticalProfileModalDiv>
+          <VerticalProfileChart airacData={airacData} />
+        </VerticalProfileModalDiv>
+      </Modal>
+    </ContainerDiv>
+  );
+};
 
-const RouteDisplay = () => {
+const RouteDisplay = ({ airacData }: { airacData: AiracData }) => {
+  const modal = useRef(null);
   const { route, moveWaypoint, removeWaypoint } = useRoute();
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -57,10 +67,6 @@ const RouteDisplay = () => {
     },
     [moveWaypoint],
   );
-  const print = () => {
-    window.print();
-  };
-
   return (
     <RouteContainer>
       <H2>ROUTE</H2>
@@ -96,14 +102,18 @@ const RouteDisplay = () => {
         <input type="checkbox" disabled checked id="print-navlog" />
       </div>
       <div>
-        <label htmlFor="print-map">Carte 1 / 500 000 ème (soon)</label>
-        <input type="checkbox" disabled id="print-map" />
+        <label htmlFor="print-vertical-profile">Profile Vertical</label>
+        <input type="checkbox" disabled checked id="print-vertical-profile" />
       </div>
       <div>
-        <label htmlFor="print-vertical-profile">Profile Vertical (soon)</label>
-        <input type="checkbox" disabled id="print-vertical-profile" />
-      </div>
-      <button onClick={print}>IMPRIMER</button>
+        <label htmlFor="print-map">Carte 1 / 500 000 ème (soon)</label>
+        <input type="checkbox" disabled id="print-map" />
+      </div>{" "}
+      {/*@ts-ignore */}
+      <button onClick={() => modal && modal.current?.open()}>PREVIEW</button>
+      <Modal fade={false} defaultOpened={false} ref={modal}>
+        <PrintPreview airacData={airacData} />
+      </Modal>
       <hr />
     </RouteContainer>
   );
@@ -143,5 +153,23 @@ const TipsContainer = styled.div`
   li:before {
     content: "->";
     padding-right: 5px;
+  }
+`;
+
+const VerticalProfileDiv = styled.div`
+  width: 100%;
+  height: 250px;
+  background-color: white;
+  overflow: hidden;
+`;
+
+const VerticalProfileModalDiv = styled.div`
+  width: 80vw;
+  height: 80vh;
+  z-index: 10000;
+  
+  @media print {
+    width: 100%;
+    height: 100%;
   }
 `;

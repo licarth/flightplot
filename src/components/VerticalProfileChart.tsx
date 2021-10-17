@@ -7,7 +7,6 @@ import * as _ from "lodash";
 import { min } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { Chart, Scatter } from "react-chartjs-2";
-import styled from "styled-components";
 import { AiracData, AirspaceType, DangerZoneType } from "ts-aerodata-france";
 import { aircraftCollection } from "../domain/Aircraft";
 import { routeAirspaceOverlaps } from "../domain/VerticalProfile";
@@ -17,11 +16,6 @@ import { isLatLngWaypoint } from "./Map/FlightPlanningLayer";
 import { useRoute } from "./useRoute";
 Chart.register(annotationPlugin);
 Chart.register(dragData);
-
-const VerticalProfileDiv = styled.div`
-  background-color: white;
-  overflow: hidden;
-`;
 
 export const VerticalProfileChart = ({
   airacData,
@@ -188,45 +182,43 @@ export const VerticalProfileChart = ({
   };
 
   return (
-    <VerticalProfileDiv>
-      <Scatter
-        key={`vertical-profile-${hashCode(JSON.stringify(route.waypoints))}`}
-        data={data}
-        options={{
-          maintainAspectRatio: false,
-          animation: false,
-          elements: {
-            line: {
-              segment: { borderColor: "#000000F", borderWidth: 2 },
-              borderColor: "black",
-            },
-            point: { radius: 0 },
+    <Scatter
+      key={`vertical-profile-${hashCode(JSON.stringify(route.waypoints))}`}
+      data={data}
+      options={{
+        maintainAspectRatio: false,
+        animation: false,
+        elements: {
+          line: {
+            segment: { borderColor: "#000000F", borderWidth: 2 },
+            borderColor: "black",
           },
-          plugins: {
-            annotation: {
-              enter: (event) => {
-                // console.log(event);
-                console.log(route.length);
-              },
-              leave: (event) => {
-                // console.log(event);
-              },
-              annotations: newLocal,
+          point: { radius: 0 },
+        },
+        plugins: {
+          annotation: {
+            enter: (event) => {
+              // console.log(event);
+              console.log(route.length);
             },
-            // @ts-ignore
-            dragData,
-          },
-          scales: {
-            y: {
-              grace: 20,
-              suggestedMax: 1500,
-              suggestedMin: 0,
-              min: (elevation && min(elevation.elevations)) || 0,
+            leave: (event) => {
+              // console.log(event);
             },
+            annotations: newLocal,
           },
-        }}
-      />
-    </VerticalProfileDiv>
+          // @ts-ignore
+          dragData,
+        },
+        scales: {
+          y: {
+            grace: 20,
+            suggestedMax: 1500,
+            suggestedMin: 0,
+            min: (elevation && min(elevation.elevations)) || 0,
+          },
+        },
+      }}
+    />
   );
 };
 

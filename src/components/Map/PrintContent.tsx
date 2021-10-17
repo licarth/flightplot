@@ -8,7 +8,7 @@ const HideRestOfDOM = createGlobalStyle`
   }
 
   @page {
-    size: A5;
+    size: A4;
     margin: 0
   }
 `;

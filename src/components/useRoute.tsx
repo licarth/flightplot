@@ -42,20 +42,20 @@ export const useRoute = () => {
       position?: number;
       name?: string;
     }) => {
-      setRoute(
-        route.addWaypoint({
+      setRoute((oldRoute) =>
+        oldRoute.addWaypoint({
           position,
           waypoint: Waypoint.create({ latLng, name }),
         }),
       );
     },
-    [route, setRoute],
+    [setRoute],
   );
 
   const addAerodromeWaypoint = useCallback(
     ({ aerodrome, position }: { aerodrome: Aerodrome; position?: number }) => {
-      setRoute(
-        route.addWaypoint({
+      setRoute((oldRoute) =>
+        oldRoute.addWaypoint({
           position,
           waypoint: Waypoint.fromAerodrome({
             aerodrome,
@@ -67,7 +67,7 @@ export const useRoute = () => {
         }),
       );
     },
-    [route, setRoute],
+    [setRoute],
   );
 
   const replaceWaypoint = useCallback(
@@ -78,13 +78,13 @@ export const useRoute = () => {
       waypointPosition: number;
       newWaypoint: Waypoint;
     }) =>
-      setRoute(
-        route.replaceWaypoint({
+      setRoute((oldRoute) =>
+        oldRoute.replaceWaypoint({
           waypointPosition,
           newWaypoint,
         }),
       ),
-    [route, setRoute],
+    [setRoute],
   );
 
   const setAerodromeWaypointType = useCallback(
@@ -108,17 +108,17 @@ export const useRoute = () => {
 
   const moveWaypoint: MoveWaypoint = useCallback(
     (currentWaypointPosition, newWaypointPosition) =>
-      setRoute(
-        route.moveWaypoint(currentWaypointPosition, newWaypointPosition),
+      setRoute((oldRoute) =>
+        oldRoute.moveWaypoint(currentWaypointPosition, newWaypointPosition),
       ),
-    [route, setRoute],
+    [setRoute],
   );
 
   const setWaypointAltitude: SetWaypointAltitude = useCallback(
     ({ waypointPosition, altitude }) => {
       const w = route.waypoints[waypointPosition];
       const newWaypoint = w.clone({ altitude });
-      console.log(JSON.stringify(newWaypoint))
+      console.log(JSON.stringify(newWaypoint));
       replaceWaypoint({ waypointPosition, newWaypoint });
     },
     [route, replaceWaypoint],
@@ -127,13 +127,13 @@ export const useRoute = () => {
   const addSameWaypointAgain: AddSameWaypointAgain = useCallback(
     (waypointPosition) => {
       const w = route.waypoints[waypointPosition];
-      setRoute(route.addWaypoint({ waypoint: w }));
+      setRoute((oldRoute) => oldRoute.addWaypoint({ waypoint: w }));
     },
     [route, setRoute],
   );
 
   const removeWaypoint: RemoveWaypoint = (waypointPosition) => {
-    setRoute(route.removeWaypoint(waypointPosition));
+    setRoute((oldRoute) => oldRoute.removeWaypoint(waypointPosition));
   };
 
   return {

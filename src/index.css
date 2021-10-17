@@ -1,17 +1,16 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-print-color-adjust: exact;
 
   @page {
-    size: A5;
-    margin: 0
+    size: A4;
+    margin: 0;
   }
-
 }
 
 #root {
@@ -19,15 +18,21 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
 #mapId {
-   height:100vh;
-   width:100vw;
+  height: 100vh;
+  width: 100vw;
 }
 
 .map-svg-text-label {
   overflow: visible !important;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }

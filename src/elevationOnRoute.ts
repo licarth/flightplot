@@ -27,10 +27,18 @@ export const elevationOnRoute: Reader<
     ];
     const latLngs = distancesFromStartInNm.map((d) => ruler.along(line, d));
 
-    return {
-      elevations: await elevationService.getElevationsForLatLngs(
+    try {
+      const elevations = await elevationService.getElevationsForLatLngs(
         latLngs.map(([lng, lat]) => ({ lat, lng })),
-      ),
-      distancesFromStartInNm,
-    };
+      );
+      return {
+        elevations,
+        distancesFromStartInNm,
+      };
+    } catch {
+      return {
+        elevations: [],
+        distancesFromStartInNm: [],
+      };
+    }
   };

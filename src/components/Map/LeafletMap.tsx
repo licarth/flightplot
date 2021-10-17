@@ -4,16 +4,13 @@ import { MapContainer } from "react-leaflet";
 import styled from "styled-components";
 import { AiracData } from "ts-aerodata-france";
 import { DisplayedLayers } from "../../App";
-import {
-  toLeafletLatLng
-} from "../../domain";
+import { toLeafletLatLng } from "../../domain";
 import { OaciLayer, OpenStreetMapLayer } from "../layer";
 import { useRoute } from "../useRoute";
 import { Aerodromes } from "./Aerodromes";
 import { Airspaces } from "./Airspaces";
 import { FlightPlanningLayer } from "./FlightPlanningLayer";
 import { LeftMenu } from "./LeftMenu";
-import { RouteDescription } from "./RouteDescription";
 import { VfrPoints } from "./VfrPoints";
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 11;
@@ -24,8 +21,7 @@ type LeafletMapProps = {
 };
 
 export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
-  const { route, addAerodromeWaypoint, addLatLngWaypoint } = useRoute();
-
+  const { addAerodromeWaypoint, addLatLngWaypoint } = useRoute();
   return (
     <>
       <BackgroundContainer onContextMenu={(e) => e.preventDefault()}>
@@ -48,7 +44,6 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
           <NmScale />
         </MapContainer>
       </BackgroundContainer>
-      <RouteDescription route={route} />
     </>
   );
 };

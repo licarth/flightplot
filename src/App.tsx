@@ -30,6 +30,7 @@ const App = ({ disabled }: { disabled: boolean }) => {
 
   return (
     <RouteProvider>
+      <div id="modal-root"></div>
       <AppContainer id="app" disabled={disabled}>
         {airacData && (
           <LeafletMap displayedLayers={displayedLayers} airacData={airacData} />

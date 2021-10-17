@@ -45,12 +45,15 @@ export const NavigationLog = ({
         </NavRow>
       )}
       {route.legs.map(
-        ({
-          arrivalWaypoint: { name },
-          trueHdg,
-          distanceInNm,
-          durationInMinutes,
-        }, i) => (
+        (
+          {
+            arrivalWaypoint: { name },
+            trueHdg,
+            distanceInNm,
+            durationInMinutes,
+          },
+          i,
+        ) => (
           <NavRow>
             <LegCell>{route.inferredAltitudes[i]} ft</LegCell>
             <LegCell>{formatHeading(trueHdg)}°T</LegCell>
@@ -89,7 +92,14 @@ const AirportDetails = ({ aerodrome }: { aerodrome: Aerodrome }) => (
         <div>{aerodrome.name}</div>
         <div>{aerodrome.icaoCode}</div>
         <div>{aerodrome.aerodromeAltitude} ft.</div>
-        <div>{aerodrome.runways.runways.map(({name, lengthInMeters, surface}) => `${name}(${lengthInMeters}m - ${surface})`).join(", ")}</div>
+        <div>
+          {aerodrome.runways.runways
+            .map(
+              ({ name, lengthInMeters, surface }) =>
+                `${name}(${lengthInMeters}m - ${surface})`,
+            )
+            .join(", ")}
+        </div>
       </AerodromeNameCell>
       <FrequenciesCell>
         <div>
@@ -131,11 +141,7 @@ const formatFrequencyTable = (
 const AirportTable = styled.div`
   display: flex;
   flex-direction: column;
-  @media print {
-    width: 20cm;
-    break-inside: avoid;
-    /* border-width: 0.6mm; */
-  }
+  break-inside: avoid;
   background-color: black;
 
   :last-child {
@@ -149,7 +155,6 @@ const LegTable = styled.div<{
   display: flex;
   flex-direction: column;
   @media print {
-    width: 20cm;
     border-width: 0.6mm;
   }
   background-color: black;
@@ -157,14 +162,13 @@ const LegTable = styled.div<{
   :last-child {
     border-bottom: solid;
   }
-  
+
   height: ${({ route }) =>
     route.length < 1 ? 1 : route.legs.length * 2 + 3}cm;
 `;
 
 const Row = styled.div`
   display: flex;
-  width: 100%;
 
   > :last-child {
     border-right: solid;
@@ -186,7 +190,6 @@ const AirportRow = styled(Row)`
 
 const HeaderRow = styled(NavRow)`
   z-index: 100;
-  width: 100%;
   display: flex;
   height: 1cm;
   background-color: grey;
@@ -270,8 +273,6 @@ const formatHeading = (trueHdg: number) =>
 const NavlogContainer = styled.div<{
   paperVersion: boolean;
 }>`
-  width: 100%;
-  margin: 0;
   ${CenteredContentCell} {
     width: ${({ paperVersion }) => (paperVersion ? 100 / 7 : 100 / 5)}%;
   }

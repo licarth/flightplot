@@ -1,17 +1,3 @@
-import {
-  closestCenter,
-  DndContext,
-  DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { pipe } from "fp-ts/lib/function";
 import { useCallback, useRef } from "react";
 import styled from "styled-components";
@@ -20,7 +6,7 @@ import { Route } from "../../domain";
 import Modal from "../../Modal";
 import { useRoute } from "../useRoute";
 import { VerticalProfileChart } from "../VerticalProfileChart";
-import { RouteElement } from "./RouteElement";
+import { RouteWaypoints } from "./RouteWaypoints";
 
 const ContainerDiv = styled.div`
   width: 400px;
@@ -49,13 +35,7 @@ export const LeftMenu = ({ airacData }: { airacData: AiracData }) => {
 };
 
 const RouteDisplay = ({ airacData }: { airacData: AiracData }) => {
-  const { route, moveWaypoint, removeWaypoint } = useRoute();
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
+  const { route } = useRoute();
 
   const saveRoute = useCallback(() => {
     window.localStorage.setItem(
@@ -64,44 +44,10 @@ const RouteDisplay = ({ airacData }: { airacData: AiracData }) => {
     );
   }, [route, airacData]);
 
-  const items = route.waypoints.map((w, i) => ({ ...w, id: `${i}` }));
-
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event;
-      if (over == null) {
-        return;
-      }
-      moveWaypoint(Number(active.id), Number(over.id));
-    },
-    [moveWaypoint],
-  );
   return (
     <RouteContainer>
       <H2>ROUTE</H2>
-      {route.waypoints.length === 0 && (
-        <div style={{ textAlign: "center" }}>
-          ⚠️ La route est vide
-          <br />
-          🖱️ Cliquez sur la carte pour ajouter un point de report ou un terrain
-          de départ.
-        </div>
-      )}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={items} strategy={verticalListSortingStrategy}>
-          {route.waypoints.map((w, i) => (
-            <RouteElement
-              waypointPosition={i}
-              removeWaypoint={removeWaypoint}
-              waypoint={w}
-            />
-          ))}{" "}
-        </SortableContext>
-      </DndContext>
+      <RouteWaypoints />
       <hr />
       <Tips />
       <hr />

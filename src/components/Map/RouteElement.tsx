@@ -9,7 +9,12 @@ import {
   Route,
   Waypoint,
 } from "../../domain";
-import { RemoveWaypoint, SetWaypointAltitude, useRoute } from "../useRoute";
+import {
+  RemoveWaypoint,
+  ReplaceWaypoint,
+  SetWaypointAltitude,
+  useRoute,
+} from "../useRoute";
 
 type RouteElementProps = {
   waypoint: Waypoint;
@@ -22,16 +27,30 @@ export const RouteElement = ({
   waypointPosition: i,
   removeWaypoint,
 }: RouteElementProps) => {
-  const { route, setWaypointAltitude, setAerodromeWaypointType } = useRoute();
+  const {
+    route,
+    setWaypointAltitude,
+    setAerodromeWaypointType,
+    replaceWaypoint,
+  } = useRoute();
   const [editingAltitude, setEditingAltitude] = useState<boolean>(false);
+  const [editingName, setEditingName] = useState<boolean>(false);
   const { attributes, listeners, setNodeRef, transform } = useSortable({
     id: `${i}`,
+
   });
   const style = { transform: CSS.Transform.toString(transform) };
   return (
     <RouteElementContainer key={`${w.id}`} style={style} ref={setNodeRef}>
       <span>
-        <NameContainer>{w.name}</NameContainer>
+        <NameDisplay
+          editingName={editingName}
+          setEditingName={(b) => setEditingName(b)}
+          i={i}
+          route={route}
+          replaceWaypoint={_.debounce(replaceWaypoint, 300)}
+          w={w}
+        />
         <AltitudeDisplay
           editingAltitude={editingAltitude}
           i={i}
@@ -44,7 +63,7 @@ export const RouteElement = ({
       </span>
       <span>
         {AerodromeWaypoint.isAerodromeWaypoint(w) && (
-          <select
+          <StyledSelect
             name={`select-waypoint-type-${w.id}`}
             id={`select-waypoint-type-${w.id}`}
             defaultValue={
@@ -64,7 +83,7 @@ export const RouteElement = ({
           >
             <option value="touch_go">land</option>
             <option value="overfly">fly</option>
-          </select>
+          </StyledSelect>
         )}
         <DeleteDiv onClick={() => removeWaypoint(i)}>❌</DeleteDiv>
         <HandleDiv {...listeners} {...attributes}>
@@ -81,10 +100,23 @@ export const RouteElementContainer = styled.span`
 `;
 
 const NameContainer = styled.div`
-  width: 70px;
   display: inline-block;
-  text-overflow: ellipsis;
+  width: 100px;
+
+  min-height: 1em;
 `;
+
+const NoNameReplacement = styled(NameContainer)`
+  color: grey;
+`;
+
+// const EmptyNameContainer = styled(NameContainer)`
+/* content="hello"
+  
+  :hover {
+    background-color: "#363636";
+  }
+`; */
 
 const CalculatedAltitude = styled.span`
   border-bottom: 1px dotted #000;
@@ -116,9 +148,65 @@ const DeleteDiv = styled.button`
   cursor: pointer;
 `;
 
+const StyledSelect = styled.select``;
+
+const StyledNameInput = styled.input`
+  width: 100px;
+`;
 const StyledAltitudeInput = styled.input`
   width: 70px;
 `;
+
+const NameDisplay = ({
+  route,
+  editingName,
+  setEditingName,
+  replaceWaypoint,
+  w,
+  i,
+}: {
+  route: Route;
+  editingName: boolean;
+  setEditingName: (b: boolean) => void;
+  replaceWaypoint: ReplaceWaypoint;
+  w: Waypoint;
+  i: number;
+}) => {
+  if (editingName) {
+    return (
+      <StyledNameInput
+        id={`input-waypoint-name-${w.id}`}
+        defaultValue={w.name || ""}
+        size={1}
+        step={500}
+        onBlur={() => setEditingName(false)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            setEditingName(false);
+          } else if (e.key === "Enter") {
+            setEditingName(false);
+          }
+        }}
+        autoFocus
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          replaceWaypoint({
+            waypointPosition: i,
+            newWaypoint: w.clone({ name: e.currentTarget.value }),
+          })
+        }
+      />
+    );
+  } else
+    return w.name ? (
+      <NameContainer onClick={() => setEditingName(true)}>
+        {w.name}
+      </NameContainer>
+    ) : (
+      <NoNameReplacement onClick={() => setEditingName(true)}>
+        {"<sans nom>"}
+      </NoNameReplacement>
+    );
+};
 
 const AltitudeDisplay = ({
   route,
@@ -138,7 +226,7 @@ const AltitudeDisplay = ({
   if (editingAltitude) {
     return (
       <StyledAltitudeInput
-        id={`input-waypoint-type-${w.id}`}
+        id={`input-waypoint-altitude-${w.id}`}
         defaultValue={route.inferredAltitudes[i]}
         size={1}
         type="number"

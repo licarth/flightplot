@@ -4,22 +4,23 @@ import { Polygon, SVGOverlay, useMap, useMapEvents } from "react-leaflet";
 import { AiracData } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
 import { boundingBox } from "../../domain/boundingBox";
+import { getMapBounds } from "./getMapBounds";
 
 export const DangerZones = ({ airacData }: { airacData?: AiracData }) => {
-  const [mapBounds, setMapBounds] =
-    useState<[number, number, number, number]>();
   const leafletMap = useMap();
-  const refreshMapBounds = () =>
-    setMapBounds([
-      leafletMap.getBounds().getWest(),
-      leafletMap.getBounds().getSouth(),
-      leafletMap.getBounds().getEast(),
-      leafletMap.getBounds().getNorth(),
-    ]);
+  const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
+    leafletMap && getMapBounds(leafletMap),
+  );
+  const refreshMapBounds = () => setMapBounds(getMapBounds(leafletMap));
   useMapEvents({
     moveend: refreshMapBounds,
     move: debounce(refreshMapBounds, 100),
   });
+  useMapEvents({
+    moveend: refreshMapBounds,
+    move: debounce(refreshMapBounds, 100),
+  });
+
   return (
     <>
       {mapBounds &&
@@ -47,9 +48,10 @@ export const DangerZones = ({ airacData }: { airacData?: AiracData }) => {
                     </text> */}
                       <Polygon
                         color="#940000"
+                        fillColor="#940000"
                         positions={leafletLatLngs}
                         interactive={false}
-                        fill={false}
+                        fill={true}
                       ></Polygon>
                     </SVGOverlay>
                   </>

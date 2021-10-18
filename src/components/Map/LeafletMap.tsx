@@ -9,6 +9,7 @@ import { OaciLayer, OpenStreetMapLayer } from "../layer";
 import { useRoute } from "../useRoute";
 import { Aerodromes } from "./Aerodromes";
 import { Airspaces } from "./Airspaces";
+import { DangerZones } from "./DangerZones";
 import { FlightPlanningLayer } from "./FlightPlanningLayer";
 import { LeftMenu } from "./LeftMenu";
 import { VfrPoints } from "./VfrPoints";
@@ -34,8 +35,9 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
         <LeftMenu airacData={airacData} />
         <MapContainer id="mapId" {...params}>
           <Layers displayedLayers={displayedLayers} />
+          <FlightPlanningLayer />
           <Airspaces airacData={airacData} />
-          {/* <DangerZones airacData={airacData} /> */}
+          <DangerZones airacData={airacData} />
           <Aerodromes
             airacData={airacData}
             onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
@@ -46,7 +48,6 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
               addLatLngWaypoint({ latLng: toLeafletLatLng(latLng), name })
             }
           />
-          <FlightPlanningLayer />
           <NmScale />
         </MapContainer>
       </BackgroundContainer>

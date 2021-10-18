@@ -3,6 +3,7 @@ import * as Option from "fp-ts/lib/Option";
 import { Aerodrome, VhfFrequencyWithRemarks } from "ts-aerodata-france";
 import styled from "styled-components";
 import { AerodromeWaypoint, Route } from "../../domain";
+
 export const NavigationLog = ({
   route,
   paperVersion = false,
@@ -55,7 +56,12 @@ export const NavigationLog = ({
           i,
         ) => (
           <NavRow>
-            <LegCell>{route.inferredAltitudes[i]} ft</LegCell>
+            <LegCell>
+              {altitudeInfo(
+                route.inferredAltitudes[i],
+                route.inferredAltitudes[i + 1],
+              )}
+            </LegCell>
             <LegCell>{formatHeading(trueHdg)}°T</LegCell>
             <LegCell>{Math.round(distanceInNm)} NM</LegCell>
             <LegCell>{Math.round(durationInMinutes)} min</LegCell>
@@ -122,6 +128,14 @@ const AirportDetails = ({ aerodrome }: { aerodrome: Aerodrome }) => (
   </AirportTable>
 );
 
+const altitudeInfo = (from: number, to: number) => {
+  if (from < to) {
+    return `↗ ${to} ft.`;
+  } else if (from > to) {
+    return `↘ ${to} ft.`;
+  } else return `${from} ft.`;
+};
+
 const formatFrequencyTable = (
   frequencies: readonly VhfFrequencyWithRemarks[],
 ) =>
@@ -141,7 +155,7 @@ const formatFrequencyTable = (
 const AirportTable = styled.div`
   display: flex;
   flex-direction: column;
-  break-inside: avoid;
+  page-break-inside: avoid;
   background-color: black;
 
   :last-child {
@@ -249,6 +263,7 @@ const WaypointCell = styled(LegTableCell)`
     border-width: 0.05cm;
   } */
   z-index: 1;
+  page-break-inside: avoid;
 `;
 
 const BlackCell = styled(LegTableCell)`
@@ -278,5 +293,11 @@ const NavlogContainer = styled.div<{
   }
   ${FrequenciesCell} {
     width: ${(3 * 100) / 4}%;
+  }
+  @media print {
+    page-break-inside: avoid;
+    :not(:first-of-type) {
+      margin-top: 2cm;
+    }
   }
 `;

@@ -1,6 +1,7 @@
 import CheapRuler from "cheap-ruler";
 import { LatLng } from "../LatLng";
 import { Aircraft } from "./Aircraft";
+import { AerodromeWaypoint, AerodromeWaypointType } from "./Waypoint";
 import { Waypoint } from "./Waypoint/Waypoint";
 
 type VerticalProfile = {
@@ -221,6 +222,27 @@ export class Route {
       }
     }
     return verticalProfile;
+  }
+
+  splitOnTouchAndGos(): Route[] {
+    const routes: Route[] = [];
+    let route = Route.empty();
+    for (const waypoint of this.waypoints) {
+      if (
+        AerodromeWaypoint.isAerodromeWaypoint(waypoint) &&
+        waypoint.waypointType === AerodromeWaypointType.RUNWAY &&
+        route.waypoints.length > 0
+      ) {
+        routes.push(route.addWaypoint({ waypoint }));
+        route = Route.empty().addWaypoint({ waypoint });
+      } else {
+        route = route.addWaypoint({ waypoint });
+      }
+    }
+    if (route.waypoints.length > 1) {
+      routes.push(route);
+    }
+    return routes;
   }
 }
 

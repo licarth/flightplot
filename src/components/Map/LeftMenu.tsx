@@ -5,12 +5,12 @@ import {
   KeyboardSensor,
   PointerSensor,
   useSensor,
-  useSensors,
+  useSensors
 } from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { useCallback, useRef } from "react";
 import styled from "styled-components";
@@ -18,7 +18,6 @@ import { AiracData } from "ts-aerodata-france";
 import Modal from "../../Modal";
 import { useRoute } from "../useRoute";
 import { VerticalProfileChart } from "../VerticalProfileChart";
-import { PrintPreview } from "./PrintPreview";
 import { RouteElement } from "./RouteElement";
 
 const ContainerDiv = styled.div`
@@ -47,7 +46,6 @@ export const LeftMenu = ({ airacData }: { airacData: AiracData }) => {
 };
 
 const RouteDisplay = ({ airacData }: { airacData: AiracData }) => {
-  const modal = useRef(null);
   const { route, moveWaypoint, removeWaypoint } = useRoute();
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -109,11 +107,7 @@ const RouteDisplay = ({ airacData }: { airacData: AiracData }) => {
         <label htmlFor="print-map">Carte 1 / 500 000 ème (soon)</label>
         <input type="checkbox" disabled id="print-map" />
       </div>{" "}
-      {/*@ts-ignore */}
-      <button onClick={() => modal && modal.current?.open()}>PREVIEW</button>
-      <Modal fade={false} defaultOpened={false} ref={modal}>
-        <PrintPreview airacData={airacData} />
-      </Modal>
+      <button onClick={() => window.print()}>PRINT</button>
       <hr />
     </RouteContainer>
   );
@@ -167,7 +161,7 @@ const VerticalProfileModalDiv = styled.div`
   width: 80vw;
   height: 80vh;
   z-index: 10000;
-  
+
   @media print {
     width: 100%;
     height: 100%;

@@ -4,6 +4,7 @@ import { AiracCycles, AiracData } from "ts-aerodata-france";
 import { LayerEnum } from "./components/layer/Layer";
 import { LeafletMap } from "./components/Map/LeafletMap";
 import { PrintContent } from "./components/Map/PrintContent";
+import { PrintPreview } from "./components/Map/PrintPreview";
 import { RouteProvider } from "./components/RouteContext";
 
 export type DisplayedLayers = {
@@ -37,8 +38,8 @@ const App = ({ disabled }: { disabled: boolean }) => {
         )}
       </AppContainer>
       <PrintContent>
-        <div id="printArea"></div>
       </PrintContent>
+      {airacData && <PrintPreview airacData={airacData} />}
     </RouteProvider>
   );
 };

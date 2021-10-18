@@ -6,16 +6,15 @@ const HideRestOfDOM = createGlobalStyle`
       display: none
     }
   }
-
-  @page {
-    size: A4;
-    margin: 0
-  }
 `;
 
 const PrintContentContainer = styled.div`
-  @media screen {
-    display: none;
+    overflow: hidden;
+    visibility: hidden;
+    position: absolute;
+    width: 0;
+    height: 0;
+    @media screen {
   }
 `;
 

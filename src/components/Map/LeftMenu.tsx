@@ -138,7 +138,7 @@ const Tips = () => (
   <TipsContainer>
     <H2>TIPS</H2>
     <ul>
-      <li>❌ Faites un click droit sur un waypoint pour le supprimer</li>
+      <li>❌ Faites un click droit sur un waypoint pour éditer son nom</li>
       <li>🖨️ Imprimez votre log de navigation avec le menu ci-dessous 👇️</li>
     </ul>
   </TipsContainer>

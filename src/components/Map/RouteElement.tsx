@@ -1,12 +1,13 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import _ from "lodash";
 import { useState } from "react";
 import styled from "styled-components";
 import {
   AerodromeWaypoint,
   AerodromeWaypointType,
   Route,
-  Waypoint
+  Waypoint,
 } from "../../domain";
 import { RemoveWaypoint, SetWaypointAltitude, useRoute } from "../useRoute";
 
@@ -36,7 +37,7 @@ export const RouteElement = ({
           i={i}
           route={route}
           setEditingAltitude={(b) => setEditingAltitude(b)}
-          setWaypointAltitude={setWaypointAltitude}
+          setWaypointAltitude={_.debounce(setWaypointAltitude, 300)}
           w={w}
         />
         {" ft."}
@@ -115,6 +116,10 @@ const DeleteDiv = styled.button`
   cursor: pointer;
 `;
 
+const StyledAltitudeInput = styled.input`
+  width: 70px;
+`;
+
 const AltitudeDisplay = ({
   route,
   editingAltitude,
@@ -132,11 +137,11 @@ const AltitudeDisplay = ({
 }) => {
   if (editingAltitude) {
     return (
-      <input
+      <StyledAltitudeInput
         id={`input-waypoint-type-${w.id}`}
         defaultValue={route.inferredAltitudes[i]}
         size={1}
-        // type="number"
+        type="number"
         step={500}
         onBlur={() => setEditingAltitude(false)}
         onKeyDown={(e) => {

@@ -8,9 +8,12 @@ import { Aircraft } from "./Aircraft";
 import { boundingBox } from "./boundingBox";
 import { AerodromeWaypoint, AerodromeWaypointType } from "./Waypoint";
 import { Waypoint, waypointCodec } from "./Waypoint/Waypoint";
+
 type VerticalProfile = {
   distance: number;
   altitudeInFeet: number;
+  routeWaypoint: Waypoint | null;
+  routeIndex: number | null;
   name: string | null;
 }[];
 
@@ -183,6 +186,8 @@ export class Route {
         distance: startingPointInNm,
         altitudeInFeet: alts[i],
         name: departureWaypoint.name,
+        routeWaypoint: departureWaypoint,
+        routeIndex: i,
       });
 
       const heightDiff = alts[i + 1] - alts[i];
@@ -201,6 +206,8 @@ export class Route {
             distance: startingPointInNm + horizontalDistanceInNm,
             altitudeInFeet: alts[i + 1],
             name: "T/C",
+            routeWaypoint: null,
+            routeIndex: null,
           });
         }
       } else if (heightDiff < 0) {
@@ -218,6 +225,8 @@ export class Route {
             distance: startingPointInNm + distanceInNm - horizontalDistanceInNm,
             altitudeInFeet: alts[i],
             name: "T/D",
+            routeWaypoint: null,
+            routeIndex: null,
           });
         }
       }
@@ -226,6 +235,8 @@ export class Route {
           distance: startingPointInNm + distanceInNm,
           altitudeInFeet: alts[i + 1],
           name: arrivalWaypoint.name,
+          routeWaypoint: arrivalWaypoint,
+          routeIndex: i + 1,
         });
       }
     }

@@ -120,6 +120,8 @@ const StyledTooltip = styled(Tooltip)`
   border: none;
   border-radius: none;
   color: #002e94;
+  text-shadow: -2px 0 white, 0 2px white, 2px 0 white, 0 -2px white;
+
   white-space: nowrap;
   font-weight: bold;
   text-align: left;

@@ -8,9 +8,9 @@ import { min } from "lodash";
 import { useCallback } from "react";
 import { Chart, Scatter } from "react-chartjs-2";
 import { AiracData, AirspaceType, DangerZoneType } from "ts-aerodata-france";
+import { AerodromeWaypoint, AerodromeWaypointType, Waypoint } from "../domain";
 import { aircraftCollection } from "../domain/Aircraft";
 import { routeAirspaceOverlaps } from "../domain/VerticalProfile";
-import { isLatLngWaypoint } from "./Map/FlightPlanningLayer";
 import { useRoute } from "./useRoute";
 Chart.register(annotationPlugin);
 Chart.register(dragData);
@@ -24,7 +24,12 @@ export const VerticalProfileChart = ({
   const { route, elevation, setWaypointAltitude } = useRoute();
   const onDragEnd = useCallback(
     (e, datasetIndex, index, value) => {
-      setWaypointAltitude({ waypointPosition: index, altitude: value.y });
+      if (value.routeIndex) {
+        setWaypointAltitude({
+          waypointPosition: value.routeIndex,
+          altitude: value.y,
+        });
+      }
     },
     [setWaypointAltitude],
   );
@@ -47,15 +52,19 @@ export const VerticalProfileChart = ({
   const verticalProfile = route.verticalProfile({
     aircraft: aircraftCollection[0],
   });
-  const points = verticalProfile.map(
-    ({ distance, altitudeInFeet, name }, i) => {
-      return { x: distance, y: altitudeInFeet, name };
-    },
-  );
+  const points = verticalProfile;
 
-  const pointData = points.map(({ x, y }) => ({ x, y, r: 0 }));
-  const pointLabels: AnnotationOptions<"line">[] = points.map(
-    ({ x, name }) => ({
+  const pointData = points.map(
+    ({ distance: x, altitudeInFeet: y, routeIndex }) => ({
+      x,
+      y,
+      r: 0,
+      routeIndex,
+    }),
+  );
+  const pointLabels: AnnotationOptions<"line">[] = points
+    .filter(({ routeWaypoint }) => routeWaypoint !== null)
+    .map(({ distance: x, name }) => ({
       type: "line",
       scaleID: "x",
       borderWidth: 2,
@@ -70,8 +79,7 @@ export const VerticalProfileChart = ({
         content: name || null,
         enabled: true,
       },
-    }),
-  );
+    }));
 
   const datasets: ChartDataset<"scatter">[] = [
     {
@@ -79,10 +87,17 @@ export const VerticalProfileChart = ({
       data: pointData,
       fill: false,
       showLine: true,
-      backgroundColor: "rgb(255, 99, 132)",
-      borderColor: "rgb(0, 0, 0)",
-      borderWidth: 2,
-      pointRadius: 5,
+      backgroundColor: "rgb(83, 0, 177)",
+      borderColor: "rgb(83, 0, 177)",
+      borderWidth: 5,
+      pointHitRadius: 25,
+      pointRadius: (p) =>
+        //@ts-ignore
+        p.raw.routeIndex &&
+        //@ts-ignore
+        canBeDragged(p.datasetIndex, route.waypoints[p.raw.routeIndex])
+          ? 10
+          : 0,
     },
   ];
 
@@ -101,7 +116,6 @@ export const VerticalProfileChart = ({
       borderColor: "rgb(0, 0, 0)",
       borderWidth: 0,
       pointRadius: 0,
-      pointHitRadius: 0,
     });
   }
   const data: ChartData<"scatter"> = {
@@ -122,11 +136,11 @@ export const VerticalProfileChart = ({
             yMax: higherLimit.roughFeetValue(),
             backgroundColor:
               type === AirspaceType.CTR
-                ? "#002f947f"
+                ? "#002f9452"
                 : type === DangerZoneType.P
                 ? "#ff0000c5"
                 : "#21003f7d",
-            borderColor: type === AirspaceType.CTR ? "#002f94" : "#001033",
+            borderColor: type === AirspaceType.CTR ? "#002f94ca" : "#001033",
           })),
       ),
       "name",
@@ -141,7 +155,8 @@ export const VerticalProfileChart = ({
     },
     // @ts-ignore
     onDragStart: (e, datasetIndex, index, value) => {
-      if (datasetIndex !== 0 || !isLatLngWaypoint(route.waypoints[index])) {
+      const w = points[index].routeWaypoint;
+      if (!canBeDragged(datasetIndex, w)) {
         // console.log(route.length);
         return false;
       }
@@ -220,3 +235,12 @@ const hashCode = (s: string) => {
   }
   return hash;
 };
+
+function canBeDragged(datasetIndex: number, w: Waypoint | null) {
+  return !(
+    datasetIndex !== 0 ||
+    w === null ||
+    (AerodromeWaypoint.isAerodromeWaypoint(w) &&
+      w.waypointType === AerodromeWaypointType.RUNWAY)
+  );
+}

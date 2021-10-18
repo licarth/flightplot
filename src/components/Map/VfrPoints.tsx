@@ -105,8 +105,10 @@ const StyledTooltip = styled(Tooltip)`
   border: none;
   border-radius: none;
   color: #002e94;
+  -webkit-text-stroke: 0.5px white;
   white-space: nowrap;
-  font-weight: bold;
+  font-weight: 1000;
+  text-shadow: -2px 0 white, 0 2px white, 2px 0 white, 0 -2px white;
   text-align: left;
   margin: 0px;
 

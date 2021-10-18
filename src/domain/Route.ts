@@ -5,10 +5,8 @@ import * as Decoder from "io-ts/lib/Decoder";
 import { AiracData } from "ts-aerodata-france";
 import { LatLng } from "../LatLng";
 import { Aircraft } from "./Aircraft";
-import {
-  AerodromeWaypoint,
-  AerodromeWaypointType
-} from "./Waypoint";
+import { boundingBox } from "./boundingBox";
+import { AerodromeWaypoint, AerodromeWaypointType } from "./Waypoint";
 import { Waypoint, waypointCodec } from "./Waypoint/Waypoint";
 type VerticalProfile = {
   distance: number;
@@ -165,6 +163,10 @@ export class Route {
           : [...prev, prev[prev.length - 1] || 0],
       [] as number[],
     );
+  }
+
+  get leafletBoundingBox() {
+    return boundingBox(this.waypoints.map(({ latLng }) => latLng));
   }
 
   verticalProfile({ aircraft }: { aircraft: Aircraft }): VerticalProfile {

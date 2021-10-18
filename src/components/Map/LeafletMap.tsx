@@ -1,5 +1,4 @@
 import { NmScale } from "@marfle/react-leaflet-nmscale";
-import { LatLngTuple } from "leaflet";
 import { MapContainer } from "react-leaflet";
 import styled from "styled-components";
 import { AiracData } from "ts-aerodata-france";
@@ -12,7 +11,7 @@ import { Airspaces } from "./Airspaces";
 import { FlightPlanningLayer } from "./FlightPlanningLayer";
 import { LeftMenu } from "./LeftMenu";
 import { VfrPoints } from "./VfrPoints";
-const defaultLatLng: LatLngTuple = [43.5, 3.95];
+// const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 11;
 
 type LeafletMapProps = {
@@ -21,12 +20,12 @@ type LeafletMapProps = {
 };
 
 export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
-  const { addAerodromeWaypoint, addLatLngWaypoint } = useRoute();
+  const { route, addAerodromeWaypoint, addLatLngWaypoint } = useRoute();
   return (
     <>
       <BackgroundContainer onContextMenu={(e) => e.preventDefault()}>
         <LeftMenu airacData={airacData} />
-        <MapContainer id="mapId" center={defaultLatLng} zoom={zoom}>
+        <MapContainer id="mapId" bounds={route.leafletBoundingBox} zoom={zoom}>
           <Layers displayedLayers={displayedLayers} />
           <Airspaces airacData={airacData} />
           {/* <DangerZones airacData={airacData} /> */}

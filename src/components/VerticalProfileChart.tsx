@@ -5,13 +5,11 @@ import "chartjs-plugin-dragdata";
 import dragData from "chartjs-plugin-dragdata";
 import * as _ from "lodash";
 import { min } from "lodash";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { Chart, Scatter } from "react-chartjs-2";
 import { AiracData, AirspaceType, DangerZoneType } from "ts-aerodata-france";
 import { aircraftCollection } from "../domain/Aircraft";
 import { routeAirspaceOverlaps } from "../domain/VerticalProfile";
-import { ElevationAtPoint, elevationOnRoute } from "../elevationOnRoute";
-import { openElevationApiElevationService } from "../ElevationService/openElevationApiElevationService";
 import { isLatLngWaypoint } from "./Map/FlightPlanningLayer";
 import { useRoute } from "./useRoute";
 Chart.register(annotationPlugin);
@@ -23,25 +21,13 @@ export const VerticalProfileChart = ({
   airacData?: AiracData;
 }) => {
   //@ts-ignore
-  const { route, setWaypointAltitude } = useRoute();
+  const { route, elevation, setWaypointAltitude } = useRoute();
   const onDragEnd = useCallback(
     (e, datasetIndex, index, value) => {
       setWaypointAltitude({ waypointPosition: index, altitude: value.y });
     },
     [setWaypointAltitude],
   );
-
-  useEffect(() => {
-    if (route.length > 1) {
-      elevationOnRoute({ elevationService: openElevationApiElevationService })(
-        route,
-      ).then((e) => setElevation(e));
-    } else {
-      setElevation(undefined);
-    }
-  }, [route]);
-
-  const [elevation, setElevation] = useState<ElevationAtPoint>();
 
   const overlaps = airacData
     ? routeAirspaceOverlaps({

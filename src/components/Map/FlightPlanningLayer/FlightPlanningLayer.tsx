@@ -50,7 +50,7 @@ export const FlightPlanningLayer = () => {
   return (
     <>
       {route.waypoints.map((w, i) => (
-        <Fragment key={`wp-${w.id}`}>
+        <Fragment key={`wp-${i}-${w.id}`}>
           {isLatLngWaypoint(w) && (
             <LatLngWaypointMarker
               key={`wpmarker-${w.id}`}

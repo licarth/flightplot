@@ -1,20 +1,27 @@
 import * as Either from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as Option from "fp-ts/lib/Option";
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { AiracCycles, AiracData } from "ts-aerodata-france";
 import { Route } from "../domain";
+import { ElevationAtPoint, elevationOnRoute } from "../elevationOnRoute";
+import { openElevationApiElevationService } from "../ElevationService/openElevationApiElevationService";
 
+const emptyElevation = { distancesFromStartInNm: [], elevations: [] };
 export const RouteContext = createContext<{
   route: Route;
   setRoute: React.Dispatch<React.SetStateAction<Route>>;
-}>({ route: Route.empty(), setRoute: () => {} });
+  elevation: ElevationAtPoint;
+}>({
+  route: Route.empty(),
+  setRoute: () => {},
+  elevation: emptyElevation,
+});
 
 const airacData = AiracData.loadCycle(AiracCycles.NOV_04_2021);
 
 export const RouteProvider: React.FC = ({ children }) => {
   const routeItem = window.localStorage.getItem("route");
-  console.log(routeItem);
   const locallyStoredRoute = pipe(
     Option.fromNullable(routeItem),
     Either.fromOption(() => new Error("no route stored")),
@@ -36,15 +43,22 @@ export const RouteProvider: React.FC = ({ children }) => {
         }),
   );
 
-  console.log(`RouteContext: ${JSON.stringify(route)}`);
+  const [elevation, setElevation] = useState<ElevationAtPoint>(emptyElevation);
+
+  useEffect(() => {
+    console.log(`useEffect`);
+    if (route.length > 1) {
+      elevationOnRoute({ elevationService: openElevationApiElevationService })(
+        route,
+      ).then((e) => setElevation(e));
+    } else {
+      setElevation(emptyElevation);
+    }
+  }, [route]);
 
   return (
-    <RouteContext.Provider value={{ route, setRoute }}>
+    <RouteContext.Provider value={{ route, setRoute, elevation }}>
       {children}
     </RouteContext.Provider>
   );
 };
-
-// const isDecoderError = (e: Error | DecodeError): e is DecodeError => {
-//   return !!e.message;
-// };

@@ -5,7 +5,7 @@ import { Route, Waypoint } from "../../../domain";
 import {
   AerodromeWaypoint,
   AerodromeWaypointType,
-  LatLngWaypoint,
+  LatLngWaypoint
 } from "../../../domain/Waypoint";
 import { LatLng } from "../../../LatLng";
 import { useRoute } from "../../useRoute";
@@ -23,6 +23,7 @@ export const FlightPlanningLayer = () => {
     removeWaypoint,
     addLatLngWaypoint,
   } = useRoute();
+
   useMapEvent("click", (e) => {
     // console.log("using map event");
     addLatLngWaypoint({ latLng: e.latlng });
@@ -53,7 +54,7 @@ export const FlightPlanningLayer = () => {
           {isLatLngWaypoint(w) && (
             <LatLngWaypointMarker
               key={`wpmarker-${w.id}`}
-              label={w.name}
+              label={w.name ? w.name : undefined}
               waypointNumber={i}
               type={waypointType(w, i)}
               position={w.latLng}

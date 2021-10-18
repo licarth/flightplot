@@ -1,11 +1,13 @@
-import { LatLng } from "../../LatLng";
-import { Waypoint, WaypointId, WaypointProps } from "./Waypoint";
-
-export class LatLngWaypoint implements Waypoint {
+import { pipe } from "fp-ts/lib/function";
+import * as Codec from "io-ts/lib/Codec";
+import * as D from "io-ts/lib/Decoder";
+import { LatLng, latLngCodec } from "../../LatLng";
+import { WaypointProps } from "./Waypoint";
+export class LatLngWaypoint {
   protected _latLng;
   public name;
-  public altitude?: number | null;
-  private _id: WaypointId;
+  public altitude: number | null;
+  private _id: string;
 
   constructor({ latLng, name, id, altitude }: WaypointProps) {
     this._latLng = latLng;
@@ -44,3 +46,29 @@ export class LatLngWaypoint implements Waypoint {
     this._latLng = latLng;
   }
 }
+
+const newLocal = Codec.type({
+  id: Codec.string,
+  latLng: latLngCodec,
+  altitude: Codec.nullable(Codec.number),
+  name: Codec.nullable(Codec.string),
+});
+
+export const latLngWaypointCodec: Codec.Codec<
+  unknown,
+  WaypointProps,
+  LatLngWaypoint
+> = Codec.make(
+  pipe(
+    newLocal,
+    D.map((props) => new LatLngWaypoint(props)),
+  ),
+  {
+    encode: ({ altitude, id, latLng, name }: LatLngWaypoint) => ({
+      altitude,
+      id,
+      latLng,
+      name,
+    }),
+  },
+);

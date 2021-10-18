@@ -14,7 +14,7 @@ import { latLngWaypointFactory } from "./Waypoint";
 const lat = (lat: number) => lat as unknown as Latitude; // Workaround
 const lng = (lng: number) => lng as unknown as Longitude; // Workaround
 
-describe("VerticalProfile", () => {
+describe.skip("VerticalProfile", () => {
   it("should return proper data when staying within 1 airspace", () => {
     const airspaces: Airspace[] = [
       {

@@ -1,13 +1,19 @@
 import CheapRuler from "cheap-ruler";
+import { pipe } from "fp-ts/lib/function";
+import * as Codec from "io-ts/lib/Codec";
+import * as Decoder from "io-ts/lib/Decoder";
+import { AiracData } from "ts-aerodata-france";
 import { LatLng } from "../LatLng";
 import { Aircraft } from "./Aircraft";
-import { AerodromeWaypoint, AerodromeWaypointType } from "./Waypoint";
-import { Waypoint } from "./Waypoint/Waypoint";
-
+import {
+  AerodromeWaypoint,
+  AerodromeWaypointType
+} from "./Waypoint";
+import { Waypoint, waypointCodec } from "./Waypoint/Waypoint";
 type VerticalProfile = {
   distance: number;
   altitudeInFeet: number;
-  name?: string;
+  name: string | null;
 }[];
 
 export class Route {
@@ -244,6 +250,20 @@ export class Route {
     }
     return routes;
   }
+
+  static codec = (airacData: AiracData) =>
+    Codec.make(
+      pipe(
+        Codec.array(waypointCodec(airacData)),
+        Decoder.compose<Array<Waypoint>, Route>({
+          decode: (waypoints) => Decoder.success(new Route({ waypoints })),
+        }),
+      ),
+      {
+        encode: ({ waypoints }) =>
+          Codec.array(waypointCodec(airacData)).encode([...waypoints]),
+      },
+    );
 }
 
 export const toPoint = (latLng: LatLng): [number, number] => [

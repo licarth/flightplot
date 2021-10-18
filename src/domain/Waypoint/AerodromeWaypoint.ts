@@ -1,12 +1,15 @@
+import { pipe } from "fp-ts/lib/function";
+import * as Codec from "io-ts/lib/Codec";
+import * as Decoder from "io-ts/lib/Decoder";
 import {
   Aerodrome,
+  AiracData,
   AltitudeInFeet,
   IcaoCode,
-  LatLng as SiaLatLng,
+  LatLng as SiaLatLng
 } from "ts-aerodata-france";
+import { fromEnumCodec } from "../../iots/enum";
 import { LatLng, toLatLng } from "../../LatLng";
-import { Waypoint } from "./Waypoint";
-
 export type AerodromeWaypointId = IcaoCode;
 
 export enum AerodromeWaypointType {
@@ -17,12 +20,12 @@ export enum AerodromeWaypointType {
 type AerodromeWaypointProps = {
   aerodrome: Aerodrome;
   waypointType: AerodromeWaypointType;
-  altitude?: number | null;
+  altitude: number | null;
 };
 
-export class AerodromeWaypoint implements Waypoint {
+export class AerodromeWaypoint {
   private readonly _aerodrome;
-  private _altitude?: number | null;
+  private _altitude: number | null;
   readonly waypointType;
 
   constructor({ aerodrome, waypointType, altitude }: AerodromeWaypointProps) {
@@ -42,7 +45,7 @@ export class AerodromeWaypoint implements Waypoint {
   }
 
   get id() {
-    return this._aerodrome.icaoCode;
+    return `${this._aerodrome.icaoCode}`;
   }
 
   get aerodrome() {
@@ -55,7 +58,7 @@ export class AerodromeWaypoint implements Waypoint {
       : AltitudeInFeet.getValue(this.aerodrome.aerodromeAltitude);
   }
 
-  set altitude(altitude: number | undefined | null) {
+  set altitude(altitude: number | null) {
     this._altitude = altitude;
   }
 
@@ -74,10 +77,44 @@ export class AerodromeWaypoint implements Waypoint {
       altitude,
     });
   }
+
+  static codec = (
+    airacData: AiracData,
+  ): Codec.Codec<unknown, SerialType, AerodromeWaypoint> =>
+    Codec.make(
+      pipe(
+        serialCodec,
+        Decoder.compose({
+          decode: ({ icaoCode, altitude, waypointType }) =>
+            Decoder.success(
+              new AerodromeWaypoint({
+                aerodrome: airacData.getAerodromeByIcaoCode(icaoCode),
+                altitude,
+                waypointType,
+              }),
+            ),
+        }),
+      ),
+      {
+        encode: ({ aerodrome, _altitude, waypointType }) => ({
+          icaoCode: `${aerodrome.icaoCode}`,
+          altitude: _altitude,
+          waypointType,
+        }),
+      },
+    );
 }
 
 export const toLeafletLatLng = (aerodromeLatLng: SiaLatLng): LatLng => {
   const latLng = toLatLng(aerodromeLatLng);
-  const res = {lat: latLng.lat, lng: latLng.lng};
+  const res = { lat: latLng.lat, lng: latLng.lng };
   return res;
 };
+
+const serialCodec = Codec.type({
+  icaoCode: Codec.string,
+  altitude: Codec.nullable(Codec.number),
+  waypointType: fromEnumCodec("AerodromeWaypointType", AerodromeWaypointType),
+});
+
+type SerialType = Codec.TypeOf<typeof serialCodec>;

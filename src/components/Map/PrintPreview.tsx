@@ -24,7 +24,11 @@ export const PrintPreview = ({ airacData }: { airacData: AiracData }) => {
 
 const PageDisplay = styled.div`
   @media screen {
-    z-index: -1000000;
+    position: absolute;
+    visibility: hidden;
+    overflow: hidden;
+    width: 0px;
+    height: 0px;
   }
 `;
 
@@ -41,7 +45,6 @@ const Page = styled.div<{
   landscape?: boolean;
 }>`
   width: ${({ landscape }) => (landscape ? 297 : 210)}mm;
-  /* height: ${({ landscape }) => (landscape ? 210 : 297)}mm; */
   padding: ${({ padding }) => padding || 0}cm;
   page-break-after: always;
 `;

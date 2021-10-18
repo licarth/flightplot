@@ -5,16 +5,18 @@ import {
   KeyboardSensor,
   PointerSensor,
   useSensor,
-  useSensors
+  useSensors,
 } from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { pipe } from "fp-ts/lib/function";
 import { useCallback, useRef } from "react";
 import styled from "styled-components";
 import { AiracData } from "ts-aerodata-france";
+import { Route } from "../../domain";
 import Modal from "../../Modal";
 import { useRoute } from "../useRoute";
 import { VerticalProfileChart } from "../VerticalProfileChart";
@@ -22,9 +24,11 @@ import { RouteElement } from "./RouteElement";
 
 const ContainerDiv = styled.div`
   width: 400px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: scroll;
 `;
 
 export const LeftMenu = ({ airacData }: { airacData: AiracData }) => {
@@ -53,6 +57,14 @@ const RouteDisplay = ({ airacData }: { airacData: AiracData }) => {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+
+  const saveRoute = useCallback(() => {
+    window.localStorage.setItem(
+      "route",
+      pipe(Route.codec(airacData).encode(route), JSON.stringify),
+    );
+  }, [route, airacData]);
+
   const items = route.waypoints.map((w, i) => ({ ...w, id: `${i}` }));
 
   const handleDragEnd = useCallback(
@@ -107,7 +119,8 @@ const RouteDisplay = ({ airacData }: { airacData: AiracData }) => {
         <label htmlFor="print-map">Carte 1 / 500 000 ème (soon)</label>
         <input type="checkbox" disabled id="print-map" />
       </div>{" "}
-      <button onClick={() => window.print()}>PRINT</button>
+      <button onClick={() => window.print()}>Imprimer</button>
+      <button onClick={saveRoute}>Sauver la route</button>
       <hr />
     </RouteContainer>
   );

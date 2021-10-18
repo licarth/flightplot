@@ -45,7 +45,11 @@ export const useRoute = () => {
       setRoute((oldRoute) =>
         oldRoute.addWaypoint({
           position,
-          waypoint: Waypoint.create({ latLng, name }),
+          waypoint: Waypoint.create({
+            latLng,
+            name: name || null,
+            altitude: null,
+          }),
         }),
       );
     },

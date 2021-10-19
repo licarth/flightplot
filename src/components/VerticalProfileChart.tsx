@@ -87,8 +87,8 @@ export const VerticalProfileChart = ({
       data: pointData,
       fill: false,
       showLine: true,
-      backgroundColor: "rgb(83, 0, 177)",
-      borderColor: "rgb(83, 0, 177)",
+      backgroundColor: "#002e94",
+      borderColor: "#002e94",
       borderWidth: 5,
       pointHitRadius: 25,
       pointRadius: (p) =>

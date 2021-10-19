@@ -6,7 +6,6 @@ import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(
   <React.StrictMode>
-    {/* <AuthApp /> */}
     <App disabled={false} />
   </React.StrictMode>,
   document.getElementById("root"),

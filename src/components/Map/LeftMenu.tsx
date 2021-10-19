@@ -8,7 +8,6 @@ import { RouteWaypoints } from "./RouteWaypoints";
 
 const ContainerDiv = styled.div`
   width: 400px;
-  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

@@ -1,4 +1,6 @@
-export const firebaseConfig = {
+import { initializeApp } from "firebase/app";
+
+const firebaseConfig = {
   apiKey: "AIzaSyDZkE-GNWNimNRft6FDah1DGz0DmsRnqeg",
   authDomain: "flightplot-web.firebaseapp.com",
   projectId: "flightplot-web",
@@ -7,3 +9,5 @@ export const firebaseConfig = {
   appId: "1:216969148978:web:d852ad70fe2f0e3048da2b",
   measurementId: "G-B9VRCW8QML",
 };
+
+export const app = initializeApp(firebaseConfig);

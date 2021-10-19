@@ -1,12 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import AuthApp from "./AuthApp";
+import App from "./App";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(
   <React.StrictMode>
-    <AuthApp />
+    {/* <AuthApp /> */}
+    <App disabled={false} />
   </React.StrictMode>,
   document.getElementById("root"),
 );

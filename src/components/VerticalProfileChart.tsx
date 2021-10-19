@@ -93,7 +93,7 @@ export const VerticalProfileChart = ({
       pointHitRadius: 25,
       pointRadius: (p) =>
         //@ts-ignore
-        p.raw.routeIndex &&
+        p.raw && p.raw.routeIndex &&
         //@ts-ignore
         canBeDragged(p.datasetIndex, route.waypoints[p.raw.routeIndex])
           ? 10
@@ -198,13 +198,8 @@ export const VerticalProfileChart = ({
         },
         plugins: {
           annotation: {
-            enter: (event) => {
-              // console.log(event);
-              console.log(route.length);
-            },
-            leave: (event) => {
-              // console.log(event);
-            },
+            enter: (event) => {},
+            leave: (event) => {},
             annotations: newLocal,
           },
           // @ts-ignore

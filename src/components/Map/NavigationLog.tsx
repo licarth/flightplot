@@ -55,7 +55,7 @@ export const NavigationLog = ({
           },
           i,
         ) => (
-          <NavRow>
+          <NavRow key={`navlog-row-${i}`}>
             <LegCell>
               {altitudeInfo(
                 route.inferredAltitudes[i],

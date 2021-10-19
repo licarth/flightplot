@@ -46,7 +46,6 @@ export const RouteProvider: React.FC = ({ children }) => {
   const [elevation, setElevation] = useState<ElevationAtPoint>(emptyElevation);
 
   useEffect(() => {
-    console.log(`useEffect`);
     if (route.length > 1) {
       elevationOnRoute({ elevationService: openElevationApiElevationService })(
         route,

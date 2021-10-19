@@ -1,11 +1,9 @@
 import { pipe } from "fp-ts/lib/function";
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import styled from "styled-components";
 import { AiracData } from "ts-aerodata-france";
 import { Route } from "../../domain";
-import Modal from "../../Modal";
 import { useRoute } from "../useRoute";
-import { VerticalProfileChart } from "../VerticalProfileChart";
 import { RouteWaypoints } from "./RouteWaypoints";
 
 const ContainerDiv = styled.div`
@@ -17,19 +15,10 @@ const ContainerDiv = styled.div`
 `;
 
 export const LeftMenu = ({ airacData }: { airacData: AiracData }) => {
-  const vpModal = useRef(null);
   return (
     <ContainerDiv>
       <RouteDisplay airacData={airacData} />
       {/* @ts-ignore */}
-      <VerticalProfileDiv onClick={() => vpModal.current?.open()}>
-        <VerticalProfileChart airacData={airacData} />
-      </VerticalProfileDiv>
-      <Modal fade={false} defaultOpened={false} ref={vpModal}>
-        <VerticalProfileModalDiv>
-          <VerticalProfileChart airacData={airacData} />
-        </VerticalProfileModalDiv>
-      </Modal>
     </ContainerDiv>
   );
 };
@@ -78,6 +67,8 @@ const RouteContainer = styled.div`
 
 const H2 = styled.h2`
   text-align: center;
+  background: #002e94;
+  color: white;
 `;
 
 const Tips = () => (
@@ -105,23 +96,5 @@ const TipsContainer = styled.div`
   li:before {
     content: "->";
     padding-right: 5px;
-  }
-`;
-
-const VerticalProfileDiv = styled.div`
-  width: 100%;
-  height: 250px;
-  background-color: white;
-  overflow: hidden;
-`;
-
-const VerticalProfileModalDiv = styled.div`
-  width: 80vw;
-  height: 80vh;
-  z-index: 10000;
-
-  @media print {
-    width: 100%;
-    height: 100%;
   }
 `;

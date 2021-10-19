@@ -59,6 +59,7 @@ export const RouteWaypoints = () => {
         <SortableContext items={items} strategy={verticalListSortingStrategy}>
           {route.waypoints.map((w, i) => (
             <RouteElement
+              key={`route-element-${i}`}
               waypointPosition={i}
               removeWaypoint={removeWaypoint}
               waypoint={w}
@@ -71,6 +72,6 @@ export const RouteWaypoints = () => {
 };
 
 const RouteWaypointsContainer = styled.div`
-  max-height: 300px;
-  overflow-y: scroll;
+  max-height: 500px;
+  overflow-y: auto;
 `;

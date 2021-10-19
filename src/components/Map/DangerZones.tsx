@@ -27,36 +27,31 @@ export const DangerZones = ({ airacData }: { airacData?: AiracData }) => {
         airacData
           ?.getDangerZonesInBbox(...mapBounds)
           .filter(({ type }) => ["D", "P"].includes(type))
-          .map((zone) => {
+          .map((zone, i) => {
             const { geometry } = zone;
             const leafletLatLngs = geometry.map(toLeafletLatLng);
 
             return (
-              <>
-                {
-                  <>
-                    <SVGOverlay
-                      attributes={{
-                        stroke: "red",
-                        class: "map-svg-text-label",
-                      }}
-                      bounds={boundingBox(leafletLatLngs)}
-                      interactive={false}
-                    >
-                      {/* <text x="0%" y="0%" stroke="#940000" height="100%">
+              <SVGOverlay
+                key={`dangerZone-${i}-${zone.name}`}
+                attributes={{
+                  stroke: "red",
+                  class: "map-svg-text-label",
+                }}
+                bounds={boundingBox(leafletLatLngs)}
+                interactive={false}
+              >
+                {/* <text x="0%" y="0%" stroke="#940000" height="100%">
                       {name} ({lowerLimit.toString()} - {higherLimit.toString()})
                     </text> */}
-                      <Polygon
-                        color="#940000"
-                        fillColor="#940000"
-                        positions={leafletLatLngs}
-                        interactive={false}
-                        fill={true}
-                      ></Polygon>
-                    </SVGOverlay>
-                  </>
-                }
-              </>
+                <Polygon
+                  color="#940000"
+                  fillColor="#940000"
+                  positions={leafletLatLngs}
+                  interactive={false}
+                  fill={true}
+                ></Polygon>
+              </SVGOverlay>
             );
           })}
     </>

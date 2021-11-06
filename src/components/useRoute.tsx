@@ -30,7 +30,7 @@ export type ReplaceWaypoint = ({
 }) => void;
 
 export const useRoute = () => {
-  const { route, setRoute, elevation} = useContext(RouteContext);
+  const { route, setRoute, elevation } = useContext(RouteContext);
 
   const addLatLngWaypoint = useCallback(
     ({
@@ -63,10 +63,7 @@ export const useRoute = () => {
           position,
           waypoint: Waypoint.fromAerodrome({
             aerodrome,
-            waypointType:
-              position === 0
-                ? AerodromeWaypointType.RUNWAY
-                : AerodromeWaypointType.OVERFLY,
+            waypointType: AerodromeWaypointType.RUNWAY,
           }),
         }),
       );

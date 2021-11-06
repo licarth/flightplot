@@ -8,6 +8,7 @@ import { AiracData } from "ts-aerodata-france";
 import { DisplayedLayers } from "../../App";
 import { toLeafletLatLng } from "../../domain";
 import { useFirebaseAuth } from "../../firebase/auth/FirebaseAuthContext";
+import { Login } from "../../Login";
 import Modal from "../../Modal";
 import { OaciLayer, OpenStreetMapLayer } from "../layer";
 import { useRoute } from "../useRoute";
@@ -29,13 +30,14 @@ type LeafletMapProps = {
 
 export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
   const { route, addAerodromeWaypoint, addLatLngWaypoint } = useRoute();
-  const { user, signIn, signOut } = useFirebaseAuth();
+  const { user, googleSignIn, signOut } = useFirebaseAuth();
   const params =
     route.waypoints.length > 1 && route.leafletBoundingBox
       ? { bounds: route.leafletBoundingBox }
       : { center: defaultLatLng, zoom };
 
   const vpModal = useRef(null);
+  const loginModal = useRef(null);
 
   return (
     <>
@@ -46,12 +48,22 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
             <LogoRight>PLOT</LogoRight>
           </AppLogo>
           <RightButtons>
-            {!user && <LoginButton onClick={signIn}>Login</LoginButton>}
+            {!user && (
+              //@ts-ignore
+              <LoginButton onClick={() => loginModal.current?.open()}>
+                Login
+              </LoginButton>
+            )}
             {user && (
               <>
                 <UserBadge user={user} />
                 <LoginButton onClick={signOut}>Logout</LoginButton>
               </>
+            )}
+            {!user && (
+              <Modal defaultOpened={false} fade={false} ref={loginModal}>
+                <Login signInWithGoogle={googleSignIn} loading={false} />
+              </Modal>
             )}
           </RightButtons>
         </TopBar>

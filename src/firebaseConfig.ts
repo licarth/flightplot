@@ -8,6 +8,8 @@ const firebaseConfig = {
   messagingSenderId: "216969148978",
   appId: "1:216969148978:web:d852ad70fe2f0e3048da2b",
   measurementId: "G-B9VRCW8QML",
+  databaseURL:
+    "https://flightplot-web-default-rtdb.europe-west1.firebasedatabase.app",
 };
 
 export const app = initializeApp(firebaseConfig);

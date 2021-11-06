@@ -1,13 +1,14 @@
 import CheapRuler from "cheap-ruler";
 import { pipe } from "fp-ts/lib/function";
 import * as Codec from "io-ts/lib/Codec";
-import * as Decoder from "io-ts/lib/Decoder";
 import { AiracData } from "ts-aerodata-france";
 import { LatLng } from "../LatLng";
 import { Aircraft } from "./Aircraft";
 import { boundingBox } from "./boundingBox";
+import { UUID, uuidCodec } from "./Uuid/Uuid";
 import { AerodromeWaypoint, AerodromeWaypointType } from "./Waypoint";
 import { Waypoint, waypointCodec } from "./Waypoint/Waypoint";
+import * as Decoder from "io-ts/lib/Decoder";
 
 type VerticalProfile = {
   distance: number;
@@ -17,14 +18,21 @@ type VerticalProfile = {
   name: string | null;
 }[];
 
-export class Route {
-  readonly waypoints: ReadonlyArray<Waypoint>;
+type RouteProps = { waypoints: Waypoint[]; id: UUID; title: string | null };
 
-  constructor({ waypoints }: { waypoints: Waypoint[] }) {
+export class Route {
+  readonly id: UUID;
+  title: string | null;
+  waypoints: Waypoint[];
+
+  constructor({ waypoints, id, title }: RouteProps) {
+    this.id = id;
+    this.title = title;
     this.waypoints = [...waypoints];
   }
 
-  static empty = () => new Route({ waypoints: [] });
+  static empty = () =>
+    new Route({ waypoints: [], id: UUID.generatev4(), title: "Empty Route" });
 
   addWaypoint({
     position = this.waypoints.length + 1,
@@ -33,7 +41,7 @@ export class Route {
     position?: number;
     waypoint: Waypoint;
   }): Route {
-    return new Route({
+    return this.clone({
       waypoints: [
         ...this.waypoints.slice(0, position),
         waypoint,
@@ -45,7 +53,7 @@ export class Route {
   removeWaypoint(waypointPostion: number): Route {
     const newWaypoints = [...this.waypoints];
     newWaypoints.splice(waypointPostion, 1);
-    return new Route({
+    return this.clone({
       waypoints: newWaypoints,
     });
   }
@@ -60,7 +68,7 @@ export class Route {
     const newWaypoints = [...this.waypoints];
 
     newWaypoints[waypointPosition] = newWaypoint;
-    return new Route({
+    return this.clone({
       waypoints: newWaypoints,
     });
   }
@@ -69,11 +77,16 @@ export class Route {
     const newWaypoints = [...this.waypoints];
     const f = newWaypoints.splice(currentWaypointPosition, 1)[0];
     newWaypoints.splice(newWaypointPosition, 0, f);
-    return new Route({ waypoints: newWaypoints });
+    return this.clone({ waypoints: newWaypoints });
+  }
+
+  setTitle(title: string | null) {
+    this.title = title;
+    return this;
   }
 
   static create({ waypoints = [] }: { waypoints?: Array<Waypoint> } = {}) {
-    return new Route({ waypoints });
+    return new Route({ id: UUID.generatev4(), waypoints, title: null });
   }
 
   get length() {
@@ -265,18 +278,46 @@ export class Route {
   }
 
   static codec = (airacData: AiracData) =>
-    Codec.make(
-      pipe(
-        Codec.array(waypointCodec(airacData)),
-        Decoder.compose<Array<Waypoint>, Route>({
-          decode: (waypoints) => Decoder.success(new Route({ waypoints })),
-        }),
+    pipe(
+      Codec.partial({
+        waypoints: Codec.array(waypointCodec(airacData)),
+        id: uuidCodec,
+        title: Codec.nullable(Codec.string),
+      }),
+      Codec.compose(
+        Codec.make<Partial<RouteProps>, RouteProps, Route>(
+          {
+            decode: ({ waypoints, id, title }) =>
+              Decoder.success(
+                new Route({
+                  waypoints: waypoints || [],
+                  id: id || UUID.generatev4(),
+                  title: title || null,
+                }),
+              ),
+          },
+          {
+            encode: (route) => ({
+              waypoints: route.waypoints,
+              id: route.id,
+              title: route.title,
+            }),
+          },
+        ),
       ),
-      {
-        encode: ({ waypoints }) =>
-          Codec.array(waypointCodec(airacData)).encode([...waypoints]),
-      },
     );
+
+  clone({
+    waypoints = this.waypoints,
+    id = this.id,
+    title = this.title,
+  }: Partial<RouteProps>) {
+    return new Route({
+      waypoints,
+      id,
+      title,
+    });
+  }
 }
 
 export const toPoint = (latLng: LatLng): [number, number] => [

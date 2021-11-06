@@ -1,14 +1,6 @@
 import { GoogleLoginButton } from "react-social-login-buttons";
 import styled from "styled-components";
 
-const CenterContainer = styled.div`
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  z-index: 1000;
-
-`;
-
 const ColumnContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -32,7 +24,6 @@ export const Login = ({
   signInWithGoogle: () => void;
   loading: boolean;
 }) => (
-  <CenterContainer>
     <ColumnContainer>
       <CenterColumn>
         <h1>Bienvenue sur Flightplot</h1>
@@ -41,5 +32,4 @@ export const Login = ({
         {loading && <h2>Loading..</h2>}
       </CenterColumn>
     </ColumnContainer>
-  </CenterContainer>
 );

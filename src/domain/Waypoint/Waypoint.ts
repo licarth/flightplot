@@ -43,7 +43,9 @@ export namespace Waypoint {
   };
 }
 
-export const waypointCodec = (airacData: AiracData) =>
+export const waypointCodec = (
+  airacData: AiracData,
+) =>
   Codec.make(
     Decoder.union(latLngWaypointCodec, AerodromeWaypoint.codec(airacData)),
     {

@@ -1,6 +1,14 @@
-import { getAuth, signInAnonymously, signOut, User } from "firebase/auth";
+import {
+  getAuth,
+  signInAnonymously,
+  signInWithPopup,
+  signOut,
+  User,
+} from "firebase/auth";
 import * as React from "react";
+import { GoogleAuthProvider } from "firebase/auth";
 
+const provider = new GoogleAuthProvider();
 const auth = getAuth();
 
 type UserState = User | null;
@@ -31,7 +39,8 @@ const FirebaseAuthProvider: React.FC = ({ children }) => {
 
 type UseFirebaseAuth = {
   user: User | null;
-  signIn: () => void;
+  googleSignIn: () => void;
+  anonymousSignIn: () => void;
   signOut: () => void;
 };
 
@@ -42,7 +51,7 @@ function useFirebaseAuth(): UseFirebaseAuth {
       "useFirebaseAuth must be used within a FirebaseAuthProvider",
     );
   }
-  const signIn = () =>
+  const anonymousSignIn = () =>
     signInAnonymously(auth)
       .then(() => {
         // Do nothing, will be done automatically with auth.onAuthStateChanged().
@@ -53,7 +62,34 @@ function useFirebaseAuth(): UseFirebaseAuth {
         // TODO deal with errors
       });
 
-  return { ...context, signIn, signOut: () => signOut(auth) };
+  const googleSignIn = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        // const credential = GoogleAuthProvider.credentialFromResult(result);
+        // const token = credential.accessToken;
+        // The signed-in user info.
+        // const user = result.user;
+        // ...
+      })
+      .catch((error) => {
+        // // Handle Errors here.
+        // const errorCode = error.code;
+        // const errorMessage = error.message;
+        // // The email of the user's account used.
+        // const email = error.email;
+        // // The AuthCredential type that was used.
+        // const credential = GoogleAuthProvider.credentialFromError(error);
+        // // ...
+      });
+  };
+
+  return {
+    ...context,
+    anonymousSignIn,
+    googleSignIn,
+    signOut: () => signOut(auth),
+  };
 }
 
 export { FirebaseAuthProvider, useFirebaseAuth };

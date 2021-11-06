@@ -8,6 +8,7 @@ import { PrintContent } from "./components/Map/PrintContent";
 import { PrintPreview } from "./components/Map/PrintPreview";
 import { RouteProvider } from "./components/RouteContext";
 import { FirebaseAuthProvider } from "./firebase/auth/FirebaseAuthContext";
+import { UserRoutesProvider } from "./components/UserRoutesContext";
 
 export type DisplayedLayers = {
   [keys in LayerEnum]: boolean;
@@ -33,21 +34,23 @@ const App = ({ disabled }: { disabled: boolean }) => {
   }, []);
 
   return (
-    <RouteProvider>
-      <FirebaseAuthProvider>
-        <div id="modal-root"></div>
-        <AppContainer id="app" disabled={disabled}>
-          {airacData && (
-            <LeafletMap
-              displayedLayers={displayedLayers}
-              airacData={airacData}
-            />
-          )}
-        </AppContainer>
-        <PrintContent>{""}</PrintContent>
-        {airacData && <PrintPreview airacData={airacData} />}{" "}
-      </FirebaseAuthProvider>
-    </RouteProvider>
+    <FirebaseAuthProvider>
+      <UserRoutesProvider>
+        <RouteProvider>
+          <div id="modal-root"></div>
+          <AppContainer id="app" disabled={disabled}>
+            {airacData && (
+              <LeafletMap
+                displayedLayers={displayedLayers}
+                airacData={airacData}
+              />
+            )}
+          </AppContainer>
+          <PrintContent>{""}</PrintContent>
+          {airacData && <PrintPreview airacData={airacData} />}{" "}
+        </RouteProvider>
+      </UserRoutesProvider>
+    </FirebaseAuthProvider>
   );
 };
 

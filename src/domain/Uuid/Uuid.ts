@@ -2,8 +2,7 @@ import * as Either from "fp-ts/lib/Either";
 import { flow, pipe } from "fp-ts/lib/function";
 import * as Codec from "io-ts/lib/Codec";
 import * as Decoder from "io-ts/lib/Decoder";
-import { validate } from "uuid";
-
+import { v4 as uuidv4, validate } from "uuid";
 export class UUID {
   private value;
 
@@ -18,6 +17,14 @@ export class UUID {
     ),
     Either.map((validValue) => new UUID(validValue)),
   );
+
+  toString() {
+    return this.value;
+  }
+}
+
+export namespace UUID {
+  export const generatev4 = () => new UUID(uuidv4());
 }
 
 export const uuidCodec = pipe(
@@ -35,7 +42,7 @@ export const uuidCodec = pipe(
             ),
           ),
       },
-      { encode: (ip) => ip.toString() },
+      { encode: (id) => id.toString() },
     ),
   ),
 );

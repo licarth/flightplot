@@ -1,40 +1,27 @@
 import { User } from "@firebase/auth";
-import { NmScale } from "@marfle/react-leaflet-nmscale";
-import { LatLngTuple } from "leaflet";
 import { useRef } from "react";
-import { MapContainer } from "react-leaflet";
 import styled from "styled-components";
 import { AiracData } from "ts-aerodata-france";
 import { DisplayedLayers } from "../../App";
-import { toLeafletLatLng } from "../../domain";
 import { useFirebaseAuth } from "../../firebase/auth/FirebaseAuthContext";
 import { Login } from "../../Login";
 import Modal from "../../Modal";
-import { OaciLayer, OpenStreetMapLayer } from "../layer";
-import { useRoute } from "../useRoute";
 import { VerticalProfileChart } from "../VerticalProfileChart";
-import { Aerodromes } from "./Aerodromes";
-import { Airspaces } from "./Airspaces";
-import { DangerZones } from "./DangerZones";
-import { FlightPlanningLayer } from "./FlightPlanningLayer";
+import { LeafletMapContainer } from "./LeafletMapContainer";
 import { LeftMenu } from "./LeftMenu";
-import { VfrPoints } from "./VfrPoints";
-
-const defaultLatLng: LatLngTuple = [43.5, 3.95];
-const zoom: number = 11;
 
 type LeafletMapProps = {
   displayedLayers: DisplayedLayers;
   airacData: AiracData;
 };
 
-export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
-  const { route, addAerodromeWaypoint, addLatLngWaypoint } = useRoute();
+export type MapBounds = [number, number, number, number];
+
+export const DisplayedContent = ({
+  displayedLayers,
+  airacData,
+}: LeafletMapProps) => {
   const { user, googleSignIn, signOut } = useFirebaseAuth();
-  const params =
-    route.waypoints.length > 1 && route.leafletBoundingBox
-      ? { bounds: route.leafletBoundingBox }
-      : { center: defaultLatLng, zoom };
 
   const vpModal = useRef(null);
   const loginModal = useRef(null);
@@ -70,23 +57,7 @@ export const LeafletMap = ({ displayedLayers, airacData }: LeafletMapProps) => {
         <AppBody>
           <LeftMenu airacData={airacData} />
           <RightSide>
-            <MapContainer id="mapId" {...params}>
-              <Layers displayedLayers={displayedLayers} />
-              <FlightPlanningLayer />
-              <Airspaces airacData={airacData} />
-              <DangerZones airacData={airacData} />
-              <Aerodromes
-                airacData={airacData}
-                onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
-              />
-              <VfrPoints
-                airacData={airacData}
-                onClick={({ latLng, name }) =>
-                  addLatLngWaypoint({ latLng: toLeafletLatLng(latLng), name })
-                }
-              />
-              <NmScale />
-            </MapContainer>
+            <LeafletMapContainer airacData={airacData} />
             {/* @ts-ignore */}
             <VerticalProfileDiv onClick={() => vpModal.current?.open()}>
               <VerticalProfileChart airacData={airacData} />
@@ -114,15 +85,6 @@ const RightSide = styled.div`
   flex-direction: column;
   flex: 1 0 auto;
 `;
-
-const Layers = ({ displayedLayers }: { displayedLayers: DisplayedLayers }) => {
-  return (
-    <>
-      {displayedLayers.open_street_map && <OpenStreetMapLayer />}
-      {displayedLayers.icao && <OaciLayer />}
-    </>
-  );
-};
 
 const BackgroundContainer = styled.div`
   display: flex;

@@ -1,16 +1,13 @@
-import { debounce } from "lodash";
 import { Fragment, useState } from "react";
 import {
   Polygon,
   SVGOverlay,
-  Tooltip,
-  useMap,
-  useMapEvents,
+  Tooltip
 } from "react-leaflet";
 import { AiracData, Airspace, AirspaceType } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
 import { boundingBox } from "../../domain/boundingBox";
-import { getMapBounds } from "./getMapBounds";
+import { MapBounds } from "./DisplayedContent";
 
 const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
   const { geometry, name, lowerLimit, higherLimit, airspaceClass } = airspace;
@@ -84,16 +81,8 @@ const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
   );
 };
 
-export const Airspaces = ({ airacData }: { airacData?: AiracData }) => {
-  const leafletMap = useMap();
-  const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
-    leafletMap && getMapBounds(leafletMap),
-  );
-  const refreshMapBounds = () => setMapBounds(getMapBounds(leafletMap));
-  useMapEvents({
-    moveend: refreshMapBounds,
-    move: debounce(refreshMapBounds, 100),
-  });
+export const Airspaces = ({ airacData, mapBounds }: { airacData?: AiracData, mapBounds: MapBounds }) => {
+
   return (
     <>
       {mapBounds &&

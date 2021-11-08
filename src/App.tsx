@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { AiracCycles, AiracData } from "ts-aerodata-france";
 import { LayerEnum } from "./components/layer/Layer";
-import { LeafletMap } from "./components/Map/LeafletMap";
+import { DisplayedContent } from "./components/Map/DisplayedContent";
 import { PrintContent } from "./components/Map/PrintContent";
 import { PrintPreview } from "./components/Map/PrintPreview";
 import { RouteProvider } from "./components/RouteContext";
@@ -40,7 +40,7 @@ const App = ({ disabled }: { disabled: boolean }) => {
           <div id="modal-root"></div>
           <AppContainer id="app" disabled={disabled}>
             {airacData && (
-              <LeafletMap
+              <DisplayedContent
                 displayedLayers={displayedLayers}
                 airacData={airacData}
               />

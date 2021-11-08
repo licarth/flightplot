@@ -1,4 +1,4 @@
-import { get, getDatabase, ref, set } from "firebase/database";
+import { getDatabase, onValue, ref, set } from "firebase/database";
 import * as Either from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as Option from "fp-ts/lib/Option";
@@ -26,25 +26,29 @@ export const UserRoutesProvider: React.FC = ({ children }) => {
   useEffect(() => {
     const db = getDatabase();
     console.log(`requesting route with user ${user ? user.uid : "none"}`);
-    get(ref(db, `routes/${user?.uid}`)).then((routes) => {
-      const routesObject = routes.val() as Record<string, string | null>;
-      const routesOrError = _.omitBy(
-        _.mapValues(routesObject, (v) =>
-          pipe(
-            Option.fromNullable(v),
-            Either.fromOption(() => new Error("no route stored")),
-            Either.map((x) => JSON.parse(x)),
-            Either.chainW(Route.codec(airacData).decode),
-            Either.fold(
-              () => null,
-              (r) => r,
+    onValue(
+      ref(db, `routes/${user?.uid}`),
+      (routes) => {
+        const routesObject = routes.val() as Record<string, string | null>;
+        const routesOrError = _.omitBy(
+          _.mapValues(routesObject, (v) =>
+            pipe(
+              Option.fromNullable(v),
+              Either.fromOption(() => new Error("no route stored")),
+              Either.map((x) => JSON.parse(x)),
+              Either.chainW(Route.codec(airacData).decode),
+              Either.fold(
+                () => null,
+                (r) => r,
+              ),
             ),
           ),
-        ),
-        _.isNull,
-      ) as Record<string, Route>;
-      setRoutes(routesOrError);
-    });
+          _.isNull,
+        ) as Record<string, Route>;
+        setRoutes(routesOrError);
+      },
+      (reason) => console.error(`Connection rejected: ${reason}`),
+    );
   }, [user]);
 
   const saveRoute = useCallback(
@@ -53,9 +57,11 @@ export const UserRoutesProvider: React.FC = ({ children }) => {
       set(
         ref(db, `routes/${user?.uid}/${route.id.toString()}`),
         JSON.stringify(Route.codec(airacData).encode(route)),
-      ).then(() => {
-        setRoutes((routes) => ({ ...routes, [route.id.toString()]: route }));
-      });
+      )
+        .then(() => {
+          setRoutes((routes) => ({ ...routes, [route.id.toString()]: route }));
+        })
+        .catch((reason) => console.error(`Connection rejected: ${reason}`));
     },
     [user],
   );

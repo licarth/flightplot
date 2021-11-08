@@ -1,6 +1,6 @@
 import CheapRuler, { Line } from "cheap-ruler";
-import { Fragment, useState } from "react";
-import { Circle, Polyline, useMapEvent } from "react-leaflet";
+import { Fragment, useEffect, useState } from "react";
+import { Circle, Polyline, useMap, useMapEvent } from "react-leaflet";
 import { Route, Waypoint } from "../../../domain";
 import {
   AerodromeWaypoint,
@@ -28,6 +28,14 @@ export const FlightPlanningLayer = () => {
     // console.log("using map event");
     addLatLngWaypoint({ latLng: e.latlng });
   });
+
+  const leafletMap = useMap();
+  const routeId = route.id.toString();
+  useEffect(() => {
+    route.waypoints.length > 0 &&
+      leafletMap.fitBounds(route.leafletBoundingBox, { maxZoom: 11 });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leafletMap, routeId]);
 
   type TemporaryWaypoint = {
     waypointBefore?: Waypoint;

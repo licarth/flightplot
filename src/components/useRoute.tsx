@@ -30,7 +30,7 @@ export type ReplaceWaypoint = ({
 }) => void;
 
 export const useRoute = () => {
-  const { route, setRoute, elevation } = useContext(RouteContext);
+  const { route, setRoute, elevation, switchRoute } = useContext(RouteContext);
 
   const addLatLngWaypoint = useCallback(
     ({
@@ -140,6 +140,7 @@ export const useRoute = () => {
   return {
     route,
     setRoute,
+    switchRoute,
     elevation,
     removeWaypoint,
     replaceWaypoint,

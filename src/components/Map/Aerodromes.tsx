@@ -26,6 +26,7 @@ export const Aerodromes = ({
   const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
     leafletMap && getMapBounds(leafletMap),
   );
+  const displayAerodromesLabels = leafletMap.getZoom() > 8;
   const refreshMapBounds = () => setMapBounds(getMapBounds(leafletMap));
   useMapEvents({
     moveend: refreshMapBounds,
@@ -77,20 +78,22 @@ export const Aerodromes = ({
                 >
                   {aerodrome.mapShortName}
                 </text> */}
-                <Polygon
-                  fill={false}
-                  fillOpacity={0}
-                  opacity={0}
-                  positions={[[l.lat - 0.015, l.lng]]}
-                >
-                  <StyledTooltip
-                    key={`tooltip-wpt-${icaoCode}-${aerodrome.mapShortName}`}
-                    permanent
-                    direction={"bottom"}
+                {displayAerodromesLabels && (
+                  <Polygon
+                    fill={false}
+                    fillOpacity={0}
+                    opacity={0}
+                    positions={[[l.lat - 0.015, l.lng]]}
                   >
-                    {aerodrome.mapShortName}
-                  </StyledTooltip>
-                </Polygon>
+                    <StyledTooltip
+                      key={`tooltip-wpt-${icaoCode}-${aerodrome.mapShortName}`}
+                      permanent
+                      direction={"bottom"}
+                    >
+                      {aerodrome.mapShortName}
+                    </StyledTooltip>
+                  </Polygon>
+                )}
               </SVGOverlay>
             </Fragment>
           );

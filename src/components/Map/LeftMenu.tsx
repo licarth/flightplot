@@ -25,9 +25,6 @@ export const LeftMenu = ({ airacData }: { airacData: AiracData }) => {
 };
 
 const RouteDisplay = ({ airacData }: { airacData: AiracData }) => {
-  const { route } = useRoute();
-  const { saveRoute } = useUserRoutes();
-
   return (
     <RouteContainer>
       <MyRoutes airacData={airacData} />
@@ -50,7 +47,6 @@ const RouteDisplay = ({ airacData }: { airacData: AiracData }) => {
         <input type="checkbox" disabled id="print-map" />
       </div>{" "}
       <button onClick={() => window.print()}>Imprimer</button>
-      <button onClick={() => saveRoute(route)}>Sauver la route</button>
       <hr />
     </RouteContainer>
   );
@@ -128,13 +124,15 @@ const RouteLine = ({
   routeName: string | null;
   airacData: AiracData;
 }) => {
-  const { route: currentlyEditedRoute, setRoute } = useRoute();
+  const { route: currentlyEditedRoute, switchRoute } = useRoute();
   const { setRouteTitle } = useUserRoutes();
   const [editingTitle, setEditingTitle] = useState(false);
+  const isCurrentRoute =
+    currentlyEditedRoute.id.toString() === route.id.toString();
   return (
     <RouteLineDiv
-      isCurrentRoute={currentlyEditedRoute.id === route.id}
-      onClick={() => setRoute(route)}
+      isCurrentRoute={isCurrentRoute}
+      onClick={() => switchRoute(route.id)}
     >
       {editingTitle ? (
         <StyledNameInput

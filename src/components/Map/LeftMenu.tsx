@@ -33,24 +33,38 @@ const RouteDisplay = () => {
       <hr />
       <Tips />
       <hr />
-      <H2>IMPRIMER</H2>
-      <div>
-        <label htmlFor="print-navlog">Log de Navigation</label>
-        <input type="checkbox" disabled checked id="print-navlog" />
-      </div>
-      <div>
-        <label htmlFor="print-vertical-profile">Profile Vertical</label>
-        <input type="checkbox" disabled checked id="print-vertical-profile" />
-      </div>
-      <div>
-        <label htmlFor="print-map">Carte 1 / 500 000 ème (soon)</label>
-        <input type="checkbox" disabled id="print-map" />
-      </div>{" "}
-      <button onClick={() => window.print()}>Imprimer</button>
+      <PrintDiv>
+        <H2>IMPRIMER</H2>
+        <div>
+          <label htmlFor="print-navlog">Log de Navigation</label>
+          <input type="checkbox" disabled checked id="print-navlog" />
+        </div>
+        <div>
+          <label htmlFor="print-vertical-profile">Profile Vertical</label>
+          <input type="checkbox" disabled checked id="print-vertical-profile" />
+        </div>
+        <div>
+          <label htmlFor="print-map">Carte 1 / 500 000 ème (soon)</label>
+          <input type="checkbox" disabled id="print-map" />
+        </div>{" "}
+        <PrintButton onClick={() => window.print()}>
+          Imprimer le dossier
+        </PrintButton>
+      </PrintDiv>
       <hr />
     </RouteContainer>
   );
 };
+
+const PrintDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const PrintButton = styled.button`
+  margin-top: 10px;
+  padding: 20px;
+`;
 
 const RouteContainer = styled.div`
   margin: 10px;
@@ -152,42 +166,50 @@ const RouteLine = ({
       isCurrentRoute={isCurrentRoute}
       onClick={() => switchRoute(route.id)}
     >
-      {editingTitle ? (
-        <StyledNameInput
-          id={`input-route-title-name-${route.id}`}
-          defaultValue={route.title || ""}
-          size={1}
-          step={500}
-          onBlur={(e) => {
-            setRouteTitle({ routeId: route.id, title: e.currentTarget.value });
-            setEditingTitle(false);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") {
-              setEditingTitle(false);
-            } else if (e.key === "Enter") {
+      <RouteLineLeft>
+        {editingTitle ? (
+          <StyledNameInput
+            id={`input-route-title-name-${route.id}`}
+            defaultValue={route.title || ""}
+            size={1}
+            step={500}
+            onBlur={(e) => {
               setRouteTitle({
                 routeId: route.id,
                 title: e.currentTarget.value,
               });
               setEditingTitle(false);
-            }
-          }}
-          autoFocus
-        />
-      ) : (
-        <TitleContainer onClick={() => setEditingTitle(true)}>
-          {routeName || "<no title>"}
-        </TitleContainer>
-      )}
-      {route.waypoints
-        .filter(AerodromeWaypoint.isAerodromeWaypoint)
-        .filter(
-          ({ waypointType }) => waypointType === AerodromeWaypointType.RUNWAY,
-        )
-        .map(({ name }) => name)
-        .join(" => ")}
-      {/* <DeleteDiv onClick={() => deleteRoute(route.id)}>❌</DeleteDiv> */}
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setEditingTitle(false);
+              } else if (e.key === "Enter") {
+                setRouteTitle({
+                  routeId: route.id,
+                  title: e.currentTarget.value,
+                });
+                setEditingTitle(false);
+              }
+            }}
+            autoFocus
+          />
+        ) : (
+          <TitleContainer onClick={() => setEditingTitle(true)}>
+            {routeName || "<no title>"}
+          </TitleContainer>
+        )}
+        {route.waypoints
+          .filter(AerodromeWaypoint.isAerodromeWaypoint)
+          .filter(
+            ({ waypointType }) => waypointType === AerodromeWaypointType.RUNWAY,
+          )
+          .map(({ name }) => name)
+          .join(" => ")}
+      </RouteLineLeft>
+      {/* @ts-ignore */}
+      <DeleteDiv onClick={() => deleteConfirmModal.current?.open()}>
+        🗑️
+      </DeleteDiv>
       <Modal fade={false} defaultOpened={false} ref={deleteConfirmModal}>
         <ConfirmDeleteRouteDiv>
           Êtes-vous sûr(e) de vouloir supprimer cette navigation ?<br />
@@ -205,10 +227,6 @@ const RouteLine = ({
           </ConfirmDeleteRouteButton>
         </ConfirmDeleteRouteDiv>
       </Modal>
-      {/* @ts-ignore */}
-      <DeleteDiv onClick={() => deleteConfirmModal.current?.open()}>
-      🗑️
-      </DeleteDiv>
     </RouteLineDiv>
   );
 };
@@ -237,6 +255,8 @@ const StyledNameInput = styled.input`
 `;
 
 const RouteLineDiv = styled.div<{ isCurrentRoute: boolean }>`
+  display: flex;
+  justify-content: space-between;
   :hover {
     background: #f597006d;
     color: white;
@@ -244,6 +264,11 @@ const RouteLineDiv = styled.div<{ isCurrentRoute: boolean }>`
   }
   ${({ isCurrentRoute }) =>
     isCurrentRoute ? "background: #f59700; color: white;" : ""}
+`;
+
+const RouteLineLeft = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;
 
 const TitleContainer = styled.div`

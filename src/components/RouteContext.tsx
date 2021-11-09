@@ -119,12 +119,12 @@ export const RouteProvider: React.FC = ({ children }) => {
       airspaces: [
         ...airacData
           .getAirspacesInBbox(...route.boundingBox)
-          .filter(({ type, name }) =>
+          .filter(({ type }) =>
             [AirspaceType.CTR, AirspaceType.TMA].includes(type),
           ),
         ...airacData
           .getDangerZonesInBbox(...route.boundingBox)
-          .filter(({ type, name }) => [DangerZoneType.P].includes(type)),
+          .filter(({ type }) => [DangerZoneType.P].includes(type)),
       ],
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

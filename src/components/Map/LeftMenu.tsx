@@ -93,26 +93,44 @@ const TipsContainer = styled.div`
 
 const MyRoutes = () => {
   const { user } = useFirebaseAuth();
-  const { routes } = useUserRoutes();
+  const { routes, saveRoute } = useUserRoutes();
 
   if (!user) {
     return <></>;
   } else {
     return (
-      <>
+      <NavigationsList>
         {" "}
         <H2>MES NAVIGATIONS</H2>
-        {_.map(routes, (route, key) => (
+        <NewNavButton
+          onClick={() => {
+            saveRoute(Route.empty());
+          }}
+        >
+          ➕ Nouvelle navigation
+        </NewNavButton>
+        {_.map(_.sortBy(routes, "title"), (route, key) => (
           <RouteLine
             key={`routeline-${key}`}
             route={route}
             routeName={route.title}
           />
         ))}
-      </>
+      </NavigationsList>
     );
   }
 };
+
+const NavigationsList = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const NewNavButton = styled.button`
+  margin-bottom: 10px;
+  text-align: center;
+  height: 30px;
+`;
 
 const RouteLine = ({
   route,
@@ -171,27 +189,40 @@ const RouteLine = ({
         .join(" => ")}
       {/* <DeleteDiv onClick={() => deleteRoute(route.id)}>❌</DeleteDiv> */}
       <Modal fade={false} defaultOpened={false} ref={deleteConfirmModal}>
-        Êtes-vous sûr(e) de vouloir supprimer cette navigation ?<br />
-        <button
-          onClick={() => {
-            //@ts-ignore
-            deleteConfirmModal.current?.close();
-            if (`${currentlyEditedRoute.id}` === `${route.id}`) {
-              setRoute(Route.empty());
-            }
-            deleteRoute(route.id);
-          }}
-        >
-          ❌ Confirmer la suppression de la route
-        </button>
+        <ConfirmDeleteRouteDiv>
+          Êtes-vous sûr(e) de vouloir supprimer cette navigation ?<br />
+          <ConfirmDeleteRouteButton
+            onClick={() => {
+              //@ts-ignore
+              deleteConfirmModal.current?.close();
+              if (`${currentlyEditedRoute.id}` === `${route.id}`) {
+                setRoute(Route.empty());
+              }
+              deleteRoute(route.id);
+            }}
+          >
+            ❌ Confirmer la suppression de la route
+          </ConfirmDeleteRouteButton>
+        </ConfirmDeleteRouteDiv>
       </Modal>
       {/* @ts-ignore */}
       <DeleteDiv onClick={() => deleteConfirmModal.current?.open()}>
-        ❌
+      🗑️
       </DeleteDiv>
     </RouteLineDiv>
   );
 };
+
+const ConfirmDeleteRouteDiv = styled.div`
+  display: flex;
+  height: 80px;
+  justify-content: space-between;
+  flex-direction: column;
+`;
+
+const ConfirmDeleteRouteButton = styled.button`
+  height: 30px;
+`;
 
 const DeleteDiv = styled.button`
   background: none;
@@ -207,12 +238,12 @@ const StyledNameInput = styled.input`
 
 const RouteLineDiv = styled.div<{ isCurrentRoute: boolean }>`
   :hover {
-    background: #002f9478;
+    background: #f597006d;
     color: white;
     cursor: pointer;
   }
   ${({ isCurrentRoute }) =>
-    isCurrentRoute ? "background: #002e94; color: white;" : ""}
+    isCurrentRoute ? "background: #f59700; color: white;" : ""}
 `;
 
 const TitleContainer = styled.div`

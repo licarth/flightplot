@@ -1,7 +1,6 @@
 import { User } from "@firebase/auth";
 import { useRef } from "react";
 import styled from "styled-components";
-import { AiracData } from "ts-aerodata-france";
 import { DisplayedLayers } from "../../App";
 import { useFirebaseAuth } from "../../firebase/auth/FirebaseAuthContext";
 import { Login } from "../../Login";
@@ -12,15 +11,11 @@ import { LeftMenu } from "./LeftMenu";
 
 type LeafletMapProps = {
   displayedLayers: DisplayedLayers;
-  airacData: AiracData;
 };
 
 export type MapBounds = [number, number, number, number];
 
-export const DisplayedContent = ({
-  displayedLayers,
-  airacData,
-}: LeafletMapProps) => {
+export const DisplayedContent = ({ displayedLayers }: LeafletMapProps) => {
   const { user, googleSignIn, signOut } = useFirebaseAuth();
 
   const vpModal = useRef(null);
@@ -55,9 +50,9 @@ export const DisplayedContent = ({
           </RightButtons>
         </TopBar>
         <AppBody>
-          <LeftMenu airacData={airacData} />
+          <LeftMenu />
           <RightSide>
-            <LeafletMapContainer airacData={airacData} />
+            <LeafletMapContainer />
             {/* @ts-ignore */}
             <VerticalProfileDiv onClick={() => vpModal.current?.open()}>
               <VerticalProfileChart />

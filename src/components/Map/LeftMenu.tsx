@@ -1,13 +1,12 @@
 import _ from "lodash";
 import { useRef, useState } from "react";
 import styled from "styled-components";
-import { AiracData } from "ts-aerodata-france";
 import { AerodromeWaypoint, AerodromeWaypointType, Route } from "../../domain";
 import { useFirebaseAuth } from "../../firebase/auth/FirebaseAuthContext";
+import Modal from "../../Modal";
 import { useRoute } from "../useRoute";
 import { useUserRoutes } from "../useUserRoutes";
 import { RouteWaypoints } from "./RouteWaypoints";
-import Modal from "../../Modal";
 
 const ContainerDiv = styled.div`
   width: 400px;
@@ -16,19 +15,19 @@ const ContainerDiv = styled.div`
   justify-content: space-between;
 `;
 
-export const LeftMenu = ({ airacData }: { airacData: AiracData }) => {
+export const LeftMenu = () => {
   return (
     <ContainerDiv>
-      <RouteDisplay airacData={airacData} />
+      <RouteDisplay />
       {/* @ts-ignore */}
     </ContainerDiv>
   );
 };
 
-const RouteDisplay = ({ airacData }: { airacData: AiracData }) => {
+const RouteDisplay = () => {
   return (
     <RouteContainer>
-      <MyRoutes airacData={airacData} />
+      <MyRoutes />
       <H2>POINTS TOURNANTS</H2>
       <RouteWaypoints />
       <hr />
@@ -92,7 +91,7 @@ const TipsContainer = styled.div`
   }
 `;
 
-const MyRoutes = ({ airacData }: { airacData: AiracData }) => {
+const MyRoutes = () => {
   const { user } = useFirebaseAuth();
   const { routes } = useUserRoutes();
 
@@ -108,7 +107,6 @@ const MyRoutes = ({ airacData }: { airacData: AiracData }) => {
             key={`routeline-${key}`}
             route={route}
             routeName={route.title}
-            airacData={airacData}
           />
         ))}
       </>
@@ -119,11 +117,9 @@ const MyRoutes = ({ airacData }: { airacData: AiracData }) => {
 const RouteLine = ({
   route,
   routeName,
-  airacData,
 }: {
   route: Route;
   routeName: string | null;
-  airacData: AiracData;
 }) => {
   const { route: currentlyEditedRoute, switchRoute, setRoute } = useRoute();
   const { deleteRoute } = useUserRoutes();

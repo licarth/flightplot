@@ -1,13 +1,14 @@
 import { debounce } from "lodash";
 import { useState } from "react";
 import { Polygon, SVGOverlay, useMap, useMapEvents } from "react-leaflet";
-import { AiracData } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
 import { boundingBox } from "../../domain/boundingBox";
+import { useAiracData } from "../useAiracData";
 import { getMapBounds } from "./getMapBounds";
 
-export const DangerZones = ({ airacData }: { airacData?: AiracData }) => {
+export const DangerZones = () => {
   const leafletMap = useMap();
+  const { airacData } = useAiracData();
   const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
     leafletMap && getMapBounds(leafletMap),
   );
@@ -25,7 +26,7 @@ export const DangerZones = ({ airacData }: { airacData?: AiracData }) => {
     <>
       {mapBounds &&
         airacData
-          ?.getDangerZonesInBbox(...mapBounds)
+          .getDangerZonesInBbox(...mapBounds)
           .filter(({ type }) => ["D", "P"].includes(type))
           .map((zone, i) => {
             const { geometry } = zone;

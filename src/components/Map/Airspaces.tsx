@@ -1,12 +1,9 @@
 import { Fragment, useState } from "react";
-import {
-  Polygon,
-  SVGOverlay,
-  Tooltip
-} from "react-leaflet";
-import { AiracData, Airspace, AirspaceType } from "ts-aerodata-france";
+import { Polygon, SVGOverlay, Tooltip } from "react-leaflet";
+import { Airspace, AirspaceType } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
 import { boundingBox } from "../../domain/boundingBox";
+import { useAiracData } from "../useAiracData";
 import { MapBounds } from "./DisplayedContent";
 
 const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
@@ -81,13 +78,14 @@ const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
   );
 };
 
-export const Airspaces = ({ airacData, mapBounds }: { airacData?: AiracData, mapBounds: MapBounds }) => {
+export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
+  const { airacData } = useAiracData();
 
   return (
     <>
       {mapBounds &&
         airacData
-          ?.getAirspacesInBbox(...mapBounds)
+          .getAirspacesInBbox(...mapBounds)
           .filter(({ type }) => type === AirspaceType.CTR)
           .map((airspace) => (
             <AirspaceSvg

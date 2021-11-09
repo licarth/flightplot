@@ -1,10 +1,9 @@
 import styled from "styled-components";
-import { AiracData } from "ts-aerodata-france";
 import { useRoute } from "../useRoute";
 import { VerticalProfileChart } from "../VerticalProfileChart";
 import { NavigationLog } from "./NavigationLog";
 
-export const PrintPreview = ({ airacData }: { airacData: AiracData }) => {
+export const PrintPreview = () => {
   const { route } = useRoute();
   return (
     <PageDisplay>

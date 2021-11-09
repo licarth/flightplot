@@ -6,23 +6,23 @@ import {
   SVGOverlay,
   Tooltip,
   useMap,
-  useMapEvents,
+  useMapEvents
 } from "react-leaflet";
 import styled from "styled-components";
-import { AiracData, VfrPoint } from "ts-aerodata-france";
+import { VfrPoint } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
+import { useAiracData } from "../useAiracData";
 import { pointToLeafletLatLng, toCheapRulerPoint } from "./FlightPlanningLayer";
 import { getMapBounds } from "./getMapBounds";
 import { preventDefault } from "./preventDefault";
 const ruler = new CheapRuler(43, "nauticalmiles");
 
 export const VfrPoints = ({
-  airacData,
   onClick,
 }: {
-  airacData?: AiracData;
   onClick: (vfrPoint: VfrPoint) => void;
 }) => {
+  const { airacData } = useAiracData();
   const leafletMap = useMap();
   const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
     leafletMap && getMapBounds(leafletMap),
@@ -34,7 +34,7 @@ export const VfrPoints = ({
   });
   let components: JSX.Element[] | undefined = [];
   if (!!mapBounds) {
-    components = airacData?.getVfrPointsInBbox(...mapBounds).map((vfrPoint) => {
+    components = airacData.getVfrPointsInBbox(...mapBounds).map((vfrPoint) => {
       const { name, latLng, icaoCode } = vfrPoint;
       const center = toCheapRulerPoint(toLeafletLatLng(latLng));
       const bottomRight = pointToLeafletLatLng(ruler.offset(center, 0.5, -0.5));

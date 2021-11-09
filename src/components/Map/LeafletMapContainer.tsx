@@ -3,7 +3,6 @@ import { LatLngTuple } from "leaflet";
 import { debounce } from "lodash";
 import { useState } from "react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
-import { AiracData } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
 import { OaciLayer } from "../layer";
 import { useRoute } from "../useRoute";
@@ -17,7 +16,7 @@ import { VfrPoints } from "./VfrPoints";
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 11;
 
-const InnerMapContainer = ({ airacData }: { airacData: AiracData }) => {
+const InnerMapContainer = () => {
   const { addAerodromeWaypoint, addLatLngWaypoint } = useRoute();
   const leafletMap = useMap();
   const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
@@ -34,20 +33,20 @@ const InnerMapContainer = ({ airacData }: { airacData: AiracData }) => {
     <>
       <Layers />
       <FlightPlanningLayer />
-      <Airspaces airacData={airacData} mapBounds={mapBounds} />
-      <DangerZones airacData={airacData} />
+      <Airspaces mapBounds={mapBounds} />
+      <DangerZones />
       {shouldRenderAerodromes && (
         <Aerodromes
-          airacData={airacData}
           onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
         />
       )}
-      {shouldRenderVfrPoints && <VfrPoints
-        airacData={airacData}
-        onClick={({ latLng, name }) =>
-          addLatLngWaypoint({ latLng: toLeafletLatLng(latLng), name })
-        }
-      />}
+      {shouldRenderVfrPoints && (
+        <VfrPoints
+          onClick={({ latLng, name }) =>
+            addLatLngWaypoint({ latLng: toLeafletLatLng(latLng), name })
+          }
+        />
+      )}
       <NmScale />
     </>
   );
@@ -62,11 +61,7 @@ const Layers = () => {
   );
 };
 
-export const LeafletMapContainer = ({
-  airacData,
-}: {
-  airacData: AiracData;
-}) => {
+export const LeafletMapContainer = () => {
   const { route } = useRoute();
 
   const params =
@@ -76,7 +71,7 @@ export const LeafletMapContainer = ({
 
   return (
     <MapContainer id="mapId" {...params}>
-      <InnerMapContainer airacData={airacData} />
+      <InnerMapContainer />
     </MapContainer>
   );
 };

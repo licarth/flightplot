@@ -1,5 +1,14 @@
-import { GoogleLoginButton } from "react-social-login-buttons";
+import { GoogleLoginButton, createButton } from "react-social-login-buttons";
 import styled from "styled-components";
+
+
+const config = {
+  text: "Log in anonymously",
+  icon: "",
+  style: { background: "white", color: "black" },
+  activeStyle: { background: "lightgrey" }
+};
+const AnonymousLoginButton = createButton(config);
 
 const ColumnContainer = styled.div`
   display: flex;
@@ -19,9 +28,11 @@ const CenterColumn = styled.div`
 
 export const Login = ({
   signInWithGoogle,
+  anonymousSignIn,
   loading,
 }: {
   signInWithGoogle: () => void;
+  anonymousSignIn: () => void;
   loading: boolean;
 }) => (
     <ColumnContainer>
@@ -29,6 +40,7 @@ export const Login = ({
         <h1>Bienvenue sur Flightplot</h1>
         Merci de vous inscrire pour continuer.
         <GoogleLoginButton onClick={signInWithGoogle} />
+        <AnonymousLoginButton onClick={anonymousSignIn} />
         {loading && <h2>Loading..</h2>}
       </CenterColumn>
     </ColumnContainer>

@@ -16,7 +16,7 @@ type LeafletMapProps = {
 export type MapBounds = [number, number, number, number];
 
 export const DisplayedContent = ({ displayedLayers }: LeafletMapProps) => {
-  const { user, googleSignIn, signOut } = useFirebaseAuth();
+  const { user, googleSignIn, anonymousSignIn, signOut } = useFirebaseAuth();
 
   const vpModal = useRef(null);
   const loginModal = useRef(null);
@@ -44,7 +44,11 @@ export const DisplayedContent = ({ displayedLayers }: LeafletMapProps) => {
             )}
             {!user && (
               <Modal defaultOpened={false} fade={false} ref={loginModal}>
-                <Login signInWithGoogle={googleSignIn} loading={false} />
+                <Login
+                  signInWithGoogle={googleSignIn}
+                  anonymousSignIn={anonymousSignIn}
+                  loading={false}
+                />
               </Modal>
             )}
           </RightButtons>

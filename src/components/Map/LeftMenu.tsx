@@ -118,7 +118,8 @@ const MyRoutes = () => {
         <H2>MES NAVIGATIONS</H2>
         <NewNavButton
           onClick={() => {
-            saveRoute(Route.empty());
+            const newRoute = Route.empty();
+            saveRoute(newRoute);
           }}
         >
           ➕ Nouvelle navigation
@@ -160,7 +161,10 @@ const RouteLine = ({
   const isCurrentRoute =
     currentlyEditedRoute.id.toString() === route.id.toString();
   const deleteConfirmModal = useRef(null);
-
+  const deleteRouteAndUnfocus = () => {
+    deleteRoute(route.id);
+    setRoute(Route.empty());
+  };
   return (
     <RouteLineDiv
       isCurrentRoute={isCurrentRoute}
@@ -206,8 +210,14 @@ const RouteLine = ({
           .map(({ name }) => name)
           .join(" => ")}
       </RouteLineLeft>
-      {/* @ts-ignore */}
-      <DeleteDiv onClick={() => deleteConfirmModal.current?.open()}>
+      <DeleteDiv
+        onClick={() =>
+          route.waypoints.length > 0
+            ? // @ts-ignore
+              deleteConfirmModal.current?.open()
+            : deleteRouteAndUnfocus()
+        }
+      >
         🗑️
       </DeleteDiv>
       <Modal fade={false} defaultOpened={false} ref={deleteConfirmModal}>
@@ -220,7 +230,7 @@ const RouteLine = ({
               if (`${currentlyEditedRoute.id}` === `${route.id}`) {
                 setRoute(Route.empty());
               }
-              deleteRoute(route.id);
+              deleteRouteAndUnfocus();
             }}
           >
             ❌ Confirmer la suppression de la route

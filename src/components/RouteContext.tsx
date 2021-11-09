@@ -10,18 +10,17 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useState,
+  useState
 } from "react";
 import {
   AiracCycles,
   AiracData,
   AirspaceType,
-  DangerZoneType,
+  DangerZoneType
 } from "ts-aerodata-france";
 import { Route } from "../domain";
 import {
-  routeAirspaceOverlaps,
-  AirspaceSegmentOverlap,
+  AirspaceSegmentOverlap, routeAirspaceOverlaps
 } from "../domain/routeAirspaceOverlaps";
 import { UUID } from "../domain/Uuid/Uuid";
 import { ElevationAtPoint, elevationOnRoute } from "../elevationOnRoute";
@@ -74,40 +73,43 @@ export const RouteProvider: React.FC = ({ children }) => {
 
   const switchRoute = useCallback(
     (routeId: UUID) => {
-      unsubscribe && unsubscribe();
-      const dbAddress = `routes/${user?.uid}/${routeId.toString()}`;
-      const newUnsubscribe = onValue(
-        ref(db, dbAddress),
-        (rSnapshot) => {
-          const routeString = rSnapshot.val() as string;
-          if (routeString) {
-            pipe(
-              Option.fromNullable(rSnapshot.val() as string),
-              Either.fromOption(() => new Error("no route stored")),
-              Either.map((x) => JSON.parse(x)),
-              Either.chainW(Route.codec(airacData).decode),
-              Either.fold(
-                (e) => {
-                  //@ts-ignore
-                  console.error(draw(e));
-                  return null;
-                },
-                (newRoute) => {
-                  if (newRoute !== route) {
-                    setRoute(newRoute);
-                  }
-                },
-              ),
-            );
-          }
-        },
-        (reason) => console.error(`Connection rejected: ${reason}`),
-      );
-      setUnsubscribe((_oldU) => newUnsubscribe);
-      // }
-      setRoute(routes[routeId.toString()]);
+      const route = routes[routeId.toString()];
+      if (route) {
+        unsubscribe && unsubscribe();
+        const dbAddress = `routes/${user?.uid}/${routeId.toString()}`;
+        const newUnsubscribe = onValue(
+          ref(db, dbAddress),
+          (rSnapshot) => {
+            const routeString = rSnapshot.val() as string;
+            if (routeString) {
+              pipe(
+                Option.fromNullable(rSnapshot.val() as string),
+                Either.fromOption(() => new Error("no route stored")),
+                Either.map((x) => JSON.parse(x)),
+                Either.chainW(Route.codec(airacData).decode),
+                Either.fold(
+                  (e) => {
+                    //@ts-ignore
+                    console.error(draw(e));
+                    return null;
+                  },
+                  (newRoute) => {
+                    if (newRoute !== route) {
+                      setRoute(newRoute);
+                    }
+                  },
+                ),
+              );
+            }
+          },
+          (reason) => console.error(`Connection rejected: ${reason}`),
+        );
+        setUnsubscribe((_oldU) => newUnsubscribe);
+        // }
+        setRoute(route);
+      }
     },
-    [route, setRoute, db, user, routes, setUnsubscribe, unsubscribe],
+    [setRoute, db, user, routes, setUnsubscribe, unsubscribe],
   );
 
   const overlapDeterministicChangeKey = route.waypoints
@@ -132,7 +134,13 @@ export const RouteProvider: React.FC = ({ children }) => {
 
   return (
     <RouteContext.Provider
-      value={{ route, setRoute, elevation, switchRoute, airspaceOverlaps }}
+      value={{
+        route,
+        setRoute,
+        elevation,
+        switchRoute,
+        airspaceOverlaps,
+      }}
     >
       {children}
     </RouteContext.Provider>

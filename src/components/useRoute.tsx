@@ -3,6 +3,7 @@ import { Aerodrome } from "ts-aerodata-france";
 import { AerodromeWaypoint, AerodromeWaypointType, Waypoint } from "../domain";
 import { LatLng } from "../LatLng";
 import { RouteContext } from "./RouteContext";
+import { useUserRoutes } from "./useUserRoutes";
 
 export type SetWaypointAltitude = ({
   waypointPosition,
@@ -33,6 +34,8 @@ export const useRoute = () => {
   const { route, setRoute, elevation, switchRoute, airspaceOverlaps } =
     useContext(RouteContext);
 
+  const { routes, saveRoute } = useUserRoutes();
+
   const addLatLngWaypoint = useCallback(
     ({
       latLng,
@@ -43,6 +46,9 @@ export const useRoute = () => {
       position?: number;
       name?: string;
     }) => {
+      if (!routes[route.id.toString()]) {
+        saveRoute(route);
+      }
       setRoute((oldRoute) =>
         oldRoute.addWaypoint({
           position,
@@ -54,11 +60,14 @@ export const useRoute = () => {
         }),
       );
     },
-    [setRoute],
+    [setRoute, routes, route, saveRoute],
   );
 
   const addAerodromeWaypoint = useCallback(
     ({ aerodrome, position }: { aerodrome: Aerodrome; position?: number }) => {
+      if (!routes[route.id.toString()]) {
+        saveRoute(route);
+      }
       setRoute((oldRoute) =>
         oldRoute.addWaypoint({
           position,
@@ -69,7 +78,7 @@ export const useRoute = () => {
         }),
       );
     },
-    [setRoute],
+    [setRoute, saveRoute, route, routes],
   );
 
   const replaceWaypoint = useCallback(

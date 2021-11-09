@@ -23,7 +23,6 @@ const airacData = AiracData.loadCycle(AiracCycles.NOV_04_2021);
 
 export const UserRoutesProvider: React.FC = ({ children }) => {
   const { user } = useFirebaseAuth();
-
   const [routes, setRoutes] = useState<Record<string, Route>>({});
 
   useEffect(() => {

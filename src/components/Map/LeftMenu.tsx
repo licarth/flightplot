@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styled from "styled-components";
 import { AiracData } from "ts-aerodata-france";
 import { AerodromeWaypoint, AerodromeWaypointType, Route } from "../../domain";
@@ -7,6 +7,7 @@ import { useFirebaseAuth } from "../../firebase/auth/FirebaseAuthContext";
 import { useRoute } from "../useRoute";
 import { useUserRoutes } from "../useUserRoutes";
 import { RouteWaypoints } from "./RouteWaypoints";
+import Modal from "../../Modal";
 
 const ContainerDiv = styled.div`
   width: 400px;
@@ -124,11 +125,14 @@ const RouteLine = ({
   routeName: string | null;
   airacData: AiracData;
 }) => {
-  const { route: currentlyEditedRoute, switchRoute } = useRoute();
+  const { route: currentlyEditedRoute, switchRoute, setRoute } = useRoute();
+  const { deleteRoute } = useUserRoutes();
   const { setRouteTitle } = useUserRoutes();
   const [editingTitle, setEditingTitle] = useState(false);
   const isCurrentRoute =
     currentlyEditedRoute.id.toString() === route.id.toString();
+  const deleteConfirmModal = useRef(null);
+
   return (
     <RouteLineDiv
       isCurrentRoute={isCurrentRoute}
@@ -169,9 +173,37 @@ const RouteLine = ({
         )
         .map(({ name }) => name)
         .join(" => ")}
+      {/* <DeleteDiv onClick={() => deleteRoute(route.id)}>❌</DeleteDiv> */}
+      <Modal fade={false} defaultOpened={false} ref={deleteConfirmModal}>
+        Êtes-vous sûr(e) de vouloir supprimer cette navigation ?<br />
+        <button
+          onClick={() => {
+            //@ts-ignore
+            deleteConfirmModal.current?.close();
+            if (`${currentlyEditedRoute.id}` === `${route.id}`) {
+              setRoute(Route.empty());
+            }
+            deleteRoute(route.id);
+          }}
+        >
+          ❌ Confirmer la suppression de la route
+        </button>
+      </Modal>
+      {/* @ts-ignore */}
+      <DeleteDiv onClick={() => deleteConfirmModal.current?.open()}>
+        ❌
+      </DeleteDiv>
     </RouteLineDiv>
   );
 };
+
+const DeleteDiv = styled.button`
+  background: none;
+  border: none;
+  display: inline-block;
+  padding-left: 10px;
+  cursor: pointer;
+`;
 
 const StyledNameInput = styled.input`
   width: 100px;

@@ -11,7 +11,7 @@ export type SetRouteTitle = ({
 }) => void;
 
 export const useUserRoutes = () => {
-  const { routes, saveRoute } = useContext(UserRoutesContext);
+  const { routes, saveRoute, deleteRoute } = useContext(UserRoutesContext);
 
   const setRouteTitle: SetRouteTitle = ({ title, routeId }) => {
     const route = routes[routeId.toString()];
@@ -25,6 +25,7 @@ export const useUserRoutes = () => {
   return {
     routes,
     setRouteTitle,
-    saveRoute
+    saveRoute,
+    deleteRoute,
   };
 };

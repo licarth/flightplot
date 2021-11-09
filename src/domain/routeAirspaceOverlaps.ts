@@ -14,7 +14,7 @@ const toArrayCoords = (
 const airspaceAsPolygon = (airspace: Airspace | DangerZone) =>
   turf.polygon([airspace.geometry.map((latlng) => toArrayCoords(latlng))]);
 
-type AirspaceSegmentOverlap = {
+export type AirspaceSegmentOverlap = {
   airspace: Airspace | DangerZone;
   segments: [number, number][];
 };

@@ -10,17 +10,13 @@ import { Chart, Scatter } from "react-chartjs-2";
 import { AirspaceType, DangerZoneType } from "ts-aerodata-france";
 import { AerodromeWaypoint, AerodromeWaypointType, Waypoint } from "../domain";
 import { aircraftCollection } from "../domain/Aircraft";
-import { routeAirspaceOverlaps } from "../domain/VerticalProfile";
 import { useRoute } from "./useRoute";
-import { useAiracData } from "./useAiracData";
 
 Chart.register(annotationPlugin);
 Chart.register(dragData);
 
 export const VerticalProfileChart = () => {
-  const { airacData } = useAiracData();
-  //@ts-ignore
-  const { route, elevation, setWaypointAltitude } = useRoute();
+  const { route, elevation, setWaypointAltitude, airspaceOverlaps } = useRoute();
   const onDragEnd = useCallback(
     (e, datasetIndex, index, value) => {
       if (value.routeIndex) {
@@ -33,21 +29,6 @@ export const VerticalProfileChart = () => {
     [setWaypointAltitude],
   );
 
-  const overlaps = airacData
-    ? routeAirspaceOverlaps({
-        route,
-        airspaces: [
-          ...airacData
-            .getAirspacesInBbox(...route.boundingBox)
-            .filter(({ type, name }) =>
-              [AirspaceType.CTR, AirspaceType.TMA].includes(type),
-            ),
-          ...airacData
-            .getDangerZonesInBbox(...route.boundingBox)
-            .filter(({ type, name }) => [DangerZoneType.P].includes(type)),
-        ],
-      })
-    : [];
   const verticalProfile = route.verticalProfile({
     aircraft: aircraftCollection[0],
   });
@@ -125,7 +106,7 @@ export const VerticalProfileChart = () => {
 
   const boxes: Record<string, AnnotationOptions<"box"> & { name: string }> =
     _.keyBy(
-      overlaps.flatMap(
+      airspaceOverlaps.flatMap(
         ({ airspace: { name, type, lowerLimit, higherLimit }, segments }, i) =>
           segments.map((s): AnnotationOptions<"box"> & { name: string } => ({
             type: "box",

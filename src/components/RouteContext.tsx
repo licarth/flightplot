@@ -5,9 +5,24 @@ import { pipe } from "fp-ts/lib/function";
 import * as Option from "fp-ts/lib/Option";
 import { draw } from "io-ts/lib/Decoder";
 import * as _ from "lodash";
-import React, { createContext, useCallback, useEffect, useState } from "react";
-import { AiracCycles, AiracData } from "ts-aerodata-france";
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import {
+  AiracCycles,
+  AiracData,
+  AirspaceType,
+  DangerZoneType,
+} from "ts-aerodata-france";
 import { Route } from "../domain";
+import {
+  routeAirspaceOverlaps,
+  AirspaceSegmentOverlap,
+} from "../domain/routeAirspaceOverlaps";
 import { UUID } from "../domain/Uuid/Uuid";
 import { ElevationAtPoint, elevationOnRoute } from "../elevationOnRoute";
 import { openElevationApiElevationService } from "../ElevationService/openElevationApiElevationService";
@@ -20,11 +35,13 @@ export const RouteContext = createContext<{
   setRoute: React.Dispatch<React.SetStateAction<Route>>;
   elevation: ElevationAtPoint;
   switchRoute: (routeId: UUID) => void;
+  airspaceOverlaps: AirspaceSegmentOverlap[];
 }>({
   route: Route.empty(),
   setRoute: () => {},
   switchRoute: (routeId: UUID) => {},
   elevation: emptyElevation,
+  airspaceOverlaps: [],
 });
 
 const airacData = AiracData.loadCycle(AiracCycles.NOV_04_2021);
@@ -93,8 +110,30 @@ export const RouteProvider: React.FC = ({ children }) => {
     [route, setRoute, db, user, routes, setUnsubscribe, unsubscribe],
   );
 
+  const overlapDeterministicChangeKey = route.waypoints
+    .map((w) => `${w.latLng.lat}-${w.latLng.lng}`)
+    .join("-");
+  const airspaceOverlaps = useMemo(() => {
+    return routeAirspaceOverlaps({
+      route,
+      airspaces: [
+        ...airacData
+          .getAirspacesInBbox(...route.boundingBox)
+          .filter(({ type, name }) =>
+            [AirspaceType.CTR, AirspaceType.TMA].includes(type),
+          ),
+        ...airacData
+          .getDangerZonesInBbox(...route.boundingBox)
+          .filter(({ type, name }) => [DangerZoneType.P].includes(type)),
+      ],
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [overlapDeterministicChangeKey]);
+
   return (
-    <RouteContext.Provider value={{ route, setRoute, elevation, switchRoute }}>
+    <RouteContext.Provider
+      value={{ route, setRoute, elevation, switchRoute, airspaceOverlaps }}
+    >
       {children}
     </RouteContext.Provider>
   );

@@ -8,7 +8,7 @@ import {
   Longitude
 } from "ts-aerodata-france";
 import { Route } from "./Route";
-import { routeAirspaceOverlaps } from "./VerticalProfile";
+import { routeAirspaceOverlaps } from "./routeAirspaceOverlaps";
 import { latLngWaypointFactory } from "./Waypoint";
 
 const lat = (lat: number) => lat as unknown as Latitude; // Workaround

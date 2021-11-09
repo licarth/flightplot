@@ -30,7 +30,8 @@ export type ReplaceWaypoint = ({
 }) => void;
 
 export const useRoute = () => {
-  const { route, setRoute, elevation, switchRoute } = useContext(RouteContext);
+  const { route, setRoute, elevation, switchRoute, airspaceOverlaps } =
+    useContext(RouteContext);
 
   const addLatLngWaypoint = useCallback(
     ({
@@ -119,7 +120,6 @@ export const useRoute = () => {
     ({ waypointPosition, altitude }) => {
       const w = route.waypoints[waypointPosition];
       const newWaypoint = w.clone({ altitude });
-      console.log(JSON.stringify(newWaypoint));
       replaceWaypoint({ waypointPosition, newWaypoint });
     },
     [route, replaceWaypoint],
@@ -150,5 +150,6 @@ export const useRoute = () => {
     addAerodromeWaypoint,
     addLatLngWaypoint,
     setAerodromeWaypointType,
+    airspaceOverlaps,
   };
 };

@@ -15,7 +15,7 @@ export const PrintPreview = ({ airacData }: { airacData: AiracData }) => {
       </Page>
       <Page>
         <TiltedChart>
-          <VerticalProfileChart airacData={airacData} />
+          <VerticalProfileChart />
         </TiltedChart>
       </Page>
     </PageDisplay>

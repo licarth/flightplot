@@ -9,6 +9,7 @@ import { PrintPreview } from "./components/Map/PrintPreview";
 import { RouteProvider } from "./components/RouteContext";
 import { FirebaseAuthProvider } from "./firebase/auth/FirebaseAuthContext";
 import { UserRoutesProvider } from "./components/UserRoutesContext";
+import { AiracDataProvider } from "./components/AiracDataContext";
 
 export type DisplayedLayers = {
   [keys in LayerEnum]: boolean;
@@ -35,6 +36,7 @@ const App = ({ disabled }: { disabled: boolean }) => {
 
   return (
     <FirebaseAuthProvider>
+      <AiracDataProvider>
       <UserRoutesProvider>
         <RouteProvider>
           <div id="modal-root"></div>
@@ -50,6 +52,7 @@ const App = ({ disabled }: { disabled: boolean }) => {
           {airacData && <PrintPreview airacData={airacData} />}{" "}
         </RouteProvider>
       </UserRoutesProvider>
+      </AiracDataProvider>
     </FirebaseAuthProvider>
   );
 };

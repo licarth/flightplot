@@ -60,11 +60,11 @@ export const DisplayedContent = ({
             <LeafletMapContainer airacData={airacData} />
             {/* @ts-ignore */}
             <VerticalProfileDiv onClick={() => vpModal.current?.open()}>
-              <VerticalProfileChart airacData={airacData} />
+              <VerticalProfileChart />
             </VerticalProfileDiv>
             <Modal fade={false} defaultOpened={false} ref={vpModal}>
               <VerticalProfileModalDiv>
-                <VerticalProfileChart airacData={airacData} />
+                <VerticalProfileChart />
               </VerticalProfileModalDiv>
             </Modal>
           </RightSide>

@@ -7,19 +7,18 @@ import * as _ from "lodash";
 import { min } from "lodash";
 import { useCallback } from "react";
 import { Chart, Scatter } from "react-chartjs-2";
-import { AiracData, AirspaceType, DangerZoneType } from "ts-aerodata-france";
+import { AirspaceType, DangerZoneType } from "ts-aerodata-france";
 import { AerodromeWaypoint, AerodromeWaypointType, Waypoint } from "../domain";
 import { aircraftCollection } from "../domain/Aircraft";
 import { routeAirspaceOverlaps } from "../domain/VerticalProfile";
 import { useRoute } from "./useRoute";
+import { useAiracData } from "./useAiracData";
+
 Chart.register(annotationPlugin);
 Chart.register(dragData);
 
-export const VerticalProfileChart = ({
-  airacData,
-}: {
-  airacData?: AiracData;
-}) => {
+export const VerticalProfileChart = () => {
+  const { airacData } = useAiracData();
   //@ts-ignore
   const { route, elevation, setWaypointAltitude } = useRoute();
   const onDragEnd = useCallback(
@@ -93,7 +92,9 @@ export const VerticalProfileChart = ({
       pointHitRadius: 25,
       pointRadius: (p) =>
         //@ts-ignore
-        p.raw && p.raw.routeIndex &&
+        p.raw &&
+        //@ts-ignore
+        p.raw.routeIndex &&
         //@ts-ignore
         canBeDragged(p.datasetIndex, route.waypoints[p.raw.routeIndex])
           ? 10

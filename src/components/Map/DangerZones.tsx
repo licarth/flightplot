@@ -1,26 +1,11 @@
-import { debounce } from "lodash";
-import { useState } from "react";
-import { Polygon, SVGOverlay, useMap, useMapEvents } from "react-leaflet";
+import { Polygon, SVGOverlay } from "react-leaflet";
 import { toLeafletLatLng } from "../../domain";
 import { boundingBox } from "../../domain/boundingBox";
 import { useAiracData } from "../useAiracData";
-import { getMapBounds } from "./getMapBounds";
+import { MapBounds } from "./DisplayedContent";
 
-export const DangerZones = () => {
-  const leafletMap = useMap();
+export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
   const { airacData } = useAiracData();
-  const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
-    leafletMap && getMapBounds(leafletMap),
-  );
-  const refreshMapBounds = () => setMapBounds(getMapBounds(leafletMap));
-  useMapEvents({
-    moveend: refreshMapBounds,
-    move: debounce(refreshMapBounds, 100),
-  });
-  useMapEvents({
-    moveend: refreshMapBounds,
-    move: debounce(refreshMapBounds, 100),
-  });
 
   return (
     <>
@@ -42,9 +27,6 @@ export const DangerZones = () => {
                 bounds={boundingBox(leafletLatLngs)}
                 interactive={false}
               >
-                {/* <text x="0%" y="0%" stroke="#940000" height="100%">
-                      {name} ({lowerLimit.toString()} - {higherLimit.toString()})
-                    </text> */}
                 <Polygon
                   color="#940000"
                   fillColor="#940000"

@@ -1,6 +1,5 @@
 import { NmScale } from "@marfle/react-leaflet-nmscale";
 import { LatLngTuple } from "leaflet";
-import { debounce } from "lodash";
 import { useState } from "react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import { toLeafletLatLng } from "../../domain";
@@ -14,7 +13,7 @@ import { getMapBounds } from "./getMapBounds";
 import { VfrPoints } from "./VfrPoints";
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
-const zoom: number = 11;
+const zoom: number = 8;
 
 const InnerMapContainer = () => {
   const { addAerodromeWaypoint, addLatLngWaypoint } = useRoute();
@@ -24,8 +23,8 @@ const InnerMapContainer = () => {
   );
   const refreshMapBounds = () => setMapBounds(getMapBounds(leafletMap));
   useMapEvents({
+    zoomend: refreshMapBounds,
     moveend: refreshMapBounds,
-    move: debounce(refreshMapBounds, 100),
   });
   const shouldRenderAerodromes = leafletMap.getZoom() > 7;
   const shouldRenderVfrPoints = leafletMap.getZoom() > 9;
@@ -34,14 +33,16 @@ const InnerMapContainer = () => {
       <Layers />
       <FlightPlanningLayer />
       <Airspaces mapBounds={mapBounds} />
-      <DangerZones />
+      <DangerZones mapBounds={mapBounds} />
       {shouldRenderAerodromes && (
         <Aerodromes
+          mapBounds={mapBounds}
           onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
         />
       )}
       {shouldRenderVfrPoints && (
         <VfrPoints
+          mapBounds={mapBounds}
           onClick={({ latLng, name }) =>
             addLatLngWaypoint({ latLng: toLeafletLatLng(latLng), name })
           }
@@ -62,12 +63,7 @@ const Layers = () => {
 };
 
 export const LeafletMapContainer = () => {
-  const { route } = useRoute();
-
-  const params =
-    route.waypoints.length > 1 && route.leafletBoundingBox
-      ? { bounds: route.leafletBoundingBox }
-      : { center: defaultLatLng, zoom };
+  const params = { center: defaultLatLng, zoom };
 
   return (
     <MapContainer id="mapId" {...params}>

@@ -1,37 +1,27 @@
 import CheapRuler, { Point } from "cheap-ruler";
-import { debounce } from "lodash";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import {
   Polygon,
   SVGOverlay,
-  Tooltip,
-  useMap,
-  useMapEvents
+  Tooltip
 } from "react-leaflet";
 import styled from "styled-components";
 import { VfrPoint } from "ts-aerodata-france";
 import { toLeafletLatLng } from "../../domain";
 import { useAiracData } from "../useAiracData";
+import { MapBounds } from "./DisplayedContent";
 import { pointToLeafletLatLng, toCheapRulerPoint } from "./FlightPlanningLayer";
-import { getMapBounds } from "./getMapBounds";
 import { preventDefault } from "./preventDefault";
 const ruler = new CheapRuler(43, "nauticalmiles");
 
 export const VfrPoints = ({
   onClick,
+  mapBounds,
 }: {
   onClick: (vfrPoint: VfrPoint) => void;
+  mapBounds: MapBounds;
 }) => {
   const { airacData } = useAiracData();
-  const leafletMap = useMap();
-  const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
-    leafletMap && getMapBounds(leafletMap),
-  );
-  const refreshMapBounds = () => setMapBounds(getMapBounds(leafletMap));
-  useMapEvents({
-    moveend: refreshMapBounds,
-    move: debounce(refreshMapBounds, 100),
-  });
   let components: JSX.Element[] | undefined = [];
   if (!!mapBounds) {
     components = airacData.getVfrPointsInBbox(...mapBounds).map((vfrPoint) => {

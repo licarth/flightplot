@@ -10,17 +10,18 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useState
+  useState,
 } from "react";
 import {
   AiracCycles,
   AiracData,
   AirspaceType,
-  DangerZoneType
+  DangerZoneType,
 } from "ts-aerodata-france";
 import { Route } from "../domain";
 import {
-  AirspaceSegmentOverlap, routeAirspaceOverlaps
+  AirspaceSegmentOverlap,
+  routeAirspaceOverlaps,
 } from "../domain/routeAirspaceOverlaps";
 import { UUID } from "../domain/Uuid/Uuid";
 import { ElevationAtPoint, elevationOnRoute } from "../elevationOnRoute";
@@ -54,20 +55,21 @@ export const RouteProvider: React.FC = ({ children }) => {
 
   const db = getDatabase();
 
+  const overlapDeterministicChangeKey = route.waypoints
+    .map((w) => `${w.latLng.lat}-${w.latLng.lng}`)
+    .join("-");
   const [elevation, setElevation] = useState<ElevationAtPoint>(emptyElevation);
 
+
+
   useEffect(() => {
-    setElevation(emptyElevation);
     if (_.keys(routes).includes(route.id.toString())) {
       saveRoute(route);
     }
-    if (route.length > 0) {
-      elevationOnRoute({ elevationService: openElevationApiElevationService })(
-        route,
-      ).then((e) => setElevation(e));
-    } else {
-      setElevation(emptyElevation);
-    }
+
+    elevationOnRoute({
+      elevationService: openElevationApiElevationService,
+    })(route).then((e) => setElevation(e));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route, saveRoute]);
 
@@ -94,9 +96,7 @@ export const RouteProvider: React.FC = ({ children }) => {
                     return null;
                   },
                   (newRoute) => {
-                    if (newRoute !== route) {
-                      setRoute(newRoute);
-                    }
+                    setRoute(newRoute);
                   },
                 ),
               );
@@ -112,9 +112,6 @@ export const RouteProvider: React.FC = ({ children }) => {
     [setRoute, db, user, routes, setUnsubscribe, unsubscribe],
   );
 
-  const overlapDeterministicChangeKey = route.waypoints
-    .map((w) => `${w.latLng.lat}-${w.latLng.lng}`)
-    .join("-");
   const airspaceOverlaps = useMemo(() => {
     return routeAirspaceOverlaps({
       route,

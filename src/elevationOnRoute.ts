@@ -12,12 +12,19 @@ export type ElevationAtPoint = {
   distancesFromStartInNm: number[];
 };
 
+const emptyElevation = {
+  elevations: [],
+  distancesFromStartInNm: [],
+};
 export const elevationOnRoute: Reader<
   { elevationService: ElevationService },
   (route: Route) => Promise<ElevationAtPoint>
 > =
   ({ elevationService }) =>
   async (route: Route) => {
+    if (route.length === 0) {
+      return emptyElevation;
+    }
     const line = route.waypoints.map((w) => toCheapRulerPoint(w.latLng));
     const definitionInNm = 0.25; // elevation every 1 Nm.
     const numberOfPoints = Math.floor(route.totalDistance / definitionInNm);
@@ -36,9 +43,6 @@ export const elevationOnRoute: Reader<
         distancesFromStartInNm,
       };
     } catch {
-      return {
-        elevations: [],
-        distancesFromStartInNm: [],
-      };
+      return emptyElevation;
     }
   };

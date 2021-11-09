@@ -25,7 +25,6 @@ export const FlightPlanningLayer = () => {
   } = useRoute();
 
   useMapEvent("click", (e) => {
-    // console.log("using map event");
     addLatLngWaypoint({ latLng: e.latlng });
   });
 
@@ -33,7 +32,7 @@ export const FlightPlanningLayer = () => {
   const routeId = route.id.toString();
   useEffect(() => {
     route.waypoints.length > 0 &&
-      leafletMap.fitBounds(route.leafletBoundingBox, { maxZoom: 11 });
+      leafletMap.flyToBounds(route.leafletBoundingBox, { maxZoom: 11 });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leafletMap, routeId]);
 

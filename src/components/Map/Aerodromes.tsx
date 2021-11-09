@@ -1,36 +1,28 @@
-import { debounce } from "lodash";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import {
   Polygon,
   SVGOverlay,
   Tooltip,
-  useMap,
-  useMapEvents,
+  useMap
 } from "react-leaflet";
 import styled from "styled-components";
 import { Aerodrome, MagneticRunwayOrientation } from "ts-aerodata-france";
 import { ReactComponent as AerodromeLogo } from "../../icons/aerodrome.min.svg";
 import { toLatLng } from "../../LatLng";
 import { useAiracData } from "../useAiracData";
-import { getMapBounds } from "./getMapBounds";
+import { MapBounds } from "./DisplayedContent";
 import { preventDefault } from "./preventDefault";
 
 export const Aerodromes = ({
   onClick,
+  mapBounds,
 }: {
   onClick: (aerodrome: Aerodrome) => void;
+  mapBounds: MapBounds;
 }) => {
   const { airacData } = useAiracData();
   const leafletMap = useMap();
-  const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
-    leafletMap && getMapBounds(leafletMap),
-  );
   const displayAerodromesLabels = leafletMap.getZoom() > 8;
-  const refreshMapBounds = () => setMapBounds(getMapBounds(leafletMap));
-  useMapEvents({
-    moveend: refreshMapBounds,
-    move: debounce(refreshMapBounds, 100),
-  });
   return (
     <>
       {mapBounds &&

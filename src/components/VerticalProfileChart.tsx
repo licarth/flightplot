@@ -16,7 +16,8 @@ Chart.register(annotationPlugin);
 Chart.register(dragData);
 
 export const VerticalProfileChart = () => {
-  const { route, elevation, setWaypointAltitude, airspaceOverlaps } = useRoute();
+  const { route, elevation, setWaypointAltitude, airspaceOverlaps } =
+    useRoute();
   const onDragEnd = useCallback(
     (e, datasetIndex, index, value) => {
       if (value.routeIndex) {
@@ -26,7 +27,7 @@ export const VerticalProfileChart = () => {
         });
       }
     },
-    [setWaypointAltitude],
+    [setWaypointAltitude]
   );
 
   const verticalProfile = route.verticalProfile({
@@ -40,7 +41,7 @@ export const VerticalProfileChart = () => {
       y,
       r: 0,
       routeIndex,
-    }),
+    })
   );
   const pointLabels: AnnotationOptions<"line">[] = points
     .filter(({ routeWaypoint }) => routeWaypoint !== null)
@@ -114,8 +115,8 @@ export const VerticalProfileChart = () => {
             adjustScaleRange: false,
             xMin: s[0],
             xMax: s[1],
-            yMin: lowerLimit.roughFeetValue() + 0.01,
-            yMax: higherLimit.roughFeetValue(),
+            yMin: lowerLimit.feetValue + 0.01,
+            yMax: higherLimit.feetValue,
             backgroundColor:
               type === AirspaceType.CTR
                 ? "#002f9452"
@@ -123,9 +124,9 @@ export const VerticalProfileChart = () => {
                 ? "#ff0000c5"
                 : "#21003f7d",
             borderColor: type === AirspaceType.CTR ? "#002f94ca" : "#001033",
-          })),
+          }))
       ),
-      "name",
+      "name"
     );
   const dragData = {
     round: -2, // rounds the values to n decimal places

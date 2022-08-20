@@ -19,7 +19,7 @@ export const UserRoutesContext = createContext<{
   deleteRoute: () => {},
 });
 
-const airacData = AiracData.loadCycle(AiracCycles.NOV_04_2021);
+const airacData = AiracData.loadCycle(AiracCycles.AUG_11_2022);
 
 export const UserRoutesProvider: React.FC = ({ children }) => {
   const { user } = useFirebaseAuth();
@@ -41,15 +41,15 @@ export const UserRoutesProvider: React.FC = ({ children }) => {
               Either.chainW(Route.codec(airacData).decode),
               Either.fold(
                 () => null,
-                (r) => r,
-              ),
-            ),
+                (r) => r
+              )
+            )
           ),
-          _.isNull,
+          _.isNull
         ) as Record<string, Route>;
         setRoutes(routesOrError);
       },
-      (reason) => console.error(`Connection rejected: ${reason}`),
+      (reason) => console.error(`Connection rejected: ${reason}`)
     );
   }, [user]);
 
@@ -58,24 +58,24 @@ export const UserRoutesProvider: React.FC = ({ children }) => {
       const db = getDatabase();
       set(
         ref(db, `routes/${user?.uid}/${route.id.toString()}`),
-        JSON.stringify(Route.codec(airacData).encode(route)),
+        JSON.stringify(Route.codec(airacData).encode(route))
       )
         .then(() => {
           setRoutes((routes) => ({ ...routes, [route.id.toString()]: route }));
         })
         .catch((reason) => console.error(`Connection rejected: ${reason}`));
     },
-    [user],
+    [user]
   );
 
   const deleteRoute = useCallback(
     (routeId: UUID) => {
       const db = getDatabase();
       remove(ref(db, `routes/${user?.uid}/${routeId.toString()}`)).catch(
-        (reason) => console.error(`Connection rejected: ${reason}`),
+        (reason) => console.error(`Connection rejected: ${reason}`)
       );
     },
-    [user],
+    [user]
   );
 
   return (

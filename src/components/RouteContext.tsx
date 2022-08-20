@@ -44,7 +44,7 @@ export const RouteContext = createContext<{
   airspaceOverlaps: [],
 });
 
-const airacData = AiracData.loadCycle(AiracCycles.NOV_04_2021);
+const airacData = AiracData.loadCycle(AiracCycles.AUG_11_2022);
 
 export const RouteProvider: React.FC = ({ children }) => {
   const { user } = useFirebaseAuth();
@@ -59,8 +59,6 @@ export const RouteProvider: React.FC = ({ children }) => {
     .map((w) => `${w.latLng.lat}-${w.latLng.lng}`)
     .join("-");
   const [elevation, setElevation] = useState<ElevationAtPoint>(emptyElevation);
-
-
 
   useEffect(() => {
     if (_.keys(routes).includes(route.id.toString())) {
@@ -97,19 +95,19 @@ export const RouteProvider: React.FC = ({ children }) => {
                   },
                   (newRoute) => {
                     setRoute(newRoute);
-                  },
-                ),
+                  }
+                )
               );
             }
           },
-          (reason) => console.error(`Connection rejected: ${reason}`),
+          (reason) => console.error(`Connection rejected: ${reason}`)
         );
         setUnsubscribe((_oldU) => newUnsubscribe);
         // }
         setRoute(route);
       }
     },
-    [setRoute, db, user, routes, setUnsubscribe, unsubscribe],
+    [setRoute, db, user, routes, setUnsubscribe, unsubscribe]
   );
 
   const airspaceOverlaps = useMemo(() => {
@@ -119,7 +117,7 @@ export const RouteProvider: React.FC = ({ children }) => {
         ...airacData
           .getAirspacesInBbox(...route.boundingBox)
           .filter(({ type }) =>
-            [AirspaceType.CTR, AirspaceType.TMA].includes(type),
+            [AirspaceType.CTR, AirspaceType.TMA].includes(type)
           ),
         ...airacData
           .getDangerZonesInBbox(...route.boundingBox)

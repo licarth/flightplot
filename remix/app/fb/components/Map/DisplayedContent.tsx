@@ -2,7 +2,9 @@ import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import Modal, { type ModalHandle } from '../../Modal';
 import type { LayerEnum } from '../layer/Layer';
+import { MyRoutes, RouteWaypoints } from '../Menus';
 import { TopBar } from '../TopBar/TopBar';
+import { useRoute } from '../useRoute';
 import { VerticalProfileChart } from '../VerticalProfileChart';
 import { H2 } from './H2';
 import { LeafletMapContainer } from './LeafletMapContainer.client';
@@ -19,9 +21,18 @@ type LeafletMapProps = {
 
 export type MapBounds = [number, number, number, number];
 
+type Section = 'routes' | 'waypoints' | 'print-options' | undefined;
+
 export const DisplayedContent = ({ displayedLayers }: LeafletMapProps) => {
     const { setMap } = useMainMap();
+    const { route } = useRoute();
     const [mounted, setMounted] = React.useState(false);
+    const [expandedSection, setExpandedSection] = useState<Section>();
+    const toggleExpandedSection = (section: Section) => {
+        expandedSection === section
+            ? setExpandedSection(() => undefined)
+            : setExpandedSection(section);
+    };
     React.useEffect(() => {
         setMounted(true);
     }, []);
@@ -35,7 +46,19 @@ export const DisplayedContent = ({ displayedLayers }: LeafletMapProps) => {
                     <RightSide>
                         {mounted ? <LeafletMapContainer setMap={setMap} /> : <></>}
                         {/* @ts-ignore */}
-                        <VerticalProfile />
+                        {route?.length > 0 && <VerticalProfile />}
+                        <MobileComponents>
+                            <H2 onClick={() => toggleExpandedSection('routes')}>MES NAVIGATIONS</H2>
+                            <MyRoutes collapsed={expandedSection !== 'routes'} />
+                            {route && (
+                                <>
+                                    <H2 onClick={() => toggleExpandedSection('waypoints')}>
+                                        POINTS TOURNANTS
+                                    </H2>
+                                    <RouteWaypoints collapsed={expandedSection !== 'waypoints'} />
+                                </>
+                            )}
+                        </MobileComponents>
                     </RightSide>
                 </AppBody>
             </BackgroundContainer>
@@ -65,13 +88,25 @@ const VerticalProfile = () => {
 const RightSide = styled.div`
     display: flex;
     flex-direction: column;
-    flex: 1 0 auto;
-    justify-content: flex-end;
+    align-items: stretch;
+    flex-grow: 1;
+    /* flex: 1 0 auto; */
+    /* justify-content: flex-end; */
+`;
+
+const MobileComponents = styled.div`
+    @media (min-width: 1024px) {
+        & {
+            display: none;
+        }
+    }
 `;
 
 const BackgroundContainer = styled.div`
     display: flex;
-    flex-grow: 1 0 auto;
+    /* flex-grow: 1 0 auto; */
+    align-content: stretch;
+    align-items: stretch;
     flex-direction: column;
     height: 100%;
 `;
@@ -80,6 +115,9 @@ const VerticalProfileDiv = styled.div<{ collapsed?: boolean }>`
     height: ${({ collapsed }) => (collapsed ? '0px' : '300px')};
     background-color: white;
     overflow: hidden;
+    canvas {
+        width: 100% !important;
+    }
 `;
 
 const VerticalProfileModalDiv = styled.div`
@@ -95,5 +133,6 @@ const VerticalProfileModalDiv = styled.div`
 
 const AppBody = styled.div`
     display: flex;
-    flex: auto;
+    align-items: stretch;
+    flex-grow: 1;
 `;

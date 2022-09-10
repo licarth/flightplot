@@ -3,6 +3,7 @@ import type { PropsWithChildren } from 'react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { AiracCycles, AiracData, AirspaceType, DangerZoneType } from 'ts-aerodata-france';
 import { AerodromeWaypointType, latLngWaypointFactory, Route, Waypoint } from '../domain';
+import type { AirspaceSegmentOverlap } from '../domain/AirspaceIntersection/routeAirspaceOverlaps';
 import { routeAirspaceOverlaps } from '../domain/AirspaceIntersection/routeAirspaceOverlaps';
 import type { UUID } from '../domain/Uuid/Uuid';
 import type { ElevationAtPoint } from '../elevationOnRoute';

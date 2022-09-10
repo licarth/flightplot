@@ -1,23 +1,19 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
-import { AerodromeWaypoint, AerodromeWaypointType, Route } from '../../domain';
-import Modal from '../../Modal';
+import { MyRoutes, PrintOptions, RouteWaypoints } from '~/fb/components/Menus';
 import { useRoute } from '../useRoute';
-import { useUserRoutes } from '../useUserRoutes';
-import { MyRoutes } from './MyRoutes';
-import { PrintOptions } from './PrintOptions';
-import { RouteWaypoints } from './RouteWaypoints';
+import { H2 } from './H2';
 
 const ContainerDiv = styled.div`
-    width: 50px;
+    display: none;
+    width: 400px;
     height: 100%;
-    display: flex;
     flex-direction: column;
     justify-content: space-between;
 
     @media (min-width: 1024px) {
         & {
-            width: 400px;
+            display: flex;
         }
     }
 `;
@@ -32,18 +28,31 @@ export const LeftMenu = () => {
 };
 
 const RouteDisplay = () => {
+    const [routesCollapsed, setRoutesCollapsed] = useState(false);
+    const [waypointsCollapsed, setWaypointsCollapsed] = useState(false);
+    const { route } = useRoute();
+
     return (
-        <RouteContainer>
-            <MyRoutes />
-            <RouteWaypoints />
-            <hr />
+        <LeftColumn>
+            <H2 marginTop={5} onClick={() => setRoutesCollapsed((v) => !v)}>
+                MES NAVIGATIONS
+            </H2>
+            <MyRoutes collapsed={routesCollapsed} />
+            {route && (
+                <>
+                    <H2 marginTop={5} onClick={() => setWaypointsCollapsed((v) => !v)}>
+                        POINTS TOURNANTS
+                    </H2>
+                    <RouteWaypoints collapsed={waypointsCollapsed} />
+                </>
+            )}
+            <H2 marginTop={5}>IMPRIMER</H2>
             <PrintOptions />
-            <hr />
-        </RouteContainer>
+        </LeftColumn>
     );
 };
 
-const RouteContainer = styled.div`
+const LeftColumn = styled.div`
     display: flex;
     flex-direction: column;
     margin: 10px;
@@ -60,146 +69,4 @@ export const NewNavButton = styled.button`
     margin-bottom: 10px;
     text-align: center;
     height: 30px;
-`;
-
-export const RouteLine = ({ route, routeName }: { route: Route; routeName: string | null }) => {
-    const { route: currentlyEditedRoute, switchRoute, setRoute } = useRoute();
-    const { deleteRoute, setRouteTitle } = useUserRoutes();
-    const [editingTitle, setEditingTitle] = useState(false);
-    const isCurrentRoute = currentlyEditedRoute?.id.toString() === route.id.toString();
-    const deleteConfirmModal = useRef(null);
-    const deleteRouteAndUnfocus = () => {
-        deleteRoute(route.id);
-        setRoute(() => undefined);
-    };
-    return (
-        <RouteLineDiv isCurrentRoute={isCurrentRoute} onClick={() => switchRoute(route.id)}>
-            <RouteLineLeft>
-                {editingTitle ? (
-                    <StyledNameInput
-                        id={`input-route-title-name-${route.id}`}
-                        defaultValue={route.title || ''}
-                        size={1}
-                        step={500}
-                        onBlur={(e) => {
-                            setRouteTitle({
-                                routeId: route.id,
-                                title: e.currentTarget.value,
-                            });
-                            setEditingTitle(false);
-                        }}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Escape') {
-                                setEditingTitle(false);
-                            } else if (e.key === 'Enter') {
-                                setRouteTitle({
-                                    routeId: route.id,
-                                    title: e.currentTarget.value,
-                                });
-                                setEditingTitle(false);
-                            }
-                        }}
-                        autoFocus
-                    />
-                ) : (
-                    <TitleContainer onClick={() => setEditingTitle(true)}>
-                        {routeName || '<no title>'}
-                    </TitleContainer>
-                )}
-                {route.waypoints
-                    .filter(AerodromeWaypoint.isAerodromeWaypoint)
-                    .filter(({ waypointType }) => waypointType === AerodromeWaypointType.RUNWAY)
-                    .map(({ name }) => name)
-                    .join(' => ')}
-            </RouteLineLeft>
-            <DeleteDiv
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return route.waypoints.length > 0
-                        ? // @ts-ignore
-                          deleteConfirmModal.current?.open()
-                        : deleteRouteAndUnfocus();
-                }}
-            >
-                🗑️
-            </DeleteDiv>
-            <Modal fade={false} defaultOpened={false} ref={deleteConfirmModal}>
-                <ConfirmDeleteRouteDiv>
-                    Êtes-vous sûr(e) de vouloir supprimer cette navigation ?<br />
-                    <ConfirmDeleteRouteButton
-                        onClick={() => {
-                            //@ts-ignore
-                            deleteConfirmModal.current?.close();
-                            if (`${currentlyEditedRoute?.id}` === `${route.id}`) {
-                                setRoute(() => undefined);
-                            }
-                            deleteRouteAndUnfocus();
-                        }}
-                    >
-                        ❌ Confirmer la suppression de la route
-                    </ConfirmDeleteRouteButton>
-                </ConfirmDeleteRouteDiv>
-            </Modal>
-        </RouteLineDiv>
-    );
-};
-
-const ConfirmDeleteRouteDiv = styled.div`
-    display: flex;
-    height: 80px;
-    justify-content: space-between;
-    flex-direction: column;
-`;
-
-const ConfirmDeleteRouteButton = styled.button`
-    height: 30px;
-`;
-
-const DeleteDiv = styled.button`
-    background: none;
-    border: none;
-    display: inline-block;
-    padding-left: 10px;
-    cursor: pointer;
-`;
-
-const StyledNameInput = styled.input`
-    width: 100px;
-`;
-
-const RouteLineDiv = styled.div<{ isCurrentRoute: boolean }>`
-    display: flex;
-    justify-content: space-between;
-    :hover {
-        background: #f597006d;
-        color: white;
-        cursor: pointer;
-    }
-    ${({ isCurrentRoute }) => (isCurrentRoute ? 'background: #f59700; color: white;' : '')}
-`;
-
-const RouteLineLeft = styled.div`
-    display: flex;
-    justify-content: space-between;
-`;
-
-const TitleContainer = styled.div`
-    display: inline-block;
-    width: 100px;
-
-    min-height: 1em;
-    font-weight: bold;
-    border-bottom: 1px solid #000;
-    text-decoration: none;
-`;
-
-export const NavigationItemsList = styled.div`
-    max-height: 20vh;
-    overflow-y: scroll;
-`;
-
-export const NavigationCollapsibleDiv = styled.div<{ collapsed?: boolean }>`
-    ${({ collapsed }) => collapsed && 'height: 0px'};
-    overflow: hidden;
 `;

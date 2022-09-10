@@ -1,10 +1,10 @@
 import { Fragment } from 'react';
 import { Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
-import { Aerodrome } from 'ts-aerodata-france';
+import type { Aerodrome } from 'ts-aerodata-france';
 import { toLatLng } from '../../LatLng';
 import { useAiracData } from '../useAiracData';
-import { MapBounds } from './DisplayedContent';
+import type { MapBounds } from './DisplayedContent';
 import { preventDefault } from './preventDefault';
 import { StyledAerodromeLogo } from './StyledAerodromeLogo';
 
@@ -35,6 +35,7 @@ export const Aerodromes = ({
                                 key={`aerodrome-${icaoCode}`}
                                 interactive={true}
                                 bounds={[
+                                    // Note: this is pure guess.
                                     [l.lat + 0.02, l.lng - 0.02],
                                     [l.lat - 0.02, l.lng + 0.02],
                                 ]}

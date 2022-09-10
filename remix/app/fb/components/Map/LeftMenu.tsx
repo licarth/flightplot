@@ -56,6 +56,7 @@ const RouteContainer = styled.div`
 const MyRoutes = () => {
     const { user } = useFirebaseAuth();
     const { routes, saveRoute } = useUserRoutes();
+    const { setRoute } = useRoute();
     const [collapsed, setCollapsed] = useState(false);
 
     if (!user) {
@@ -70,6 +71,7 @@ const MyRoutes = () => {
                         onClick={() => {
                             const newRoute = Route.empty();
                             saveRoute(newRoute);
+                            setRoute(() => newRoute);
                         }}
                     >
                         ➕ Nouvelle navigation
@@ -108,7 +110,7 @@ const RouteLine = ({ route, routeName }: { route: Route; routeName: string | nul
     const deleteConfirmModal = useRef(null);
     const deleteRouteAndUnfocus = () => {
         deleteRoute(route.id);
-        setRoute(Route.empty());
+        setRoute(() => undefined);
     };
     return (
         <RouteLineDiv isCurrentRoute={isCurrentRoute} onClick={() => switchRoute(route.id)}>
@@ -151,12 +153,14 @@ const RouteLine = ({ route, routeName }: { route: Route; routeName: string | nul
                     .join(' => ')}
             </RouteLineLeft>
             <DeleteDiv
-                onClick={() =>
-                    route.waypoints.length > 0
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return route.waypoints.length > 0
                         ? // @ts-ignore
                           deleteConfirmModal.current?.open()
-                        : deleteRouteAndUnfocus()
-                }
+                        : deleteRouteAndUnfocus();
+                }}
             >
                 🗑️
             </DeleteDiv>
@@ -168,7 +172,7 @@ const RouteLine = ({ route, routeName }: { route: Route; routeName: string | nul
                             //@ts-ignore
                             deleteConfirmModal.current?.close();
                             if (`${currentlyEditedRoute?.id}` === `${route.id}`) {
-                                setRoute(Route.empty());
+                                setRoute(() => undefined);
                             }
                             deleteRouteAndUnfocus();
                         }}

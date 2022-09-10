@@ -96,19 +96,31 @@ export const VerticalProfileChart = () => {
     ];
 
     if (elevation) {
-        //@ts-ignore
         datasets.push({
             label: 'Élevation du terrain',
+            // data: elevation.distancesFromStartInNm.map((x, i) => ({
+            //     x,
+            //     y: elevation.elevations[i],
+            //     r: 0,
+            // })),
+            // fill: true,
+            // showLine: false,
+            // backgroundColor: 'rgb(141, 63, 0)',
+            // borderColor: 'rgb(0, 0, 0)',
+            // borderWidth: 0,
+            // pointRadius: 0,
             data: elevation.distancesFromStartInNm.map((x, i) => ({
                 x,
                 y: elevation.elevations[i],
                 r: 0,
             })),
-            fill: true,
-            showLine: false,
-            backgroundColor: 'rgb(141, 63, 0)',
-            borderColor: 'rgb(0, 0, 0)',
+            fill: 'origin',
+            showLine: true,
+            backgroundColor: '#883d00',
+            borderColor: '#883d00',
             borderWidth: 0,
+            pointHitRadius: 0,
+            pointHoverRadius: 0,
             pointRadius: 0,
         });
     }
@@ -180,6 +192,7 @@ export const VerticalProfileChart = () => {
             key={`vertical-profile-${hashCode(JSON.stringify(route.waypoints))}`}
             data={data}
             options={{
+                responsive: true,
                 maintainAspectRatio: false,
                 animation: false,
                 elements: {

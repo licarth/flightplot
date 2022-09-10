@@ -96,7 +96,7 @@ const RouteLine = ({ route, routeName }: { route: Route; routeName: string | nul
                         .join(' => ')}
                 </RouteSummaryContainer>
             </RouteLineLeft>
-            {/* <DeleteDiv
+            <DeleteDiv
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -107,7 +107,7 @@ const RouteLine = ({ route, routeName }: { route: Route; routeName: string | nul
                 }}
             >
                 🗑️
-            </DeleteDiv> */}
+            </DeleteDiv>
             <Modal fade={false} defaultOpened={false} ref={deleteConfirmModal}>
                 <ConfirmDeleteRouteDiv>
                     Êtes-vous sûr(e) de vouloir supprimer cette navigation ?<br />

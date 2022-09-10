@@ -19,6 +19,7 @@ export const InnerMapContainer = () => {
     const [mapBounds, setMapBounds] = useState<[number, number, number, number]>(
         leafletMap && getMapBounds(leafletMap),
     );
+
     const refreshMapBounds = () => setMapBounds(getMapBounds(leafletMap));
     useMapEvents({
         zoomend: refreshMapBounds,

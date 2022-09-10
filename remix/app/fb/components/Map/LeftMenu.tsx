@@ -1,12 +1,10 @@
-import _ from 'lodash';
 import { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { AerodromeWaypoint, AerodromeWaypointType, Route } from '../../domain';
-import { useFirebaseAuth } from '../../firebase/auth/FirebaseAuthContext';
 import Modal from '../../Modal';
 import { useRoute } from '../useRoute';
 import { useUserRoutes } from '../useUserRoutes';
-import { H2 } from './H2';
+import { MyRoutes } from './MyRoutes';
 import { PrintOptions } from './PrintOptions';
 import { RouteWaypoints } from './RouteWaypoints';
 
@@ -53,56 +51,18 @@ const RouteContainer = styled.div`
     height: 100%;
 `;
 
-const MyRoutes = () => {
-    const { user } = useFirebaseAuth();
-    const { routes, saveRoute } = useUserRoutes();
-    const { setRoute } = useRoute();
-    const [collapsed, setCollapsed] = useState(false);
-
-    if (!user) {
-        return <></>;
-    } else {
-        return (
-            <NavigationsList>
-                {' '}
-                <H2 onClick={() => setCollapsed((v) => !v)}>MES NAVIGATIONS</H2>
-                <NavigationCollapsibleDiv collapsed={collapsed}>
-                    <NewNavButton
-                        onClick={() => {
-                            const newRoute = Route.empty();
-                            saveRoute(newRoute);
-                            setRoute(() => newRoute);
-                        }}
-                    >
-                        ➕ Nouvelle navigation
-                    </NewNavButton>
-                    <NavigationItemsList>
-                        {_.map(_.sortBy(routes, 'title'), (route, key) => (
-                            <RouteLine
-                                key={`routeline-${key}`}
-                                route={route}
-                                routeName={route.title}
-                            />
-                        ))}
-                    </NavigationItemsList>
-                </NavigationCollapsibleDiv>
-            </NavigationsList>
-        );
-    }
-};
-
-const NavigationsList = styled.div`
+export const NavigationsList = styled.div`
     display: flex;
     flex-direction: column;
 `;
 
-const NewNavButton = styled.button`
+export const NewNavButton = styled.button`
     margin-bottom: 10px;
     text-align: center;
     height: 30px;
 `;
 
-const RouteLine = ({ route, routeName }: { route: Route; routeName: string | null }) => {
+export const RouteLine = ({ route, routeName }: { route: Route; routeName: string | null }) => {
     const { route: currentlyEditedRoute, switchRoute, setRoute } = useRoute();
     const { deleteRoute, setRouteTitle } = useUserRoutes();
     const [editingTitle, setEditingTitle] = useState(false);
@@ -234,12 +194,12 @@ const TitleContainer = styled.div`
     text-decoration: none;
 `;
 
-const NavigationItemsList = styled.div`
+export const NavigationItemsList = styled.div`
     max-height: 20vh;
     overflow-y: scroll;
 `;
 
-const NavigationCollapsibleDiv = styled.div<{ collapsed?: boolean }>`
+export const NavigationCollapsibleDiv = styled.div<{ collapsed?: boolean }>`
     ${({ collapsed }) => collapsed && 'height: 0px'};
     overflow: hidden;
 `;

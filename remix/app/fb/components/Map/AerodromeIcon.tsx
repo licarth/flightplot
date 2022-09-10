@@ -1,8 +1,13 @@
-// Converted with https://react-svgr.com/playground/ from aerodrome.min.svg with SVGO option "cleanupIDs": false,
 import { SVGProps } from 'react';
 
-const AerodromeIcon = (props: SVGProps<SVGSVGElement>) => (
-    <svg viewBox="0 0 31.75 31.75" id="svg5" xmlns="http://www.w3.org/2000/svg" {...props}>
+const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
+    <svg
+        viewBox="0 0 31.75 31.75"
+        id="svg5"
+        xmlSpace="preserve"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+    >
         <g
             id="magnetic-variation"
             style={{
@@ -26,7 +31,12 @@ const AerodromeIcon = (props: SVGProps<SVGSVGElement>) => (
                 r={11}
                 transform="rotate(47.634)"
             />
-            <g id="g4992">
+            <g
+                id="g4992"
+                style={{
+                    display: 'inline',
+                }}
+            >
                 <path
                     id="rect3506-5-6"
                     style={{
@@ -68,26 +78,62 @@ const AerodromeIcon = (props: SVGProps<SVGSVGElement>) => (
             id="runway"
             style={{
                 display: 'inline',
+                opacity: 1,
             }}
         >
             <path
-                id="path5520"
+                id="path5520-2-5"
                 style={{
                     display: 'inline',
-                    opacity: 1,
                     fill: '#002e94',
                     fillOpacity: 1,
                     stroke: 'none',
-                    strokeWidth: 1.833,
+                    strokeWidth: 1.60041,
                     strokeMiterlimit: 4,
                     strokeDasharray: 'none',
                     strokeOpacity: 1,
                 }}
-                d="M18.143 5.67A12.472 12.472 0 0 0 5.67 18.143a12.472 12.472 0 0 0 12.473 12.47 12.472 12.472 0 0 0 12.47-12.47A12.472 12.472 0 0 0 18.143 5.67ZM14.5 8h7v20h-7z"
-                transform="scale(.88194)"
+                d="M15.875 4.284A11.587 11.587 0 0 0 4.289 15.87a11.587 11.587 0 0 0 11.586 11.587A11.587 11.587 0 0 0 27.461 15.87 11.587 11.587 0 0 0 15.875 4.284Zm.002 1.507a10.084 10.084 0 0 1 2.96.446v19.269a10.084 10.084 0 0 1-2.96.453 10.084 10.084 0 0 1-2.963-.453V6.244a10.084 10.084 0 0 1 2.963-.453z"
+            />
+        </g>
+        <g
+            id="military"
+            style={{
+                display: 'inline',
+            }}
+            transform="translate(.112 -.224)"
+        >
+            <path
+                id="path5520-5"
+                style={{
+                    display: 'inline',
+                    fill: '#ba2020',
+                    fillOpacity: 1,
+                    stroke: 'none',
+                    strokeWidth: 1.6166,
+                    strokeMiterlimit: 4,
+                    strokeDasharray: 'none',
+                    strokeOpacity: 1,
+                }}
+                d="M15.765 5.1c-6.076 0-11 4.925-11 11S9.69 27.1 15.764 27.1c6.074-.001 10.997-4.925 10.998-10.999 0-6.074-4.924-11-10.998-11Zm0 3.47a7.529 7.529 0 1 1-.003 15.058 7.529 7.529 0 0 1 .003-15.057Z"
+            />
+            <path
+                id="path5520-2"
+                style={{
+                    display: 'inline',
+                    opacity: 1,
+                    fill: '#fff',
+                    fillOpacity: 1,
+                    stroke: 'none',
+                    strokeWidth: 1.39539,
+                    strokeMiterlimit: 4,
+                    strokeDasharray: 'none',
+                    strokeOpacity: 1,
+                }}
+                d="M15.764 6.604a9.495 9.495 0 0 0-9.496 9.495 9.495 9.495 0 0 0 9.496 9.495 9.495 9.495 0 0 0 9.494-9.495 9.495 9.495 0 0 0-9.494-9.495Zm0 .702a8.792 8.792 0 0 1 8.791 8.793 8.792 8.792 0 0 1-8.791 8.792 8.792 8.792 0 0 1-8.793-8.792 8.792 8.792 0 0 1 8.793-8.793Z"
             />
         </g>
     </svg>
 );
 
-export default AerodromeIcon;
+export default SvgComponent;

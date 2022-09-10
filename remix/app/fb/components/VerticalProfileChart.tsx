@@ -1,5 +1,6 @@
-import { ChartData, ChartDataset } from 'chart.js';
-import annotationPlugin, { AnnotationOptions } from 'chartjs-plugin-annotation';
+import type { ChartData, ChartDataset } from 'chart.js';
+import type { AnnotationOptions } from 'chartjs-plugin-annotation';
+import annotationPlugin from 'chartjs-plugin-annotation';
 import 'chartjs-plugin-dragdata';
 //@ts-ignore
 import { Chart as ChartJS } from 'chart.js';
@@ -12,7 +13,8 @@ import { useCallback } from 'react';
 import { Scatter } from 'react-chartjs-2';
 
 import { AirspaceType, DangerZoneType } from 'ts-aerodata-france';
-import { AerodromeWaypoint, AerodromeWaypointType, Waypoint } from '../domain';
+import type { Waypoint } from '../domain';
+import { AerodromeWaypoint, AerodromeWaypointType } from '../domain';
 import { aircraftCollection } from '../domain/Aircraft';
 import { useRoute } from './useRoute';
 

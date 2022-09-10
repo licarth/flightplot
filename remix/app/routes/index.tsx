@@ -1,5 +1,6 @@
 // import '../fb/firebaseConfig';
 import { useState } from 'react';
+import { MetaFunction } from 'remix';
 import styled from 'styled-components';
 import { DisplayedContent, PrintContent } from '~/fb/components/Map';
 import { MainMapProvider } from '~/fb/components/Map/MainMapContext';
@@ -38,6 +39,14 @@ export default function Index() {
         </FirebaseAuthProvider>
     );
 }
+
+export const meta: MetaFunction = () => {
+    return {
+        title: 'FlightPlot',
+        description: 'Outil de plannification de vols VFR',
+        viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0',
+    };
+};
 
 export type DisplayedLayers = {
     [keys in LayerEnum]: boolean;

@@ -1,10 +1,12 @@
-import { Unsubscribe } from 'firebase/database';
-import React, { createContext, PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import type { Unsubscribe } from 'firebase/database';
+import type { PropsWithChildren } from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { AiracCycles, AiracData, AirspaceType, DangerZoneType } from 'ts-aerodata-france';
 import { AerodromeWaypointType, latLngWaypointFactory, Route, Waypoint } from '../domain';
-import { AirspaceSegmentOverlap, routeAirspaceOverlaps } from '../domain/routeAirspaceOverlaps';
-import { UUID } from '../domain/Uuid/Uuid';
-import { ElevationAtPoint, elevationOnRoute } from '../elevationOnRoute';
+import { routeAirspaceOverlaps } from '../domain/AirspaceIntersection/routeAirspaceOverlaps';
+import type { UUID } from '../domain/Uuid/Uuid';
+import type { ElevationAtPoint } from '../elevationOnRoute';
+import { elevationOnRoute } from '../elevationOnRoute';
 import { openElevationApiElevationService } from '../ElevationService/openElevationApiElevationService';
 import { FORMATS } from './PrintContext';
 import { useUserRoutes } from './useUserRoutes';

@@ -42,7 +42,7 @@ export const UserRoutesContext = createContext<{
     listenToRouteChanges: () => () => {},
 });
 
-const airacData = AiracData.loadCycle(AiracCycles.AUG_11_2022);
+const airacData = AiracData.loadCycle(AiracCycles.SEP_08_2022);
 
 export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const { user } = useFirebaseAuth();
@@ -81,6 +81,7 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
             const route = routes[routeId.toString()];
             setLastLocalChangeAt(lastChangeAt);
             if (route) {
+                console.log(`Listening to route updates for ${route.title}`);
                 const dbAddress = `routes/${user?.uid}/${routeId.toString()}`;
                 const newRouteCallback = (newRoute: Route): void => {
                     if (shouldPropagateChange(newRoute)) {

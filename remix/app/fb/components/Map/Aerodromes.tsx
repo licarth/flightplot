@@ -22,14 +22,11 @@ export const Aerodromes = ({
         <>
             {mapBounds &&
                 airacData.getAerodromesInBbox(...mapBounds).map((aerodrome) => {
+                    const { latLng, icaoCode, magneticVariation, runways } = aerodrome;
                     const {
-                        latLng,
-                        icaoCode,
-                        magneticVariation,
-                        runways: {
-                            mainRunway: { magneticOrientation },
-                        },
-                    } = aerodrome;
+                        mainRunway: { magneticOrientation },
+                    } = runways;
+                    const hasPavedRunway = runways.runways.some((r) => r.surface === 'asphalt');
                     const l = toLatLng(latLng);
 
                     return (
@@ -52,6 +49,8 @@ export const Aerodromes = ({
                                 {
                                     <StyledAerodromeLogo
                                         title={`${icaoCode}`}
+                                        $military={aerodrome.status === 'MIL'}
+                                        $pavedRunway={hasPavedRunway}
                                         $magneticVariation={magneticVariation}
                                         $magneticOrientation={magneticOrientation}
                                     />

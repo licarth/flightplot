@@ -1,6 +1,6 @@
 import { NmScale } from '@marfle/react-leaflet-nmscale';
 import { useState } from 'react';
-import { useMap, useMapEvents } from 'react-leaflet';
+import { LayerGroup, useMap, useMapEvents } from 'react-leaflet';
 import { toLeafletLatLng } from '../../domain';
 import { OaciLayer } from '../layer';
 import { useRoute } from '../useRoute';
@@ -30,24 +30,26 @@ export const InnerMapContainer = () => {
     return (
         <>
             <Layers />
-            {route && <FlightPlanningLayer routeContext={routeContext} />}
-            <PrintAreaPreview />
-            <Airspaces mapBounds={mapBounds} />
-            <DangerZones mapBounds={mapBounds} />
-            {shouldRenderAerodromes && (
-                <Aerodromes
-                    mapBounds={mapBounds}
-                    onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
-                />
-            )}
-            {shouldRenderVfrPoints && (
-                <VfrPoints
-                    mapBounds={mapBounds}
-                    onClick={({ latLng, name }) =>
-                        addLatLngWaypoint({ latLng: toLeafletLatLng(latLng), name })
-                    }
-                />
-            )}
+            <LayerGroup>
+                {route && <FlightPlanningLayer routeContext={routeContext} />}
+                <PrintAreaPreview />
+                <Airspaces mapBounds={mapBounds} />
+                <DangerZones mapBounds={mapBounds} />
+                {shouldRenderAerodromes && (
+                    <Aerodromes
+                        mapBounds={mapBounds}
+                        onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
+                    />
+                )}
+                {shouldRenderVfrPoints && (
+                    <VfrPoints
+                        mapBounds={mapBounds}
+                        onClick={({ latLng, name }) =>
+                            addLatLngWaypoint({ latLng: toLeafletLatLng(latLng), name })
+                        }
+                    />
+                )}
+            </LayerGroup>
             <NmScale />
         </>
     );

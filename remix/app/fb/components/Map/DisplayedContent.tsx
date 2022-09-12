@@ -15,15 +15,13 @@ export type DisplayedLayers = {
     [keys in LayerEnum]: boolean;
 };
 
-type LeafletMapProps = {
-    displayedLayers: DisplayedLayers;
-};
+type LeafletMapProps = {};
 
 export type MapBounds = [number, number, number, number];
 
 type Section = 'routes' | 'waypoints' | 'print-options' | undefined;
 
-export const DisplayedContent = ({ displayedLayers }: LeafletMapProps) => {
+export const DisplayedContent = ({}: LeafletMapProps) => {
     const { setMap } = useMainMap();
     const { route } = useRoute();
     const [mounted, setMounted] = React.useState(false);

@@ -1,13 +1,15 @@
 import { NmScale } from '@marfle/react-leaflet-nmscale';
 import { LayerGroup, useMap } from 'react-leaflet';
 import { toLeafletLatLng } from '../../domain';
-import { OaciLayer } from '../layer';
+import { OaciLayer, OpenStreetMapLayer } from '../layer';
+import { SatelliteLayer } from '../layer/SatelliteLayer';
 import { useRoute } from '../useRoute';
 import { Aerodromes } from './Aerodromes';
 import { Airspaces } from './Airspaces';
 import { DangerZones } from './DangerZones';
 import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
+import { LayerSwitchButton } from './LayerSwitchButton';
 import { useMainMap } from './MainMapContext';
 import { VfrPoints } from './VfrPoints';
 import { Vors } from './Vors';
@@ -16,6 +18,7 @@ export const InnerMapContainer = () => {
     const routeContext = useRoute();
     const { addAerodromeWaypoint, addLatLngWaypoint, route } = routeContext;
     const leafletMap = useMap();
+    const { currentBackgroundLayer } = useMainMap();
 
     const { bounds: mapBounds } = useMainMap();
 
@@ -25,7 +28,7 @@ export const InnerMapContainer = () => {
 
     return (
         <>
-            <Layers />
+            <DisplayedLayer layer={currentBackgroundLayer} />
             {route && <FlightPlanningLayer routeContext={routeContext} />}
             <LayerGroup>
                 <PrintAreaPreview />
@@ -57,16 +60,19 @@ export const InnerMapContainer = () => {
                 )}
             </LayerGroup>
             <NmScale />
+            <LayerSwitchButton />
         </>
     );
 };
 
-const Layers = () => {
+export type DisplayedLayerProps = { layer: 'oaci' | 'sat' | 'osm' };
+
+const DisplayedLayer = ({ layer }: DisplayedLayerProps) => {
     return (
         <>
-            {/* <OpenStreetMapLayer /> */}
-            {/* <SatelliteLayer /> */}
-            <OaciLayer />
+            {layer === 'osm' && <OpenStreetMapLayer />}
+            {layer === 'oaci' && <SatelliteLayer />}
+            {layer === 'sat' && <OaciLayer />}
         </>
     );
 };

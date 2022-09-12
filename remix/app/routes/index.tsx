@@ -1,5 +1,4 @@
 // import '../fb/firebaseConfig';
-import { useState } from 'react';
 import { MetaFunction } from 'remix';
 import styled from 'styled-components';
 import { DisplayedContent, PrintContent } from '~/fb/components/Map';
@@ -13,11 +12,6 @@ import { UserRoutesProvider } from '../fb/components/UserRoutesContext';
 import { FirebaseAuthProvider } from '../fb/firebase/auth/FirebaseAuthContext';
 
 export default function Index() {
-    const [displayedLayers] = useState<DisplayedLayers>({
-        icao: true,
-        open_street_map: false,
-    });
-
     return (
         <FirebaseAuthProvider>
             <AiracDataProvider>
@@ -27,7 +21,7 @@ export default function Index() {
                             <div id="modal-root" data-testid="modal-root"></div>
                             <AppContainer id="app">
                                 <MainMapProvider>
-                                    <DisplayedContent displayedLayers={displayedLayers} />
+                                    <DisplayedContent />
                                 </MainMapProvider>
                             </AppContainer>
                             <PrintContent>{''}</PrintContent>

@@ -4,6 +4,11 @@ on:
     branches:
       - master
       - remix-stashed
+
+defaults:
+  run:
+    working-directory: remix
+
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 jobs:
@@ -13,4 +18,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: cd remix && yarn deploy --remote-only
+      - run: npm i
+      - run: cd remix && npm run deploy --remote-only

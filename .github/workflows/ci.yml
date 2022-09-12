@@ -3,6 +3,10 @@ name: ci
 on:
   - push
 
+defaults:
+  run:
+    working-directory: remix
+
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 jobs:
@@ -11,4 +15,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cd remix && yarn test
+      - run: npm i
+      - run: yarn test

@@ -5,7 +5,7 @@ orbs:
 
 jobs:
   run_tests:
-    working_directory: ~/project
+    working_directory: ~/project/remix
     docker:
       - image: circleci/node:12
     steps:
@@ -15,8 +15,8 @@ jobs:
           pkg-manager: yarn
       - run: yarn test
 
-  build_deploy_hosting:
-    working_directory: ~/project
+  build_deploy:
+    working_directory: ~/project/remix
     docker:
       - image: circleci/node:12
     steps:
@@ -25,14 +25,15 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
       - run: yarn build
+      - uses: superfly/flyctl-actions/setup-flyctl@master
       - when:
           condition:
-            equal: [master, << pipeline.git.branch >>]
+            equal: [remix-stashed, << pipeline.git.branch >>]
           steps:
-            - run: yarn firebase deploy --only hosting --token "$FIREBASE_TOKEN"
+            - run: yarn deploy --remote-only
 
 workflows:
   ci:
     jobs:
       - run_tests
-      - build_deploy_hosting
+      - build_deploy

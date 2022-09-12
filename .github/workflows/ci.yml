@@ -15,5 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm i
+      - name: npm install (library)
+        uses: bahmutov/npm-install@v1
       - run: npm run test

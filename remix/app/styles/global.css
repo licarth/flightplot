@@ -1,3 +1,45 @@
+/* Airspace names & vertical limits on IGN maps */
+@font-face {
+  font-family: 'Futura';
+  src: url('/fonts/FuturaBT-ExtraBlackCondensed.woff2') format('woff2'),
+      url('/fonts/FuturaBT-ExtraBlackCondensed.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Airspace names & vertical limits on IGN maps */
+@font-face {
+  font-family: 'Futura';
+  src: url('/fonts/FuturaBT-ExtraBlackCondItalic.woff2') format('woff2'),
+      url('/fonts/FuturaBT-ExtraBlackCondItalic.woff') format('woff');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Frequencies & VFR Points on IGN maps */
+@font-face {
+  font-family: 'Folio XBd BT';
+  src: url('/fonts/FolioBT-ExtraBold.woff2') format('woff2'),
+      url('/fonts/FolioBT-ExtraBold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* aerodrome names on IGN maps */
+@font-face {
+  font-family: 'Univers';
+  src: url('/fonts/Univers-CondensedBold.woff2') format('woff2'),
+      url('/fonts/Univers-CondensedBold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+
 /* @font-face {
     font-family: 'Work Sans', sans-serif;
     src: url('/fonts/WorkSans-Black.ttf') format('truetype');
@@ -12,6 +54,7 @@
     font-style: italic;
     font-display: optional;
 }
+
 
 @font-face {
     font-family: 'Work Sans', sans-serif;

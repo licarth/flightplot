@@ -1,16 +1,17 @@
 import { Fragment, useState } from 'react';
 import { Polygon, SVGOverlay, Tooltip } from 'react-leaflet';
+import styled from 'styled-components';
 import { Airspace, AirspaceType } from 'ts-aerodata-france';
 import { toLeafletLatLng } from '../../domain';
 import { boundingBox } from '../../domain/boundingBox';
 import { useAiracData } from '../useAiracData';
 import { MapBounds } from './DisplayedContent';
 
+const color = '#002e94';
 const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
     const { geometry, name, lowerLimit, higherLimit, airspaceClass } = airspace;
     const leafletLatLngs = geometry.map(toLeafletLatLng);
     const [mouseOver, setMouseOver] = useState(false);
-    const color = '#002e94';
     return (
         <Fragment key={`airspace-${name}`}>
             {
@@ -54,22 +55,19 @@ const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
                                 key={`tooltip-airspace-${name}`}
                                 className=""
                             >
-                                <b>
-                                    {name} [{airspaceClass}]
-                                </b>
-                                <br />
-                                <div
-                                    style={{
-                                        textAlign: 'center',
-                                        fontStyle: 'italic',
-                                        backgroundColor: 'grey',
-                                        color: 'white',
-                                    }}
-                                >
-                                    {higherLimit.toString()}
-                                    <hr />
-                                    {lowerLimit.toString()}
-                                </div>
+                                <IgnAirspaceNameFont>
+                                    <b>
+                                        {name} [{airspaceClass}]
+                                    </b>
+                                    <br />
+                                    <div>
+                                        <i>
+                                            {higherLimit.toString()}
+                                            <hr />
+                                            {lowerLimit.toString()}
+                                        </i>
+                                    </div>
+                                </IgnAirspaceNameFont>
                             </Tooltip>
                         </Polygon>
                     </SVGOverlay>
@@ -97,3 +95,9 @@ export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
         </>
     );
 };
+
+const IgnAirspaceNameFont = styled.span`
+    text-align: center;
+    font-family: 'Futura';
+    color: ${color};
+`;

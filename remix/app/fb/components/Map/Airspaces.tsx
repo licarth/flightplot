@@ -52,6 +52,7 @@ const AirspaceSvg = ({ airspace }: { airspace: Airspace }) => {
                                 opacity={0.8}
                                 offset={[10, 0]}
                                 key={`tooltip-airspace-${name}`}
+                                className=""
                             >
                                 <b>
                                     {name} [{airspaceClass}]

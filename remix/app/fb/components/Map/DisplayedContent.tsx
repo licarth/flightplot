@@ -90,8 +90,6 @@ const RightSide = styled.div`
     flex-direction: column;
     align-items: stretch;
     flex-grow: 1;
-    /* flex: 1 0 auto; */
-    /* justify-content: flex-end; */
 `;
 
 const MobileComponents = styled.div`

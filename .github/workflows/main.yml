@@ -18,4 +18,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: npm run deploy
+      - run: npm run deploy -- --remote-only

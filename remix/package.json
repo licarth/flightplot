@@ -7,12 +7,12 @@
     "scripts": {
         "build": "remix build",
         "dev": "remix dev",
-        "deploy": "flyctl deploy --remote-only",
+        "deploy": "flyctl deploy",
         "lint": "eslint app",
         "format": "prettier --write app",
         "postinstall": "remix setup node",
         "start": "remix-serve build",
-        "test": "jest --watch",
+        "test": "jest",
         "test-pr": "jest"
     },
     "dependencies": {

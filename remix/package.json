@@ -7,7 +7,7 @@
     "scripts": {
         "build": "remix build",
         "dev": "remix dev",
-        "deploy": "flyctl deploy",
+        "deploy": "flyctl deploy --remote-only",
         "lint": "eslint app",
         "format": "prettier --write app",
         "postinstall": "remix setup node",

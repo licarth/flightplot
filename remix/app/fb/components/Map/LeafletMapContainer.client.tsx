@@ -33,4 +33,7 @@ const MapSizeDetector = styled.div`
     justify-items: stretch;
     flex-grow: 1;
     display: flex;
+    * {
+        color-scheme: only light;
+    }
 `;

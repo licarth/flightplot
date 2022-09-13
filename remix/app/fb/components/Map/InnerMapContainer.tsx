@@ -30,35 +30,39 @@ export const InnerMapContainer = () => {
         <>
             <DisplayedLayer layer={currentBackgroundLayer} />
             {route && <FlightPlanningLayer routeContext={routeContext} />}
-            <LayerGroup>
-                <PrintAreaPreview />
-                {mapBounds && (
-                    <>
-                        <Airspaces mapBounds={mapBounds} />
-                        <DangerZones mapBounds={mapBounds} />
-                        {shouldRenderAerodromes && (
+            <PrintAreaPreview />
+            {mapBounds && (
+                <>
+                    <Airspaces mapBounds={mapBounds} />
+                    <DangerZones mapBounds={mapBounds} />
+                    {shouldRenderAerodromes && (
+                        <LayerGroup>
                             <Aerodromes
                                 mapBounds={mapBounds}
                                 onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
                             />
-                        )}
-                        {shouldRenderVors && (
+                        </LayerGroup>
+                    )}
+                    {shouldRenderVors && (
+                        <LayerGroup>
                             <Vors
                                 mapBounds={mapBounds}
                                 onClick={(aerodrome) => addAerodromeWaypoint({ aerodrome })}
                             />
-                        )}
-                        {shouldRenderVfrPoints && (
+                        </LayerGroup>
+                    )}
+                    {shouldRenderVfrPoints && (
+                        <LayerGroup>
                             <VfrPoints
                                 mapBounds={mapBounds}
                                 onClick={({ latLng, name }) =>
                                     addLatLngWaypoint({ latLng: toLeafletLatLng(latLng), name })
                                 }
                             />
-                        )}
-                    </>
-                )}
-            </LayerGroup>
+                        </LayerGroup>
+                    )}
+                </>
+            )}
             <NmScale />
             <LayerSwitchButton />
         </>

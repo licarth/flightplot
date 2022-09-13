@@ -1,24 +1,28 @@
-import { LatLng } from "../LatLng";
+import { WebMercatorCoords } from '../components/Map/CtrSVGPolygon/coordsConverter';
+import { LatLng } from '../LatLng';
 
-export const boundingBox = (latLngs: LatLng[]): [number, number][] => {
-  const lats: number[] = [];
-  const lngs: number[] = [];
+export const boundingBox = (latLngs: LatLng[] | WebMercatorCoords[]): [number, number][] => {
+    const yy: number[] = [];
+    const xx: number[] = [];
 
-  for (let i = 0; i < latLngs.length; i++) {
-    const { lat, lng } = latLngs[i];
-    lats.push(lat);
-    lngs.push(lng);
-  }
+    for (let i = 0; i < latLngs.length; i++) {
+        //@ts-ignore
+        const y = latLngs[i].lat || latLngs[i].y;
+        //@ts-ignore
+        const x = latLngs[i].lng || latLngs[i].x;
+        yy.push(y);
+        xx.push(x);
+    }
 
-  // calc the min and max lng and lat
-  const minlat = Math.min(...lats);
-  const maxlat = Math.max(...lats);
-  const minlng = Math.min(...lngs);
-  const maxlng = Math.max(...lngs);
+    // calc the min and max lng and lat
+    const minlat = Math.min(...yy);
+    const maxlat = Math.max(...yy);
+    const minlng = Math.min(...xx);
+    const maxlng = Math.max(...xx);
 
-  // create a bounding rectangle that can be used in leaflet
-  return [
-    [minlat, minlng],
-    [maxlat, maxlng],
-  ];
+    // create a bounding rectangle that can be used in leaflet
+    return [
+        [minlat, minlng],
+        [maxlat, maxlng],
+    ];
 };

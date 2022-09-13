@@ -39,7 +39,7 @@ export const Aerodromes = ({
                                     [l.lat + 0.02, l.lng - 0.02],
                                     [l.lat - 0.02, l.lng + 0.02],
                                 ]}
-                                attributes={{ class: 'map-svg-text-label' }}
+                                attributes={{ class: 'overflow-visible' }}
                                 eventHandlers={{
                                     click: (e) => {
                                         preventDefault(e);

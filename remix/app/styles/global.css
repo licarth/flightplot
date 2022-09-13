@@ -132,7 +132,7 @@ html {
     flex-grow: 1;
   }
   
-  .map-svg-text-label {
+  .overflow-visible {
     overflow: visible !important;
   }
   

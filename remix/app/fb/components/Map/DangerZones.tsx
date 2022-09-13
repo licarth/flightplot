@@ -1,8 +1,10 @@
-import { Polygon, SVGOverlay } from 'react-leaflet';
-import { toLeafletLatLng } from '../../domain';
-import { boundingBox } from '../../domain/boundingBox';
+import { Tooltip } from 'react-leaflet';
+import styled from 'styled-components';
 import { useAiracData } from '../useAiracData';
+import { Colors } from './Colors';
+import { AirspaceSVGPolygon } from './CtrSVGPolygon/AirspaceSVGPolygon';
 import { MapBounds } from './DisplayedContent';
+import { IgnAirspaceNameFont } from './IgnAirspaceNameFont';
 
 export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
     const { airacData } = useAiracData();
@@ -13,30 +15,46 @@ export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
                 airacData
                     .getDangerZonesInBbox(...mapBounds)
                     .filter(({ type }) => ['P'].includes(type))
-                    .map((zone, i) => {
-                        const { geometry } = zone;
-                        const leafletLatLngs = geometry.map(toLeafletLatLng);
-
+                    .map(({ geometry, name, lowerLimit, higherLimit }, i) => {
                         return (
-                            <SVGOverlay
-                                key={`dangerZone-${i}-${zone.name}`}
-                                attributes={{
-                                    stroke: 'red',
-                                    class: 'map-svg-text-label',
-                                }}
-                                bounds={boundingBox(leafletLatLngs)}
-                                interactive={false}
+                            <AirspaceSVGPolygon
+                                key={`p-${name}`}
+                                i={i}
+                                geometry={geometry}
+                                name={name}
+                                thinBorderColor={Colors.pThinBorder}
+                                thickBorderColor={Colors.pThickBorder}
+                                thinDashArray=""
+                                prefix="p"
                             >
-                                <Polygon
-                                    color="#940000"
-                                    fillColor="#940000"
-                                    positions={leafletLatLngs}
-                                    interactive={false}
-                                    fill={true}
-                                ></Polygon>
-                            </SVGOverlay>
+                                <Tooltip
+                                    sticky
+                                    opacity={1}
+                                    offset={[10, 0]}
+                                    key={`tooltip-airspace-${name}`}
+                                >
+                                    <Centered>
+                                        <IgnAirspaceNameFont $color={Colors.pThickBorder}>
+                                            <b>{name}</b>
+                                            <br />
+                                            <div>
+                                                <i>
+                                                    {higherLimit.toString()}
+                                                    <hr />
+                                                    {lowerLimit.toString()}
+                                                </i>
+                                            </div>
+                                        </IgnAirspaceNameFont>
+                                    </Centered>
+                                </Tooltip>
+                            </AirspaceSVGPolygon>
                         );
                     })}
         </>
     );
 };
+
+const Centered = styled.div`
+    display: flex;
+    flex-direction: column;
+`;

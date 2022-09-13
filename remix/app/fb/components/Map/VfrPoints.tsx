@@ -37,7 +37,7 @@ export const VfrPoints = ({
                             <SVGOverlay
                                 attributes={{
                                     stroke: 'red',
-                                    class: 'map-svg-text-label',
+                                    class: 'overflow-visible',
                                 }}
                                 bounds={bounds}
                                 interactive={true}

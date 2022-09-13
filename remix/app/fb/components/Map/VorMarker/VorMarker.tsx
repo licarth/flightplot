@@ -24,7 +24,7 @@ export const VorMarker = ({ vor: { name, latLng, dme, mapShortName } }: { vor: V
             <SVGOverlay
                 interactive={true}
                 bounds={bounds}
-                attributes={{ class: 'map-svg-text-label' }}
+                attributes={{ class: 'overflow-visible' }}
                 eventHandlers={{
                     mouseover: () => {
                         setMouseOver(true);

@@ -22,7 +22,7 @@ export const Aerodromes = ({
         <>
             {mapBounds &&
                 airacData.getAerodromesInBbox(...mapBounds).map((aerodrome) => {
-                    const { latLng, icaoCode, magneticVariation, runways } = aerodrome;
+                    const { latLng, icaoCode, magneticVariation, runways, status } = aerodrome;
                     const {
                         mainRunway: { magneticOrientation },
                     } = runways;
@@ -50,20 +50,13 @@ export const Aerodromes = ({
                                 {
                                     <StyledAerodromeLogo
                                         title={`${icaoCode}`}
-                                        $military={aerodrome.status === 'MIL'}
+                                        $military={status === 'MIL'}
                                         $pavedRunway={hasPavedRunway}
                                         $magneticVariation={magneticVariation}
                                         $magneticOrientation={magneticOrientation}
+                                        $closed={status === 'OFF'}
                                     />
                                 }
-                                {/* <text
-                  x="50%"
-                  y="120%"
-                  style={{ textAnchor: "middle" }}
-                  stroke="#002e94"
-                >
-                  {aerodrome.mapShortName}
-                </text> */}
                                 {displayAerodromesLabels && (
                                     <Polygon
                                         fill={false}
@@ -76,7 +69,9 @@ export const Aerodromes = ({
                                             permanent
                                             direction={'bottom'}
                                         >
-                                            {aerodrome.mapShortName}
+                                            <span style={{ color: getColor(status) }}>
+                                                {aerodrome.mapShortName}
+                                            </span>
                                         </StyledTooltip>
                                     </Polygon>
                                 )}
@@ -88,13 +83,23 @@ export const Aerodromes = ({
     );
 };
 
+const getColor = (status: Aerodrome['status']) => {
+    switch (status) {
+        case 'OFF':
+            return '#242424ff';
+        case 'MIL':
+            return '#ba2020';
+        default:
+            return '#002e94ff';
+    }
+};
+
 const StyledTooltip = styled(Tooltip)`
     background-color: transparent;
     box-shadow: unset;
     background-color: none;
     border: none;
     border-radius: none;
-    color: #002e94;
     text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
     white-space: nowrap;
     font-weight: bold;

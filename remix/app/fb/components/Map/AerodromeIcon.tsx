@@ -9,6 +9,42 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
         {...props}
     >
         <g
+            id="closed"
+            style={{
+                display: 'inline',
+            }}
+        >
+            <circle
+                style={{
+                    display: 'inline',
+                    opacity: 1,
+                    fill: 'none',
+                    stroke: '#242424',
+                    strokeWidth: 1.6166,
+                    strokeMiterlimit: 4,
+                    strokeDasharray: 'none',
+                    strokeOpacity: 1,
+                }}
+                id="circle5506"
+                cx={22.604}
+                cy={-1.04}
+                r={11}
+                transform="rotate(47.634)"
+            />
+            <path
+                id="path2519"
+                style={{
+                    display: 'inline',
+                    opacity: 1,
+                    fill: '#1a1a1a',
+                    stroke: 'none',
+                    strokeWidth: 0.881944,
+                    strokeOpacity: 1,
+                }}
+                d="m10.583 8.82 4.358 7.083.002-.004v.007l-.002-.003-4.358 7.083h2.18l3.16-5.121 3.16 5.12h2.178l-4.358-7.082 4.36-7.084h-2.18l-3.16 5.122-3.16-5.122Z"
+            />
+        </g>
+        <g
             id="magnetic-variation"
             style={{
                 display: 'inline',
@@ -25,20 +61,20 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
                     strokeDasharray: 'none',
                     strokeOpacity: 1,
                 }}
-                id="circle5506"
+                id="circle326"
                 cx={22.604}
                 cy={-1.04}
                 r={11}
                 transform="rotate(47.634)"
             />
             <g
-                id="g4992"
+                id="g332"
                 style={{
                     display: 'inline',
                 }}
             >
                 <path
-                    id="rect3506-5-6"
+                    id="path328"
                     style={{
                         fontVariationSettings: 'normal',
                         opacity: 1,
@@ -59,7 +95,7 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
                     d="M12.876 0v5.39A12.472 11 0 0 1 16.02 5a12.472 11 0 0 1 2.857.299V0Zm0 26.61v5.14h6v-5.052a12.472 11 0 0 1-2.857.301 12.472 11 0 0 1-3.143-.39z"
                 />
                 <path
-                    id="rect3506-2"
+                    id="path330"
                     style={{
                         opacity: 1,
                         fill: '#002e94',

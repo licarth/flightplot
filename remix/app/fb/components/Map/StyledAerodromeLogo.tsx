@@ -7,20 +7,25 @@ type PropsType = {
     $magneticOrientation: MagneticRunwayOrientation;
     $pavedRunway: boolean;
     $military: boolean;
+    $closed: boolean;
 };
 
 export const StyledAerodromeLogo = styled(AerodromeIcon)<PropsType>`
+    #closed {
+        ${({ $closed }) => !$closed && `display: none !important;`}
+    }
     #magnetic-variation {
-        ${({ $military }) => $military && `display: none !important;`}
+        ${({ $military, $closed }) => ($military || $closed) && `display: none !important;`}
         transform-origin: center;
         transform: ${(props) => `rotate(${props.$magneticVariation}deg)`};
     }
     #runway {
-        ${({ $pavedRunway }) => !$pavedRunway && `display: none !important;`}
+        ${({ $pavedRunway }) => !$pavedRunway && !closed && `display: none !important;`}
         transform-origin: center;
         transform: ${(props) => `rotate(${props.$magneticOrientation}deg)`};
     }
     #runway * {
+        ${({ $closed }) => $closed && `display: none !important;`}
         ${({ $military }) => $military && `fill: #ba2020 !important;`}
     }
     #military {

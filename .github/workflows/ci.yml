@@ -19,4 +19,5 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: remix
+      - run: npm run icons
       - run: npm run test

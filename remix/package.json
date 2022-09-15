@@ -54,7 +54,7 @@
         "remix": "^1.6.8",
         "sharp": "^0.30.7",
         "styled-components": "^5.3.5",
-        "ts-aerodata-france": "file:../../sia-aero",
+        "ts-aerodata-france": "^0.1.6",
         "uuid": "^9.0.0"
     },
     "devDependencies": {

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import type { MagneticRunwayOrientation } from 'ts-aerodata-france';
-import AerodromeIcon from '../../../generated/icons/Aerodrome';
+import { Aerodrome } from '~/generated/icons';
 
 type PropsType = {
     $magneticVariation: number;
@@ -10,7 +10,7 @@ type PropsType = {
     $closed: boolean;
 };
 
-export const StyledAerodromeLogo = styled(AerodromeIcon)<PropsType>`
+export const StyledAerodromeLogo = styled(Aerodrome)<PropsType>`
     #closed {
         ${({ $closed }) => !$closed && `display: none !important;`}
     }

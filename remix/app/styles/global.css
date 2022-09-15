@@ -38,6 +38,16 @@
   font-display: swap;
 }
 
+/* aerodrome codes on IGN maps */
+@font-face {
+  font-family: 'Univers Next 630';
+  src: url('/fonts/Univers Next W04 630 Bold.woff2') format('woff2'),
+      url('/fonts/Univers Next W04 630 Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
 
 
 /* @font-face {

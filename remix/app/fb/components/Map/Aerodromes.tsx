@@ -69,9 +69,10 @@ export const Aerodromes = ({
                                             permanent
                                             direction={'bottom'}
                                         >
-                                            <span style={{ color: getColor(status) }}>
-                                                {aerodrome.mapShortName}
-                                            </span>
+                                            <AdDescription style={{ color: getColor(status) }}>
+                                                <AdIcaoCode>{aerodrome.icaoCode}</AdIcaoCode>
+                                                <div>{aerodrome.mapShortName}</div>
+                                            </AdDescription>
                                         </StyledTooltip>
                                     </Polygon>
                                 )}
@@ -82,6 +83,17 @@ export const Aerodromes = ({
         </>
     );
 };
+
+const AdDescription = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+const AdIcaoCode = styled.div`
+    font-family: 'Univers Next 630';
+    font-weight: bold;
+    font-size: 0.8em;
+`;
 
 const getColor = (status: Aerodrome['status']) => {
     switch (status) {
@@ -95,6 +107,7 @@ const getColor = (status: Aerodrome['status']) => {
 };
 
 const StyledTooltip = styled(Tooltip)`
+    line-height: 90%;
     background-color: transparent;
     box-shadow: unset;
     background-color: none;

@@ -33,6 +33,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules /app/node_modules
 
 ADD . .
+RUN npm run icons
 RUN npm run build
 
 # Finally, build the production image with minimal footprint

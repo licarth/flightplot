@@ -1,5 +1,8 @@
+ign-oaci-2022.tif
+
 # Dependencies
 node_modules
+generated
 
 # Typescript
 *.tsbuildinfo

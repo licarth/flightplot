@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { MagneticRunwayOrientation } from 'ts-aerodata-france';
-import AerodromeIcon from './AerodromeIcon';
+import type { MagneticRunwayOrientation } from 'ts-aerodata-france';
+import AerodromeIcon from '~/generated/icons/Aerodrome';
 
 type PropsType = {
     $magneticVariation: number;

@@ -1,4 +1,4 @@
 module.exports = {
     typescript: true,
-    outDir: 'generated/icons',
+    outDir: './generated/icons',
 };

@@ -1,5 +1,5 @@
 import type { LatLngTuple, Map } from 'leaflet';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { MapContainer } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
@@ -14,6 +14,12 @@ export const LeafletMapContainer = ({ setMap }: { setMap: (map: Map) => void }) 
     const { width, height, ref } = useResizeDetector();
     const { map } = useMainMap();
 
+    const mapRef = useRef(null);
+
+    useEffect(() => {
+        mapRef.current && setMap(mapRef.current);
+    }, [mapRef.current]);
+
     useEffect(() => {
         map?.invalidateSize();
     }, [width, height, map]);
@@ -21,7 +27,7 @@ export const LeafletMapContainer = ({ setMap }: { setMap: (map: Map) => void }) 
     return (
         <MapSizeDetector ref={ref}>
             {MapContainer && (
-                <MapContainer ref={ref} id="mapId" {...params} whenCreated={setMap}>
+                <MapContainer ref={mapRef} id="mapId" {...params}>
                     <InnerMapContainer />
                 </MapContainer>
             )}

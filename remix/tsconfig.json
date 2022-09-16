@@ -9,7 +9,6 @@
         "resolveJsonModule": true,
         "forceConsistentCasingInFileNames": true,
         "importHelpers": true,
-        "importsNotUsedAsValues": "error",
         "target": "ES2019",
         "strict": true,
         "baseUrl": ".",

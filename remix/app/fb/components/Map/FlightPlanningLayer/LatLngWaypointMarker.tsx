@@ -1,4 +1,5 @@
-import Leaflet, { LatLng, LatLngExpression } from 'leaflet';
+import type { LatLng, LatLngExpression } from 'leaflet';
+import type Leaflet from 'leaflet';
 import { useRef, useState } from 'react';
 import { Circle, Marker, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';

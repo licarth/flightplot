@@ -1,4 +1,5 @@
-import Leaflet, { LatLngExpression } from 'leaflet';
+import type { LatLngExpression } from 'leaflet';
+import type Leaflet from 'leaflet';
 import { useRef } from 'react';
 import { Circle, Marker, Tooltip, useMap } from 'react-leaflet';
 import { preventDefault } from '../preventDefault';

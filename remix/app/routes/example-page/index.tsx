@@ -1,5 +1,6 @@
 // Remix
-import { LoaderFunction, useLoaderData, Link, useCatch } from 'remix';
+import type { LoaderFunction } from 'remix';
+import { Link, useCatch, useLoaderData } from 'remix';
 
 const goBack = <Link to="/">GoBack</Link>;
 

@@ -1,5 +1,5 @@
-import { WebMercatorCoords } from '../fb/components/Map/CtrSVGPolygon/coordsConverter';
-import { LatLng } from './LatLng';
+import type { WebMercatorCoords } from '../fb/components/Map/CtrSVGPolygon/coordsConverter';
+import type { LatLng } from './LatLng';
 
 export const boundingBox = (latLngs: LatLng[] | WebMercatorCoords[]): [number, number][] => {
     const yy: number[] = [];

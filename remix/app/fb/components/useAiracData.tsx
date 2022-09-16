@@ -1,7 +1,7 @@
-import { useContext } from "react";
-import { AiracDataContext } from "./AiracDataContext";
+import { useContext } from 'react';
+import { AiracDataContext } from './AiracDataContext';
 
 export const useAiracData = () => {
-  const { airacData } = useContext(AiracDataContext);
-  return { airacData };
+    const { airacData } = useContext(AiracDataContext);
+    return { airacData };
 };

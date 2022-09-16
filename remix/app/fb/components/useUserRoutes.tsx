@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { UUID } from '../../domain/Uuid/Uuid';
+import type { UUID } from '../../domain/Uuid/Uuid';
 import { UserRoutesContext } from './UserRoutesContext';
 
 export type SetRouteTitle = ({ title, routeId }: { title: string; routeId: UUID }) => void;

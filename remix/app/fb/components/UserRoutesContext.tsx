@@ -1,27 +1,14 @@
-import {
-    DataSnapshot,
-    getDatabase,
-    onValue,
-    ref,
-    remove,
-    set,
-    Unsubscribe,
-} from 'firebase/database';
+import type { DataSnapshot, Unsubscribe } from 'firebase/database';
+import { getDatabase, onValue, ref, remove, set } from 'firebase/database';
 import * as Either from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as Option from 'fp-ts/lib/Option';
 import * as _ from 'lodash';
-import React, {
-    createContext,
-    PropsWithChildren,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import type { PropsWithChildren } from 'react';
+import React, { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import { AiracCycles, AiracData } from 'ts-aerodata-france';
 import { Route } from '../../domain';
-import { UUID } from '../../domain/Uuid/Uuid';
+import type { UUID } from '../../domain/Uuid/Uuid';
 import { useFirebaseAuth } from '../firebase/auth/FirebaseAuthContext';
 
 export const UserRoutesContext = createContext<{

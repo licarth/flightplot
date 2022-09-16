@@ -1,6 +1,6 @@
 import path from 'path';
 import sharp from 'sharp';
-import { Lambert93Coords } from './coordsConverter';
+import type { Lambert93Coords } from './coordsConverter';
 
 type LambertBBox = {
     bottomLeft: Lambert93Coords;

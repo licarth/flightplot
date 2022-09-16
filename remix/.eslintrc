@@ -5,14 +5,16 @@
         "plugin:testing-library/react",
         "plugin:jest-dom/recommended"
     ],
-    "plugins": ["testing-library", "jest-dom"],
+    "plugins": ["testing-library", "jest-dom", "prettier"],
     "rules": {
         "testing-library/await-async-query": "error",
         "testing-library/no-await-sync-query": "error",
         "testing-library/no-debugging-utils": "warn",
         "testing-library/no-dom-import": "off",
         "@typescript-eslint/no-redeclare": "off",
-        "@typescript-eslint/no-use-before-define": "off"
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/consistent-type-imports": "error",
+        "prettier/prettier": "error"
     },
     "overrides": [
         {

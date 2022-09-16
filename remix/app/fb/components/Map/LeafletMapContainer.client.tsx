@@ -1,4 +1,4 @@
-import { LatLngTuple, Map } from 'leaflet';
+import type { LatLngTuple, Map } from 'leaflet';
 import { useEffect } from 'react';
 import { MapContainer } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';

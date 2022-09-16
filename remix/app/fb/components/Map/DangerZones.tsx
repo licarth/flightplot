@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useAiracData } from '../useAiracData';
 import { Colors } from './Colors';
 import { AirspaceSVGPolygon } from './CtrSVGPolygon/AirspaceSVGPolygon';
-import { MapBounds } from './DisplayedContent';
+import type { MapBounds } from './DisplayedContent';
 import { IgnAirspaceNameFont } from './IgnAirspaceNameFont';
 
 export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {

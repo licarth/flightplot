@@ -1,4 +1,4 @@
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from 'styled-components';
 
 const HideRestOfDOM = createGlobalStyle`
   @media print {
@@ -9,20 +9,20 @@ const HideRestOfDOM = createGlobalStyle`
 `;
 
 const PrintContentContainer = styled.div`
-  overflow: hidden;
-  visibility: hidden;
-  position: absolute;
-  width: 0;
-  height: 0;
-  @media screen {
-  }
+    overflow: hidden;
+    visibility: hidden;
+    position: absolute;
+    width: 0;
+    height: 0;
+    @media screen {
+    }
 `;
 
 export const PrintContent = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <>
-      <HideRestOfDOM />
-      <PrintContentContainer>{children}</PrintContentContainer>
-    </>
-  );
+    return (
+        <>
+            <HideRestOfDOM />
+            <PrintContentContainer>{children}</PrintContentContainer>
+        </>
+    );
 };

@@ -1,3 +1,3 @@
-import { LatLng } from './LatLng';
+import type { LatLng } from './LatLng';
 
 export const toCheapRulerPoint = (latLng: LatLng): [number, number] => [latLng.lng, latLng.lat];

@@ -1,7 +1,7 @@
 import type { LoaderFunction } from '@remix-run/node';
+import * as turf from '@turf/turf';
 import { convertToLambert } from '~/image-generation/coordsConverter';
 import { OaciCropper } from '~/image-generation/OaciCropper';
-import * as turf from '@turf/turf';
 
 export const loader: LoaderFunction = async ({ params }) => {
     try {

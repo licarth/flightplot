@@ -1,8 +1,8 @@
 import * as turf from '@turf/turf';
-import { LineString } from '@turf/turf';
-import { Airspace, Latitude, Longitude } from 'ts-aerodata-france';
-import { LatLng } from './LatLng';
-import { Route } from './Route';
+import type { LineString } from '@turf/turf';
+import type { Airspace, Latitude, Longitude } from 'ts-aerodata-france';
+import type { LatLng } from './LatLng';
+import type { Route } from './Route';
 
 type Props = { airspaces: Airspace[]; route: Route };
 

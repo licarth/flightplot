@@ -1,54 +1,52 @@
 /* Airspace names & vertical limits on IGN maps */
 @font-face {
-  font-family: 'Futura';
-  src: url('/fonts/FuturaBT-ExtraBlackCondensed.woff2') format('woff2'),
-      url('/fonts/FuturaBT-ExtraBlackCondensed.woff') format('woff');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Futura';
+    src: url('/fonts/FuturaBT-ExtraBlackCondensed.woff2') format('woff2'),
+        url('/fonts/FuturaBT-ExtraBlackCondensed.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
 }
 
 /* Airspace names & vertical limits on IGN maps */
 @font-face {
-  font-family: 'Futura';
-  src: url('/fonts/FuturaBT-ExtraBlackCondItalic.woff2') format('woff2'),
-      url('/fonts/FuturaBT-ExtraBlackCondItalic.woff') format('woff');
-  font-weight: 900;
-  font-style: italic;
-  font-display: swap;
+    font-family: 'Futura';
+    src: url('/fonts/FuturaBT-ExtraBlackCondItalic.woff2') format('woff2'),
+        url('/fonts/FuturaBT-ExtraBlackCondItalic.woff') format('woff');
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
 }
 
 /* Frequencies & VFR Points on IGN maps */
 @font-face {
-  font-family: 'Folio XBd BT';
-  src: url('/fonts/FolioBT-ExtraBold.woff2') format('woff2'),
-      url('/fonts/FolioBT-ExtraBold.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Folio XBd BT';
+    src: url('/fonts/FolioBT-ExtraBold.woff2') format('woff2'),
+        url('/fonts/FolioBT-ExtraBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
 }
 
 /* aerodrome names on IGN maps */
 @font-face {
-  font-family: 'Univers';
-  src: url('/fonts/Univers-CondensedBold.woff2') format('woff2'),
-      url('/fonts/Univers-CondensedBold.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Univers';
+    src: url('/fonts/Univers-CondensedBold.woff2') format('woff2'),
+        url('/fonts/Univers-CondensedBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
 }
 
 /* aerodrome codes on IGN maps */
 @font-face {
-  font-family: 'Univers Next 630';
-  src: url('/fonts/Univers Next W04 630 Bold.woff2') format('woff2'),
-      url('/fonts/Univers Next W04 630 Bold.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Univers Next 630';
+    src: url('/fonts/Univers Next W04 630 Bold.woff2') format('woff2'),
+        url('/fonts/Univers Next W04 630 Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
 }
-
-
 
 /* @font-face {
     font-family: 'Work Sans', sans-serif;
@@ -108,47 +106,44 @@ main {
 
 html {
     height: 100%;
-  }
-  body {
+}
+body {
     min-height: 100%;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-      sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+        'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-print-color-adjust: exact;
-  
+
     @page {
-      size: A4;
-      margin: 0cm !important;
+        size: A4;
+        margin: 0cm !important;
     }
-  }
-  
-  body {
+}
+
+body {
     height: 100%;
-  }
-  
-  #root {
+}
+
+#root {
     height: 100%;
-  }
-  
-  code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-      monospace;
-  }
-  
-  #mapId {
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+#mapId {
     flex-grow: 1;
-  }
-  
-  .overflow-visible {
+}
+
+.overflow-visible {
     overflow: visible !important;
-  }
-  
-  *,
-  *::before,
-  *::after {
+}
+
+*,
+*::before,
+*::after {
     box-sizing: border-box;
-  }
-  
+}

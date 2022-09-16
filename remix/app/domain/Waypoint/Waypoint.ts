@@ -1,8 +1,8 @@
 import * as Codec from 'io-ts/lib/Codec';
 import * as Decoder from 'io-ts/lib/Decoder';
-import { Aerodrome, AiracData } from 'ts-aerodata-france';
+import type { Aerodrome, AiracData } from 'ts-aerodata-france';
 import { v4 as uuidv4 } from 'uuid';
-import { LatLng } from '../LatLng';
+import type { LatLng } from '../LatLng';
 import { AerodromeWaypoint, AerodromeWaypointType } from './AerodromeWaypoint';
 import { LatLngWaypoint, latLngWaypointCodec } from './LatLngWaypoint';
 

@@ -1,11 +1,11 @@
 // import '../fb/firebaseConfig';
-import { MetaFunction } from 'remix';
+import type { MetaFunction } from 'remix';
 import styled from 'styled-components';
 import { DisplayedContent, PrintContent } from '~/fb/components/Map';
 import { MainMapProvider } from '~/fb/components/Map/MainMapContext';
 import { PrintPreview } from '~/fb/components/Map/PrintPreview';
 import { AiracDataProvider } from '../fb/components/AiracDataContext';
-import { LayerEnum } from '../fb/components/layer/Layer';
+import type { LayerEnum } from '../fb/components/layer/Layer';
 import { PrintProvider } from '../fb/components/PrintContext';
 import { RouteProvider } from '../fb/components/RouteContext';
 import { UserRoutesProvider } from '../fb/components/UserRoutesContext';

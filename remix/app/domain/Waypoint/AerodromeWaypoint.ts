@@ -1,15 +1,11 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as Codec from 'io-ts/lib/Codec';
 import * as Decoder from 'io-ts/lib/Decoder';
-import {
-    Aerodrome,
-    AiracData,
-    AltitudeInFeet,
-    IcaoCode,
-    LatLng as SiaLatLng,
-} from 'ts-aerodata-france';
+import type { Aerodrome, AiracData, LatLng as SiaLatLng } from 'ts-aerodata-france';
+import { AltitudeInFeet, IcaoCode } from 'ts-aerodata-france';
 import { fromEnumCodec } from '../../iots/enum';
-import { LatLng, toLatLng } from '../LatLng';
+import type { LatLng } from '../LatLng';
+import { toLatLng } from '../LatLng';
 export type AerodromeWaypointId = IcaoCode;
 
 export enum AerodromeWaypointType {

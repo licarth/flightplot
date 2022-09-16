@@ -12,10 +12,11 @@ import { min } from 'lodash';
 import { Scatter } from 'react-chartjs-2';
 
 import { AirspaceType, DangerZoneType } from 'ts-aerodata-france';
-import { AerodromeWaypoint, AerodromeWaypointType, Route, Waypoint } from '../../../domain';
+import type { Route, Waypoint } from '../../../domain';
+import { AerodromeWaypoint, AerodromeWaypointType } from '../../../domain';
 import { aircraftCollection } from '../../../domain/Aircraft';
-import { AirspaceSegmentOverlap } from '../../../domain/AirspaceIntersection/routeAirspaceOverlaps';
-import { ElevationAtPoint } from '../../elevationOnRoute';
+import type { AirspaceSegmentOverlap } from '../../../domain/AirspaceIntersection/routeAirspaceOverlaps';
+import type { ElevationAtPoint } from '../../elevationOnRoute';
 
 // export const VerticalProfileChart = () => {
 //     return <></>;

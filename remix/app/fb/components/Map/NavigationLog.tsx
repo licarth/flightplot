@@ -1,8 +1,9 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as Option from 'fp-ts/lib/Option';
 import styled from 'styled-components';
-import { Aerodrome, VhfFrequencyWithRemarks } from 'ts-aerodata-france';
-import { AerodromeWaypoint, Route } from '../../../domain';
+import type { Aerodrome, VhfFrequencyWithRemarks } from 'ts-aerodata-france';
+import type { Route } from '../../../domain';
+import { AerodromeWaypoint } from '../../../domain';
 
 export const NavigationLog = ({
     route,

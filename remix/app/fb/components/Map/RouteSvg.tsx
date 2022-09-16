@@ -1,7 +1,7 @@
 import { useRef } from 'react';
-import { Route } from '../../../domain';
-import { LatLng } from '../../../domain/LatLng';
-import { PrintArea } from '../../../domain/PrintArea';
+import type { Route } from '../../../domain';
+import type { LatLng } from '../../../domain/LatLng';
+import type { PrintArea } from '../../../domain/PrintArea';
 import { convertToLambert } from './coordsConverter';
 import { createLineForRouteSegment } from './FlightPlanningLayer';
 

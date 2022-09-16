@@ -1,2 +1,2 @@
-export * from "./fromClassCodec";
-export * from "./enum";
+export * from './enum';
+export * from './fromClassCodec';

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Route } from '../../../domain';
-import { PageFormat } from '../../../domain/PageFormat';
-import { PrintArea } from '../../../domain/PrintArea';
+import type { Route } from '../../../domain';
+import type { PageFormat } from '../../../domain/PageFormat';
+import type { PrintArea } from '../../../domain/PrintArea';
 import { usePrint } from '../PrintContext';
 import { useRoute } from '../useRoute';
 import { VerticalProfileChartWithHook } from '../VerticalProfileChart';

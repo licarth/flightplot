@@ -2,12 +2,12 @@ import CheapRuler from 'cheap-ruler';
 import { Fragment } from 'react';
 import { Polygon, SVGOverlay, Tooltip } from 'react-leaflet';
 import styled from 'styled-components';
-import { VfrPoint } from 'ts-aerodata-france';
+import type { VfrPoint } from 'ts-aerodata-france';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
 import { toLeafletLatLng } from '../../../domain';
 import { useAiracData } from '../useAiracData';
 import { boxAround } from './boxAround';
-import { MapBounds } from './DisplayedContent';
+import type { MapBounds } from './DisplayedContent';
 import { pointToLeafletLatLng } from './FlightPlanningLayer';
 import { preventDefault } from './preventDefault';
 

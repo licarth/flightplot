@@ -3,8 +3,9 @@ import { CSS } from '@dnd-kit/utilities';
 import _ from 'lodash';
 import { useState } from 'react';
 import styled from 'styled-components';
-import { AerodromeWaypoint, AerodromeWaypointType, Route, Waypoint } from '../../../domain';
-import { RemoveWaypoint, ReplaceWaypoint, SetWaypointAltitude, useRoute } from '../useRoute';
+import type { Route, Waypoint } from '../../../domain';
+import { AerodromeWaypoint, AerodromeWaypointType } from '../../../domain';
+import type { RemoveWaypoint, ReplaceWaypoint, SetWaypointAltitude, useRoute } from '../useRoute';
 
 type RouteElementProps = {
     waypoint: Waypoint;

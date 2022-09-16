@@ -1,8 +1,10 @@
-import { IconProp, library } from '@fortawesome/fontawesome-svg-core';
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import * as Icons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // FontAwesome requirements
-import Leaflet, { Point, PointExpression } from 'leaflet';
+import type { PointExpression } from 'leaflet';
+import Leaflet, { Point } from 'leaflet';
 import { renderToString } from 'react-dom/server';
 import styled from 'styled-components';
 

@@ -3,7 +3,7 @@ import type { PropsWithChildren } from 'react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { MapBounds } from './DisplayedContent';
 import { getMapBounds } from './getMapBounds';
-import { DisplayedLayerProps } from './InnerMapContainer';
+import type { DisplayedLayerProps } from './InnerMapContainer';
 
 export const MainMapContext = createContext<{
     map?: Map;

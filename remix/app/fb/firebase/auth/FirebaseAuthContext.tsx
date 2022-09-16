@@ -1,10 +1,5 @@
-import {
-    GoogleAuthProvider,
-    signInAnonymously,
-    signInWithPopup,
-    signOut,
-    User,
-} from '@firebase/auth';
+import type { User } from '@firebase/auth';
+import { GoogleAuthProvider, signInAnonymously, signInWithPopup, signOut } from '@firebase/auth';
 import * as React from 'react';
 import { auth } from '~/fb/firebaseConfig';
 

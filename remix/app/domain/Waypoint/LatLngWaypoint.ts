@@ -1,8 +1,9 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as Codec from 'io-ts/lib/Codec';
 import * as D from 'io-ts/lib/Decoder';
-import { LatLng, latLngCodec } from '../LatLng';
-import { WaypointProps } from './Waypoint';
+import type { LatLng } from '../LatLng';
+import { latLngCodec } from '../LatLng';
+import type { WaypointProps } from './Waypoint';
 export class LatLngWaypoint {
     protected _latLng;
     public name;

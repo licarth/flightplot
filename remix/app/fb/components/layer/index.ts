@@ -1,2 +1,2 @@
-export * from "./OaciLayer";
-export * from "./OpenStreetMapsLayer";
+export * from './OaciLayer';
+export * from './OpenStreetMapsLayer';

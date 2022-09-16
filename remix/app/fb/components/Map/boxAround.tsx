@@ -1,4 +1,5 @@
-import CheapRuler, { Point } from 'cheap-ruler';
+import type { Point } from 'cheap-ruler';
+import CheapRuler from 'cheap-ruler';
 
 export const boxAround = (point: Point, radiusInMeters: number) => {
     const ruler = new CheapRuler(point[1], 'meters');

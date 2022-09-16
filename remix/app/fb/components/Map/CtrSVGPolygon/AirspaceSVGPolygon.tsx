@@ -3,7 +3,8 @@ import { Polygon, SVGOverlay } from 'react-leaflet';
 import type { LatLng } from 'ts-aerodata-france';
 import { toLeafletLatLng } from '~/domain';
 import { boundingBox } from '~/domain/boundingBox';
-import { convertToWebMercator, WebMercatorCoords } from './coordsConverter';
+import type { WebMercatorCoords } from './coordsConverter';
+import { convertToWebMercator } from './coordsConverter';
 
 type Props = {
     children?: JSX.Element;

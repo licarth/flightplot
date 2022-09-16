@@ -1,6 +1,6 @@
 import { NmScale } from '@marfle/react-leaflet-nmscale';
 import { LayerGroup, useMap } from 'react-leaflet';
-import { toLeafletLatLng } from '../../domain';
+import { toLeafletLatLng } from '../../../domain';
 import { OaciLayer, OpenStreetMapLayer } from '../layer';
 import { SatelliteLayer } from '../layer/SatelliteLayer';
 import { useRoute } from '../useRoute';

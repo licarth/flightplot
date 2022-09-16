@@ -2,9 +2,9 @@ import { Fragment, useState } from 'react';
 import { Polygon, SVGOverlay, Tooltip } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Vor } from 'ts-aerodata-france';
-import { toLeafletLatLng } from '~/fb/domain';
-import { toCheapRulerPoint } from '~/fb/domain/toCheapRulerPoint';
-import { toLatLng } from '~/fb/LatLng';
+import { toLeafletLatLng } from '~/domain';
+import { toLatLng } from '~/domain/LatLng';
+import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
 import VorDmeIcon from '~/generated/icons/VorDme';
 import { boxAround } from '../boxAround';
 

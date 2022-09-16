@@ -1,7 +1,7 @@
 import * as turf from '@turf/turf';
 import CheapRuler from 'cheap-ruler';
 import type { Airspace, DangerZone, Latitude, Longitude } from 'ts-aerodata-france';
-import type { LatLng } from '../../LatLng';
+import type { LatLng } from '../LatLng';
 import type { Route } from '../Route';
 import { toCheapRulerPoint } from '../toCheapRulerPoint';
 

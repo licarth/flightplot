@@ -1,8 +1,8 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import { latLngWaypointFactory } from '~/domain';
+import { Route } from '~/domain/Route';
 import { VerticalProfileChart } from '~/fb/components/VerticalProfileChart/VerticalProfileChart';
-import { latLngWaypointFactory } from '~/fb/domain';
 import { emptyElevation } from '~/fb/elevationOnRoute';
-import { Route } from '~domain/Route';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

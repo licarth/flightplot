@@ -1,5 +1,5 @@
-import { LatLng } from "../LatLng";
+import { LatLng } from '../../domain/LatLng';
 
 export interface ElevationService {
-  getElevationsForLatLngs(latLngs: LatLng[]): Promise<number[]>;
+    getElevationsForLatLngs(latLngs: LatLng[]): Promise<number[]>;
 }

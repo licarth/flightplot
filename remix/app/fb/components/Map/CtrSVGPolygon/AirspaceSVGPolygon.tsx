@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Polygon, SVGOverlay } from 'react-leaflet';
 import type { LatLng } from 'ts-aerodata-france';
-import { toLeafletLatLng } from '~/fb/domain';
-import { boundingBox } from '~/fb/domain/boundingBox';
+import { toLeafletLatLng } from '~/domain';
+import { boundingBox } from '~/domain/boundingBox';
 import { convertToWebMercator, WebMercatorCoords } from './coordsConverter';
 
 type Props = {

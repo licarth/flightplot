@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { useRef, useState } from 'react';
 import styled from 'styled-components';
-import { AerodromeWaypoint, AerodromeWaypointType, Route } from '../../domain';
+import { AerodromeWaypoint, AerodromeWaypointType, Route } from '../../../domain';
 import { useFirebaseAuth } from '../../firebase/auth/FirebaseAuthContext';
 import Modal from '../../Modal';
 import { CollapsibleDiv } from '../Map/CollapsibleDiv';

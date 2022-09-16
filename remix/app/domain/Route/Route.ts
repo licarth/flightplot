@@ -3,15 +3,15 @@ import { pipe } from 'fp-ts/lib/function';
 import * as Codec from 'io-ts/lib/Codec';
 import type { AiracData } from 'ts-aerodata-france';
 import { AiracCycles } from 'ts-aerodata-france';
-import { fromClassCodec } from '../iots';
+import { fromClassCodec } from '../../iots';
+import type { Aircraft } from '../Aircraft';
+import { boundingBox } from '../boundingBox';
 import type { LatLng } from '../LatLng';
-import type { Aircraft } from './Aircraft';
-import { boundingBox } from './boundingBox';
-import { PrintArea } from './PrintArea';
-import { UUID, uuidCodec } from './Uuid/Uuid';
-import { AerodromeWaypoint, AerodromeWaypointType } from './Waypoint';
-import type { Waypoint } from './Waypoint/Waypoint';
-import { waypointCodec } from './Waypoint/Waypoint';
+import { PrintArea } from '../PrintArea';
+import { UUID, uuidCodec } from '../Uuid/Uuid';
+import { AerodromeWaypoint, AerodromeWaypointType } from '../Waypoint';
+import type { Waypoint } from '../Waypoint/Waypoint';
+import { waypointCodec } from '../Waypoint/Waypoint';
 
 type VerticalProfile = {
     distance: number;

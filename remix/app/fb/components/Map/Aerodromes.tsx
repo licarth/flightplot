@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Aerodrome } from 'ts-aerodata-france';
-import { toLatLng } from '../../LatLng';
+import { toLatLng } from '../../../domain/LatLng';
 import { useAiracData } from '../useAiracData';
 import type { MapBounds } from './DisplayedContent';
 import { preventDefault } from './preventDefault';

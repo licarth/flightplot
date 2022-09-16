@@ -1,7 +1,7 @@
-import { aircraftCollection } from './Aircraft';
+import { aircraftCollection } from '../Aircraft';
+import { type Waypoint } from '../Waypoint';
+import { latLngWaypointFactory } from '../Waypoint/LatLngWaypoint.factory';
 import { Route } from './Route';
-import { type Waypoint } from './Waypoint';
-import { latLngWaypointFactory } from './Waypoint/LatLngWaypoint.factory';
 
 describe('Route', () => {
     it('should add a waypoint properly', () => {

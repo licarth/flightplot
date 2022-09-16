@@ -1,8 +1,8 @@
 import CheapRuler from 'cheap-ruler';
 import type { Reader } from 'fp-ts/lib/Reader';
 import _ from 'lodash';
-import { toCheapRulerPoint } from '~domain/toCheapRulerPoint';
-import type { Route } from './domain';
+import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
+import type { Route } from '../domain';
 import type { ElevationService } from './ElevationService/ElevationService';
 
 const ruler = new CheapRuler(43, 'nauticalmiles');

@@ -5,7 +5,7 @@ import { PageFormat } from '../../domain/PageFormat';
 import { PrintArea } from '../../domain/PrintArea';
 import { usePrint } from '../PrintContext';
 import { useRoute } from '../useRoute';
-import { VerticalProfileChart } from '../VerticalProfileChart';
+import { VerticalProfileChartWithHook } from '../VerticalProfileChart';
 import { NavigationLog } from './NavigationLog';
 import { RouteSvg } from './RouteSvg';
 
@@ -24,9 +24,9 @@ export const PrintPreview = () => {
                     ))}
                 </Page>
             )}
-            {printElements.verticalProfile && (
+            {route && printElements.verticalProfile && (
                 <Page singlePage landscape avoidBreakInside>
-                    <VerticalProfileChart />
+                    <VerticalProfileChartWithHook />
                 </Page>
             )}
             {printElements.charts &&

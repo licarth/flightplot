@@ -1,7 +1,7 @@
 import CheapRuler from 'cheap-ruler';
 import type { Reader } from 'fp-ts/lib/Reader';
 import _ from 'lodash';
-import { toCheapRulerPoint } from './components/Map/FlightPlanningLayer';
+import { toCheapRulerPoint } from '~domain/toCheapRulerPoint';
 import type { Route } from './domain';
 import type { ElevationService } from './ElevationService/ElevationService';
 
@@ -12,7 +12,7 @@ export type ElevationAtPoint = {
     distancesFromStartInNm: number[];
 };
 
-const emptyElevation = {
+export const emptyElevation = {
     elevations: [],
     distancesFromStartInNm: [],
 };

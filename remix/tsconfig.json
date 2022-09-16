@@ -1,29 +1,30 @@
 {
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
-  "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2019"],
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
-    "target": "ES2019",
-    "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./app/*"],
-      "~constants": ["./app/__constants__/index.ts"],
-      "~models": ["./app/__models__/index.ts"],
-      "~utils": ["./app/__utils__/index.ts"],
-      "~routes/*": ["./app/routes/*"],
-      "~styles/*": ["./app/styles/*"],
-      "~components": ["./app/components/index.ts"],
-      "~hooks": ["./app/hooks/index.ts"],
-      "~public/*": ["./app/public/*"]
-    },
-    "noEmit": true,
-    "allowJs": true
-  }
+    "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
+    "compilerOptions": {
+        "lib": ["DOM", "DOM.Iterable", "ES2019"],
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        "jsx": "react-jsx",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true,
+        "importHelpers": true,
+        "target": "ES2019",
+        "strict": true,
+        "baseUrl": ".",
+        "paths": {
+            "~/*": ["./app/*"],
+            "~constants": ["./app/__constants__/index.ts"],
+            "~models": ["./app/__models__/index.ts"],
+            "~utils": ["./app/__utils__/index.ts"],
+            "~routes/*": ["./app/routes/*"],
+            "~styles/*": ["./app/styles/*"],
+            "~components": ["./app/components/index.ts"],
+            "~hooks": ["./app/hooks/index.ts"],
+            "~public/*": ["./app/public/*"],
+            "~domain/*": ["./app/fb/domain/*"]
+        },
+        "noEmit": true,
+        "allowJs": true
+    }
 }

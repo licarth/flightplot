@@ -9,14 +9,13 @@ import 'chart.js/auto';
 import dragData from 'chartjs-plugin-dragdata';
 import * as _ from 'lodash';
 import { min } from 'lodash';
-import { useCallback } from 'react';
 import { Scatter } from 'react-chartjs-2';
 
 import { AirspaceType, DangerZoneType } from 'ts-aerodata-france';
-import type { Waypoint } from '../domain';
-import { AerodromeWaypoint, AerodromeWaypointType } from '../domain';
-import { aircraftCollection } from '../domain/Aircraft';
-import { useRoute } from './useRoute';
+import { AerodromeWaypoint, AerodromeWaypointType, Route, Waypoint } from '../../domain';
+import { aircraftCollection } from '../../domain/Aircraft';
+import { AirspaceSegmentOverlap } from '../../domain/AirspaceIntersection/routeAirspaceOverlaps';
+import { ElevationAtPoint } from '../../elevationOnRoute';
 
 // export const VerticalProfileChart = () => {
 //     return <></>;
@@ -24,20 +23,38 @@ import { useRoute } from './useRoute';
 ChartJS.register(annotationPlugin);
 ChartJS.register(dragData);
 
-export const VerticalProfileChart = () => {
-    const { route, elevation, setWaypointAltitude, airspaceOverlaps } = useRoute();
+export type SetWaypointAltitude = ({
+    waypointPosition,
+    altitude,
+}: {
+    waypointPosition: number;
+    altitude: number | null;
+}) => void;
 
-    const onDragEnd = useCallback(
+type Props = {
+    route: Route;
+    elevation: ElevationAtPoint;
+    setWaypointAltitude?: SetWaypointAltitude;
+    airspaceOverlaps: AirspaceSegmentOverlap[];
+};
+
+export const VerticalProfileChart = ({
+    route,
+    elevation,
+    setWaypointAltitude,
+    airspaceOverlaps,
+}: Props) => {
+    const onDragEnd =
+        //@ts-ignore
         (e, datasetIndex, index, value) => {
             if (value.routeIndex) {
-                setWaypointAltitude({
-                    waypointPosition: value.routeIndex,
-                    altitude: value.y,
-                });
+                setWaypointAltitude &&
+                    setWaypointAltitude({
+                        waypointPosition: value.routeIndex,
+                        altitude: value.y,
+                    });
             }
-        },
-        [setWaypointAltitude],
-    );
+        };
 
     if (!route) {
         return <></>;
@@ -75,7 +92,7 @@ export const VerticalProfileChart = () => {
 
     const datasets: ChartDataset<'scatter'>[] = [
         {
-            label: 'Route',
+            label: 'Route1',
             data: pointData,
             fill: false,
             showLine: true,

@@ -1,2 +1,2 @@
-export * from "./Route";
-export * from "./Waypoint";
+export * from './Route';
+export * from './Waypoint';

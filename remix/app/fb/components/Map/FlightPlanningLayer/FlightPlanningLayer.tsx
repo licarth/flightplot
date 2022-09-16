@@ -2,6 +2,7 @@ import type { Line } from 'cheap-ruler';
 import CheapRuler from 'cheap-ruler';
 import { Fragment, useEffect, useState } from 'react';
 import { Circle, Polyline, useMap, useMapEvent } from 'react-leaflet';
+import { toCheapRulerPoint } from '~/fb/domain/toCheapRulerPoint';
 import type { Route, Waypoint } from '../../../domain';
 import type { LatLngWaypoint } from '../../../domain/Waypoint';
 import { AerodromeWaypoint, AerodromeWaypointType } from '../../../domain/Waypoint';
@@ -201,8 +202,6 @@ export const pointToLeafletLatLng = ([x, y]: [number, number]) => ({
     lat: y,
     lng: x,
 });
-
-export const toCheapRulerPoint = (latLng: LatLng): [number, number] => [latLng.lng, latLng.lat];
 
 export const toLine = (latLngs: Array<LatLng>): Line =>
     latLngs.map((latLng) => [latLng.lng, latLng.lat]);

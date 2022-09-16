@@ -5,7 +5,7 @@ import type { LayerEnum } from '../layer/Layer';
 import { MyRoutes, RouteWaypoints } from '../Menus';
 import { TopBar } from '../TopBar/TopBar';
 import { useRoute } from '../useRoute';
-import { VerticalProfileChart } from '../VerticalProfileChart';
+import { VerticalProfileChartWithHook } from '../VerticalProfileChart';
 import { H2 } from './H2';
 import { LeafletMapContainer } from './LeafletMapContainer.client';
 import { LeftMenu } from './LeftMenu';
@@ -72,11 +72,11 @@ const VerticalProfile = () => {
         <>
             <H2 onClick={() => setCollapsed((v) => !v)}>PROFIL VERTICAL</H2>
             <VerticalProfileDiv onClick={() => vpModal.current?.open()} collapsed={collapsed}>
-                <VerticalProfileChart />
+                <VerticalProfileChartWithHook />
             </VerticalProfileDiv>
             <Modal fade={false} defaultOpened={false} ref={vpModal}>
                 <VerticalProfileModalDiv>
-                    <VerticalProfileChart />
+                    <VerticalProfileChartWithHook />
                 </VerticalProfileModalDiv>
             </Modal>
         </>

@@ -1,0 +1,11 @@
+# Ignore dependencies
+node_modules
+
+# Compile artifacts
+/.cache
+/build
+/public/build
+.env
+
+# Ignore all HTML files
+*.html

@@ -8,9 +8,10 @@ import 'chart.js/auto';
 //@ts-ignore
 import dragData from 'chartjs-plugin-dragdata';
 import * as _ from 'lodash';
-import { min } from 'lodash';
-import { Scatter } from 'react-chartjs-2';
+import { max, min } from 'lodash';
+import { Chart } from 'react-chartjs-2';
 
+import type { Altitude, FlightLevel, Height } from 'ts-aerodata-france';
 import { AirspaceType, DangerZoneType } from 'ts-aerodata-france';
 import type { Route, Waypoint } from '../../../domain';
 import { AerodromeWaypoint, AerodromeWaypointType } from '../../../domain';
@@ -18,9 +19,6 @@ import { aircraftCollection } from '../../../domain/Aircraft';
 import type { AirspaceSegmentOverlap } from '../../../domain/AirspaceIntersection/routeAirspaceOverlaps';
 import type { ElevationAtPoint } from '../../elevationOnRoute';
 
-// export const VerticalProfileChart = () => {
-//     return <></>;
-// };
 ChartJS.register(annotationPlugin);
 ChartJS.register(dragData);
 
@@ -116,17 +114,6 @@ export const VerticalProfileChart = ({
     if (elevation) {
         datasets.push({
             label: 'Élevation du terrain',
-            // data: elevation.distancesFromStartInNm.map((x, i) => ({
-            //     x,
-            //     y: elevation.elevations[i],
-            //     r: 0,
-            // })),
-            // fill: true,
-            // showLine: false,
-            // backgroundColor: 'rgb(141, 63, 0)',
-            // borderColor: 'rgb(0, 0, 0)',
-            // borderWidth: 0,
-            // pointRadius: 0,
             data: elevation.distancesFromStartInNm.map((x, i) => ({
                 x,
                 y: elevation.elevations[i],
@@ -142,8 +129,95 @@ export const VerticalProfileChart = ({
             pointRadius: 0,
         });
     }
+
+    const airspacesDatasets: ChartDataset<'scatter'>[] = _.flatten(
+        airspaceOverlaps.flatMap(
+            ({ airspace: { name, type, lowerLimit, higherLimit }, segments }, i) => {
+                return segments.map(([start, end]): ChartDataset<'scatter'>[] => {
+                    const firstI = elevation.distancesFromStartInNm.findIndex((x) => x >= start);
+                    return [
+                        {
+                            label: '<HIDE>',
+                            data: elevation
+                                ? elevation.distancesFromStartInNm
+                                      .filter((x) => x >= start && x <= end)
+                                      .map((x, i) => ({
+                                          x,
+                                          y: isHeight(higherLimit)
+                                              ? elevation.elevations[i + firstI] +
+                                                higherLimit.feetValue
+                                              : higherLimit.feetValue + 0.01,
+                                      }))
+                                : [
+                                      { x: start, y: higherLimit.feetValue },
+                                      { x: end, y: higherLimit.feetValue },
+                                  ],
+                            fill: false,
+                            showLine: true,
+                            borderColor: type === AirspaceType.CTR ? '#002f94ca' : '#001033',
+                            borderWidth: 1,
+                            pointHitRadius: 0,
+                            pointHoverRadius: 0,
+                            pointRadius: 0,
+                            clip: 10,
+                        },
+                        {
+                            label: name,
+                            data: elevation
+                                ? elevation.distancesFromStartInNm
+                                      .filter((x) => x >= start && x <= end)
+                                      .map((x, i) => ({
+                                          x,
+                                          y: isHeight(lowerLimit)
+                                              ? elevation.elevations[i + firstI] +
+                                                lowerLimit.feetValue
+                                              : lowerLimit.feetValue + 0.01,
+                                      }))
+                                : [
+                                      { x: start, y: lowerLimit.feetValue },
+                                      { x: end, y: lowerLimit.feetValue },
+                                  ],
+                            fill: '-1',
+                            showLine: true,
+                            backgroundColor:
+                                type === AirspaceType.CTR
+                                    ? '#0c0d0f52'
+                                    : type === DangerZoneType.P
+                                    ? '#ff0000c5'
+                                    : type === DangerZoneType.R
+                                    ? '#ff6a00c5'
+                                    : '#21003f7d',
+                            borderColor: type === AirspaceType.CTR ? '#002f94ca' : '#001033',
+                            borderWidth: 1,
+                            pointHitRadius: 0,
+                            pointHoverRadius: 0,
+                            pointRadius: 0,
+                        },
+                    ];
+
+                    //     ({
+                    //     type: 'box',
+                    //     name: `${name}-${i}-${s[0]}`,
+                    //     adjustScaleRange: false,
+                    //     xMin: s[0],
+                    //     xMax: s[1],
+                    //     yMin: lowerLimit.feetValue + 0.01,
+                    //     yMax: higherLimit.feetValue,
+                    //     backgroundColor:
+                    //         type === AirspaceType.CTR
+                    //             ? '#002f9452'
+                    //             : type === DangerZoneType.P
+                    //             ? '#ff0000c5'
+                    //             : '#21003f7d',
+                    //     borderColor: type === AirspaceType.CTR ? '#002f94ca' : '#001033',
+                    // })
+                });
+            },
+        ),
+    );
+
     const data: ChartData<'scatter'> = {
-        datasets: datasets,
+        datasets: [...datasets, ...airspacesDatasets],
     };
 
     const boxes: Record<string, AnnotationOptions<'box'> & { name: string }> = _.keyBy(
@@ -168,6 +242,7 @@ export const VerticalProfileChart = ({
         ),
         'name',
     );
+
     const dragData2 = {
         round: -2, // rounds the values to n decimal places
         showTooltip: true, // show the tooltip while dragging [default = true]
@@ -201,13 +276,14 @@ export const VerticalProfileChart = ({
     };
 
     const newLocal = {
-        ...boxes,
+        // ...boxes,
         ...pointLabels,
     };
 
     return (
-        <Scatter
+        <Chart
             key={`vertical-profile-${hashCode(JSON.stringify(route.waypoints))}`}
+            type="scatter"
             data={data}
             options={{
                 responsive: true,
@@ -221,16 +297,30 @@ export const VerticalProfileChart = ({
                     point: { radius: 0 },
                 },
                 plugins: {
+                    tooltip: {
+                        //   callbacks: {
+                        //     footer: footer,
+                        //   }
+                    },
+                    legend: {
+                        labels: {
+                            filter: function (item, chart) {
+                                // Logic to remove a particular legend item goes here
+                                return !item.text.startsWith('<HIDE>');
+                            },
+                        },
+                    },
                     annotation: {
                         enter: (event) => {},
                         leave: (event) => {},
                         annotations: newLocal,
                     },
                     // @ts-ignore
-                    dragData2,
+                    // dragData2,
                 },
                 scales: {
-                    y: {
+                    yAxes: {
+                        max: max(route.waypoints.map((w) => w.altitude)) + 2000,
                         grace: 20,
                         suggestedMax: 1500,
                         suggestedMin: 0,
@@ -263,3 +353,7 @@ function canBeDragged(datasetIndex: number, w: Waypoint | null) {
             w.waypointType === AerodromeWaypointType.RUNWAY)
     );
 }
+
+const isHeight = (t: Altitude | Height | FlightLevel): t is Height => {
+    return t.toString().includes('ASFC');
+};

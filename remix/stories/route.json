@@ -1,0 +1,22 @@
+{
+    "waypoints": [
+        { "icaoCode": "LFPL", "altitude": null, "waypointType": "RUNWAY" },
+        { "icaoCode": "LFAI", "altitude": 2000, "waypointType": "OVERFLY" },
+        { "icaoCode": "LFGO", "altitude": null, "waypointType": "OVERFLY" },
+        { "icaoCode": "LFGP", "altitude": null, "waypointType": "OVERFLY" },
+        { "icaoCode": "LFGI", "altitude": null, "waypointType": "RUNWAY" }
+    ],
+    "id": "a4557e2a-e982-44a8-981b-3e779f3190d0",
+    "title": "Empty Route",
+    "printAreas": [
+        {
+            "bottomLeft": { "lat": 48.02823029213948, "lng": 2.2543939948081975 },
+            "pageFormat": { "dxMillimeters": 297, "dyMillimeters": 210 }
+        },
+        {
+            "bottomLeft": { "lat": 47.20096493745382, "lng": 3.4101565182209015 },
+            "pageFormat": { "dxMillimeters": 297, "dyMillimeters": 210 }
+        }
+    ],
+    "lastChangeAt": 1663340972076
+}

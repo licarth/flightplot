@@ -26,7 +26,7 @@ export const PrintPreview = () => {
             )}
             {route && printElements.verticalProfile && (
                 <Page singlePage landscape avoidBreakInside>
-                    <VerticalProfileChartWithHook />
+                    <VerticalProfileChartWithHook fitToSpace />
                 </Page>
             )}
             {printElements.charts &&

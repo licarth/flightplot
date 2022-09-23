@@ -1,7 +1,7 @@
 import { useRoute } from '../useRoute';
 import { VerticalProfileChart } from './VerticalProfileChart';
 
-export const VerticalProfileChartWithHook = () => {
+export const VerticalProfileChartWithHook = ({ fitToSpace }: { fitToSpace?: boolean }) => {
     const { route, airspaceOverlaps, elevation, setWaypointAltitude } = useRoute();
     if (!route) {
         return <></>;
@@ -12,6 +12,7 @@ export const VerticalProfileChartWithHook = () => {
             airspaceOverlaps={airspaceOverlaps}
             elevation={elevation}
             setWaypointAltitude={setWaypointAltitude}
+            fitToSpace={fitToSpace}
         />
     );
 };

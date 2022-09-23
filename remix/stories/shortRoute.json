@@ -1,0 +1,20 @@
+{
+    "waypoints": [
+        {
+            "altitude": null,
+            "id": "31bdcb93-356b-4864-8adc-c39bad86d0cd",
+            "latLng": { "lat": 43.173028869157605, "lng": 5.96832275390625 },
+            "name": null
+        },
+        {
+            "altitude": null,
+            "id": "4b1c55ad-26de-4ef4-b476-c1646a346046",
+            "latLng": { "lat": 43.14375387805804, "lng": 6.300659179687501 },
+            "name": null
+        }
+    ],
+    "id": "6d25aa14-01c4-4b25-ac35-341687806632",
+    "title": "Empty Route",
+    "printAreas": [],
+    "lastChangeAt": 1663839950149
+}

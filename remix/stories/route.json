@@ -3,6 +3,12 @@
         { "icaoCode": "LFPL", "altitude": null, "waypointType": "RUNWAY" },
         { "icaoCode": "LFAI", "altitude": 2000, "waypointType": "OVERFLY" },
         { "icaoCode": "LFGO", "altitude": null, "waypointType": "OVERFLY" },
+        {
+            "name": "Some long label, can be long long",
+            "latLng": { "lat": 47.20096493745382, "lng": 3.4101565182209015 },
+            "altitude": null,
+            "id": "a93b622b-fa41-45ff-a5be-30271bef0539"
+        },
         { "icaoCode": "LFGP", "altitude": null, "waypointType": "OVERFLY" },
         { "icaoCode": "LFGI", "altitude": null, "waypointType": "RUNWAY" }
     ],

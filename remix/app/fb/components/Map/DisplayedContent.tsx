@@ -87,6 +87,7 @@ const RightSide = styled.div`
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    overflow-y: hidden;
     flex-grow: 1;
 `;
 
@@ -111,9 +112,6 @@ const VerticalProfileDiv = styled.div<{ collapsed?: boolean }>`
     height: ${({ collapsed }) => (collapsed ? '0px' : '300px')};
     background-color: white;
     overflow: hidden;
-    canvas {
-        width: 100% !important;
-    }
 `;
 
 const VerticalProfileModalDiv = styled.div`

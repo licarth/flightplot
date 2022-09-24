@@ -69,7 +69,6 @@ export const VerticalProfileChart = ({
         aircraft: aircraftCollection[0],
     });
 
-    console.log(verticalProfile);
     const points = verticalProfile;
 
     const pointData = points.map(({ distance: x, altitudeInFeet: y, routeIndex }) => ({
@@ -303,7 +302,6 @@ export const VerticalProfileChart = ({
                                             ? 20
                                             : 5,
                                     yValue: (context, opts) => {
-                                        console.log(context.chart);
                                         return Math.min(
                                             upperStart,
                                             context.chart.scales['yAxes'].max,
@@ -372,7 +370,6 @@ export const VerticalProfileChart = ({
         onDragStart: (e, datasetIndex, index, value) => {
             const w = points[index].routeWaypoint;
             if (!canBeDragged(datasetIndex, w)) {
-                // console.log(route.length);
                 return false;
             }
             /*
@@ -434,9 +431,6 @@ export const VerticalProfileChart = ({
                                         // Logic to remove a particular legend item goes here
                                         return !item.text.startsWith('<HIDE>');
                                     },
-                                },
-                                onHover: (e, item, legend) => {
-                                    console.log(item);
                                 },
                             },
                             annotation: {

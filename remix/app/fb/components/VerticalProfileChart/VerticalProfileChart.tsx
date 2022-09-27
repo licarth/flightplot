@@ -40,6 +40,12 @@ type Props = {
     fitToSpace?: boolean;
 };
 
+function isTouchDevice() {
+    return (
+        'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0
+    );
+}
+
 export const VerticalProfileChart = ({
     route,
     elevation,
@@ -139,6 +145,7 @@ export const VerticalProfileChart = ({
                 p.raw &&
                 //@ts-ignore
                 p.raw.routeIndex &&
+                !isTouchDevice() &&
                 //@ts-ignore
                 canBeDragged(p.datasetIndex, route.waypoints[p.raw.routeIndex])
                     ? 10
@@ -386,7 +393,7 @@ export const VerticalProfileChart = ({
         // @ts-ignore
         onDragEnd,
         // @ts-ignore
-        // onDrag: onDragEnd,
+        // onDrag: () =>,
     };
 
     const newLocal = {
@@ -439,7 +446,7 @@ export const VerticalProfileChart = ({
                                 annotations: newLocal,
                             },
                             // @ts-ignore
-                            dragData: dragDataPluginOptions,
+                            dragData: !isTouchDevice() && dragDataPluginOptions,
                         },
                         scales: {
                             yAxes: {

@@ -1,9 +1,27 @@
+import styles from 'antd/dist/antd.variable.css';
 import type { LinksFunction, MetaFunction } from 'remix';
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from 'remix';
+import {
+    json,
+    Links,
+    LiveReload,
+    Meta,
+    Outlet,
+    Scripts,
+    ScrollRestoration,
+    useCatch,
+    useLoaderData,
+} from 'remix';
 import globablStylesUrl from '~styles/global.css';
 import rootStylesUrl from '~styles/index.css';
 import normalizeStylesUrl from '~styles/__normalize__.css';
-import './fb/firebaseConfig';
+
+export async function loader() {
+    return json({
+        ENV: {
+            USE_EMULATORS: process.env.USE_EMULATORS,
+        },
+    });
+}
 
 export const meta: MetaFunction = () => {
     const description = `Remix startup example`;
@@ -27,6 +45,7 @@ export const links: LinksFunction = () => {
         'https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Russo+One&display=swap',
     ];
     return [
+        { rel: 'stylesheet', href: styles },
         {
             rel: 'preconnect',
             href: 'https://fonts.googleapis.com',
@@ -58,24 +77,28 @@ const Document = ({
 }: {
     children: React.ReactNode;
     title?: string;
-}): JSX.Element => (
-    <html lang="en">
-        <head>
-            <script async src="https://www.googletagmanager.com/gtag/js?id=G-B9VRCW8QML"></script>
-            <script
-                dangerouslySetInnerHTML={{
-                    __html: `
+}): JSX.Element => {
+    return (
+        <html lang="en">
+            <head>
+                <script
+                    async
+                    src="https://www.googletagmanager.com/gtag/js?id=G-B9VRCW8QML"
+                ></script>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
                     window.dataLayer = window.dataLayer || [];
                     function gtag(){dataLayer.push(arguments);}
                     gtag('js', new Date());
                   
                     gtag('config', 'G-B9VRCW8QML');
         `,
-                }}
-            />
-            <script
-                dangerouslySetInnerHTML={{
-                    __html: `
+                    }}
+                />
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
                     window['_fs_host'] = 'fullstory.com';
                     window['_fs_script'] = 'edge.fullstory.com/s/fs.js';
                     window['_fs_org'] = 'o-1DMMAY-na1';
@@ -98,31 +121,41 @@ const Document = ({
                         g._v="1.3.0";
                     })(window,document,window['_fs_namespace'],'script','user');
         `,
-                }}
-            />
-            <meta charSet="utf-8" />
-            <meta name="viewport" content="width=device-width,initial-scale=1" />
-            <Meta />
-            <title>{title}</title>
-            <Links />
-            {typeof document === 'undefined' ? '__STYLES__' : null}
-        </head>
-        <body>
-            {children}
-            <ScrollRestoration />
-            <Scripts />
-            {process.env.NODE_ENV === 'development' && <LiveReload />}
-        </body>
-    </html>
-);
+                    }}
+                />
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width,initial-scale=1" />
+                <Meta />
+                <title>{title}</title>
+                <Links />
+                {typeof document === 'undefined' ? '__STYLES__' : null}
+            </head>
+            <body>
+                {children}
+                <ScrollRestoration />
+                <Scripts />
+                {process.env.NODE_ENV === 'development' && <LiveReload />}
+            </body>
+        </html>
+    );
+};
 
-const App = () => (
-    <Document>
-        <main id="main" className="main">
-            <Outlet />
-        </main>
-    </Document>
-);
+const App = () => {
+    const data = useLoaderData();
+
+    return (
+        <Document>
+            <main id="main" className="main">
+                <Outlet />
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `window.ENV = ${JSON.stringify(data.ENV)}`,
+                    }}
+                />
+            </main>
+        </Document>
+    );
+};
 
 export const CatchBoundary = () => {
     const caught = useCatch();

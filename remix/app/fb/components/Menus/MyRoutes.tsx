@@ -1,3 +1,4 @@
+import { Input } from 'antd';
 import _ from 'lodash';
 import { useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -5,11 +6,19 @@ import { AerodromeWaypoint, AerodromeWaypointType, Route } from '../../../domain
 import { useFirebaseAuth } from '../../firebase/auth/FirebaseAuthContext';
 import Modal from '../../Modal';
 import { CollapsibleDiv } from '../Map/CollapsibleDiv';
-import { NavigationsList, NewNavButton } from '../Map/LeftMenu';
+import { NewNavButton } from '../Map/LeftMenu';
 import { useRoute } from '../useRoute';
 import { useUserRoutes } from '../useUserRoutes';
 
-export const MyRoutes = ({ collapsed = false }: { collapsed?: boolean }) => {
+type OnRouteSelect = (route: Route) => void;
+
+export const MyRoutes = ({
+    onRouteSelect = () => {},
+    collapsed = false,
+}: {
+    onRouteSelect?: OnRouteSelect;
+    collapsed?: boolean;
+}) => {
     const { user } = useFirebaseAuth();
     const { routes, saveRoute } = useUserRoutes();
     const { setRoute } = useRoute();
@@ -18,33 +27,41 @@ export const MyRoutes = ({ collapsed = false }: { collapsed?: boolean }) => {
         return <></>;
     } else {
         return (
-            <NavigationsList>
-                <CollapsibleDiv collapsed={collapsed}>
-                    <NewNavButton
-                        onClick={() => {
-                            const newRoute = Route.empty();
-                            saveRoute(newRoute);
-                            setRoute(() => newRoute);
-                        }}
-                    >
-                        ➕ Nouvelle navigation
-                    </NewNavButton>
-                    <NavigationItemsList>
-                        {_.map(_.sortBy(routes, 'title'), (route, key) => (
-                            <RouteLine
-                                key={`routeline-${key}`}
-                                route={route}
-                                routeName={route.title}
-                            />
-                        ))}
-                    </NavigationItemsList>
-                </CollapsibleDiv>
-            </NavigationsList>
+            <CollapsibleDiv collapsed={collapsed}>
+                <NewNavButton
+                    onClick={() => {
+                        const newRoute = Route.empty();
+                        saveRoute(newRoute);
+                        setRoute(() => newRoute);
+                        onRouteSelect(newRoute);
+                    }}
+                >
+                    ➕ Nouvelle navigation
+                </NewNavButton>
+                <NavigationItemsList>
+                    {_.map(_.sortBy(routes, 'title'), (route, key) => (
+                        <RouteLine
+                            key={`routeline-${key}`}
+                            route={route}
+                            routeName={route.title}
+                            onRouteSelect={onRouteSelect}
+                        />
+                    ))}
+                </NavigationItemsList>
+            </CollapsibleDiv>
         );
     }
 };
 
-const RouteLine = ({ route, routeName }: { route: Route; routeName: string | null }) => {
+const RouteLine = ({
+    route,
+    routeName,
+    onRouteSelect = () => {},
+}: {
+    route: Route;
+    routeName: string | null;
+    onRouteSelect?: OnRouteSelect;
+}) => {
     const { route: currentlyEditedRoute, switchRoute, setRoute } = useRoute();
     const { deleteRoute, setRouteTitle } = useUserRoutes();
     const [editingTitle, setEditingTitle] = useState(false);
@@ -55,7 +72,13 @@ const RouteLine = ({ route, routeName }: { route: Route; routeName: string | nul
         setRoute(() => undefined);
     };
     return (
-        <RouteLineDiv isCurrentRoute={isCurrentRoute} onClick={() => switchRoute(route.id)}>
+        <RouteLineDiv
+            isCurrentRoute={isCurrentRoute}
+            onClick={() => {
+                onRouteSelect(route);
+                return switchRoute(route.id);
+            }}
+        >
             <RouteLineLeft>
                 {editingTitle ? (
                     <StyledNameInput
@@ -93,7 +116,7 @@ const RouteLine = ({ route, routeName }: { route: Route; routeName: string | nul
                         .filter(AerodromeWaypoint.isAerodromeWaypoint)
                         .filter(({ waypointType }) => waypointType === AerodromeWaypointType.RUNWAY)
                         .map(({ name }) => name)
-                        .join(' => ')}
+                        .join(' → ')}
                 </RouteSummaryContainer>
             </RouteLineLeft>
             <DeleteDiv
@@ -130,7 +153,6 @@ const RouteLine = ({ route, routeName }: { route: Route; routeName: string | nul
 };
 
 const NavigationItemsList = styled.div`
-    max-height: 20vh;
     overflow-y: scroll;
 `;
 
@@ -158,7 +180,7 @@ const DeleteDiv = styled.button`
     cursor: pointer;
 `;
 
-const StyledNameInput = styled.input`
+const StyledNameInput = styled(Input)`
     width: 100px;
 `;
 

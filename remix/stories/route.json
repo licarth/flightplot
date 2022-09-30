@@ -13,7 +13,7 @@
         { "icaoCode": "LFGI", "altitude": null, "waypointType": "RUNWAY" }
     ],
     "id": "a4557e2a-e982-44a8-981b-3e779f3190d0",
-    "title": "Empty Route",
+    "title": "A Route",
     "printAreas": [
         {
             "bottomLeft": { "lat": 48.02823029213948, "lng": 2.2543939948081975 },

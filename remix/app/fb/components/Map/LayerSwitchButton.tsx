@@ -11,7 +11,7 @@ export const LayerSwitchButton = () => {
     const control = L.Control.extend({
         //...options
         options: {
-            position: 'topleft',
+            position: 'topright',
         },
         onAdd: function (map) {
             console.log('this is the control');

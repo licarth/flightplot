@@ -25,3 +25,8 @@ yarn-error.log*
 *.cache
 offline-tiles
 .env
+
+firebase-debug.log
+firestore-debug.log
+database-debug.log
+ui-debug.log

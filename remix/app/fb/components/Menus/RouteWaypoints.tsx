@@ -85,11 +85,9 @@ export const RouteWaypoints = ({ collapsed }: Collapsible) => {
 };
 
 const RouteWaypointsContainer = styled.div`
-    max-height: 500px;
     overflow-y: auto;
 `;
 
 const RouteWaipointElements = styled.div`
-    max-height: 20vh;
     overflow-y: scroll;
 `;

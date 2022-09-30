@@ -50,7 +50,7 @@ export class Route {
         new Route({
             waypoints: [],
             id: UUID.generatev4(),
-            title: 'Empty Route',
+            title: 'Route Sans Titre',
             printAreas: [],
             lastChangeAt: new Date().getTime(),
         });

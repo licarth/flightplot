@@ -1,3 +1,4 @@
+import { Button, Checkbox, Space } from 'antd';
 import styled from 'styled-components';
 import { useMainMap } from '../Map/MainMapContext';
 import { FORMATS, usePrint } from '../PrintContext';
@@ -11,9 +12,7 @@ export const PrintOptions = () => {
     return (
         <PrintDiv>
             <div>
-                <label htmlFor="print-navlog">Log de Navigation</label>
-                <input
-                    type="checkbox"
+                <Checkbox
                     checked={printElements.navLog}
                     onChange={(v) =>
                         setPrintElements((elements) => ({
@@ -22,11 +21,12 @@ export const PrintOptions = () => {
                         }))
                     }
                     id="print-navlog"
-                />
+                >
+                    Log de Navigation
+                </Checkbox>
             </div>
             <div>
-                <label htmlFor="print-vertical-profile">Profile Vertical</label>
-                <input
+                <Checkbox
                     type="checkbox"
                     checked={printElements.verticalProfile}
                     onChange={(v) =>
@@ -36,11 +36,12 @@ export const PrintOptions = () => {
                         }))
                     }
                     id="print-vertical-profile"
-                />
+                >
+                    Profile Vertical
+                </Checkbox>
             </div>
             <div>
-                <label htmlFor="print-map">Zones IGN 2022 1/ 500 000 ème</label>
-                <input
+                <Checkbox
                     checked={printElements.charts}
                     onChange={(v) =>
                         setPrintElements((elements) => ({
@@ -51,28 +52,32 @@ export const PrintOptions = () => {
                     disabled={chartsLoading}
                     type="checkbox"
                     id="print-map"
-                />
-            </div>{' '}
-            <button
-                onClick={() => {
-                    const mapCenter = map?.getCenter();
-                    mapCenter &&
-                        route &&
-                        setRoute(
-                            (route) =>
-                                route &&
-                                route.addPrintArea({
-                                    pageFormat: FORMATS.A4_PORTRAIT,
-                                    bottomLeft: mapCenter,
-                                }),
-                        );
-                }}
-            >
-                Ajouter un zone d'impression
-            </button>
-            <PrintButton disabled={chartsLoading} onClick={() => window.print()}>
-                {chartsLoading ? '⏳ Chargement des cartes...' : 'Imprimer le dossier'}
-            </PrintButton>
+                >
+                    Cartes IGN 2022 1/ 500 000 ème
+                </Checkbox>
+            </div>
+            <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+                <Button
+                    onClick={() => {
+                        const mapCenter = map?.getCenter();
+                        mapCenter &&
+                            route &&
+                            setRoute(
+                                (route) =>
+                                    route &&
+                                    route.addPrintArea({
+                                        pageFormat: FORMATS.A4_PORTRAIT,
+                                        bottomLeft: mapCenter,
+                                    }),
+                            );
+                    }}
+                >
+                    Ajouter un zone d'impression
+                </Button>
+                <PrintButton type="primary" disabled={chartsLoading} onClick={() => window.print()}>
+                    {chartsLoading ? '⏳ Chargement des cartes...' : 'Imprimer le dossier'}
+                </PrintButton>
+            </Space>
         </PrintDiv>
     );
 };
@@ -83,7 +88,4 @@ const PrintDiv = styled.div`
     justify-self: flex-end;
 `;
 
-const PrintButton = styled.button`
-    margin-top: 10px;
-    padding: 20px;
-`;
+const PrintButton = styled(Button)``;

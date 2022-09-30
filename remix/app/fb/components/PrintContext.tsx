@@ -14,7 +14,7 @@ export const FORMATS = {
 const defaultPrintElements = {
     verticalProfile: true,
     navLog: true,
-    charts: true,
+    charts: false,
 };
 
 export const PrintContext = createContext<{

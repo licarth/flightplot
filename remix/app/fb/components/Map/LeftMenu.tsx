@@ -1,20 +1,27 @@
+import { Button, Collapse } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { MyRoutes, PrintOptions, RouteWaypoints } from '~/fb/components/Menus';
 import { useRoute } from '../useRoute';
-import { H2 } from './H2';
+
+const Panel = styled(Collapse.Panel)`
+    font-family: 'Univers';
+`;
 
 const ContainerDiv = styled.div`
     display: none;
-    min-width: 400px;
-    width: 400px;
-    height: 100%;
-    flex-direction: column;
-    justify-content: space-between;
 
     @media (min-width: 1024px) {
         & {
+            height: 100%;
             display: flex;
+            min-width: 400px;
+            width: 400px;
+            overflow: hidden;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100000;
         }
     }
 `;
@@ -28,46 +35,81 @@ export const LeftMenu = () => {
     );
 };
 
-const RouteDisplay = () => {
-    const [routesCollapsed, setRoutesCollapsed] = useState(false);
-    const [waypointsCollapsed, setWaypointsCollapsed] = useState(false);
+export const RouteDisplay = () => {
+    const [activeKey, setActiveKey] = useState<string | string[]>(['routes', 'details', 'print']);
     const { route } = useRoute();
 
     return (
         <LeftColumn>
-            <H2 marginTop={5} onClick={() => setRoutesCollapsed((v) => !v)}>
-                MES NAVIGATIONS
-            </H2>
-            <MyRoutes collapsed={routesCollapsed} />
-            {route && (
-                <>
-                    <H2 marginTop={5} onClick={() => setWaypointsCollapsed((v) => !v)}>
-                        POINTS TOURNANTS
-                    </H2>
-                    <RouteWaypoints collapsed={waypointsCollapsed} />
-                </>
-            )}
-            <H2 marginTop={5}>IMPRIMER</H2>
-            <PrintOptions />
+            <StyledCollapse
+                expandIcon={() => <></>}
+                activeKey={activeKey}
+                onChange={(keys) => setActiveKey(keys)}
+                destroyInactivePanel
+            >
+                <StyledPanel header="Mes navigations" key={'routes'} $shrinkable>
+                    <MyRoutes onRouteSelect={() => setActiveKey(['details'])} />
+                </StyledPanel>
+                <StyledPanel
+                    $shrinkable
+                    collapsible={(!route && 'disabled') || undefined}
+                    header={
+                        <Header>
+                            {route && `${route?.title} (${route?.totalDistance.toFixed(1)} NM)`}
+                        </Header>
+                    }
+                    style={!route ? { display: 'none' } : {}}
+                    key="details"
+                >
+                    <RouteWaypoints />
+                </StyledPanel>
+                <StyledPanel header="Impression" key="print">
+                    <PrintOptions />
+                </StyledPanel>
+            </StyledCollapse>
         </LeftColumn>
     );
 };
 
 const LeftColumn = styled.div`
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
-    margin: 10px;
+    overflow: hidden;
     border: 1px black;
-    height: 100%;
+    max-height: 90%;
 `;
 
-export const NavigationsList = styled.div`
+const StyledPanel = styled(Panel)<{ $shrinkable?: boolean }>`
     display: flex;
     flex-direction: column;
+    ${({ $shrinkable }) => {
+        if ($shrinkable) {
+            return `
+            overflow: hidden;
+            .ant-collapse-header {
+                flex-shrink: 0;
+            }
+            .ant-collapse-content {
+                flex-shrink: 1;
+                overflow: scroll;
+            }`;
+        }
+    }}
 `;
 
-export const NewNavButton = styled.button`
+const Header = styled.div`
+    padding: 0px;
+`;
+
+export const NewNavButton = styled(Button)`
     margin-bottom: 10px;
     text-align: center;
     height: 30px;
+`;
+
+const StyledCollapse = styled(Collapse)`
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 `;

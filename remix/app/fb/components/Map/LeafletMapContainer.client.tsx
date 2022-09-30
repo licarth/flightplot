@@ -1,6 +1,6 @@
 import type { LatLngTuple, Map } from 'leaflet';
 import { useEffect, useRef } from 'react';
-import { MapContainer } from 'react-leaflet';
+import { MapContainer, ZoomControl } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
 import { InnerMapContainer } from './InnerMapContainer';
@@ -27,8 +27,9 @@ export const LeafletMapContainer = ({ setMap }: { setMap: (map: Map) => void }) 
     return (
         <MapSizeDetector ref={ref}>
             {MapContainer && (
-                <MapContainer ref={mapRef} id="mapId" {...params}>
+                <MapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
                     <InnerMapContainer />
+                    <ZoomControl position="topright" />
                 </MapContainer>
             )}
         </MapSizeDetector>

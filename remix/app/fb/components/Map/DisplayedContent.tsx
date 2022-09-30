@@ -40,8 +40,8 @@ export const DisplayedContent = ({}: LeafletMapProps) => {
             <BackgroundContainer onContextMenu={(e) => e.preventDefault()}>
                 <TopBar />
                 <AppBody>
-                    <LeftMenu />
                     <RightSide>
+                        <LeftMenu />
                         {mounted ? <LeafletMapContainer setMap={setMap} /> : <></>}
                         {/* @ts-ignore */}
                         {route?.length > 0 && <VerticalProfile />}
@@ -84,6 +84,7 @@ const VerticalProfile = () => {
 };
 
 const RightSide = styled.div`
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: stretch;

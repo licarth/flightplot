@@ -1,6 +1,7 @@
 import type { User } from '@firebase/auth';
 import { GoogleAuthProvider, signInAnonymously, signInWithPopup, signOut } from '@firebase/auth';
 import * as React from 'react';
+import { FullStoryAPI } from 'react-fullstory';
 import { auth } from '~/fb/firebaseConfig';
 
 const provider = new GoogleAuthProvider();
@@ -18,7 +19,15 @@ const FirebaseAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =
     const value = { user };
 
     React.useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(setUser);
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user && !user.isAnonymous) {
+                FullStoryAPI('identify', user.uid, {
+                    email: user.email || undefined,
+                    displayName: user.displayName || undefined,
+                });
+            }
+            setUser(user);
+        });
         return unsubscribe;
     }, []);
 

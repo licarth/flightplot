@@ -1,4 +1,5 @@
 // import '../fb/firebaseConfig';
+import FullStory from 'react-fullstory';
 import type { MetaFunction } from 'remix';
 import styled from 'styled-components';
 import { DisplayedContent, PrintContent } from '~/fb/components/Map';
@@ -11,26 +12,31 @@ import { RouteProvider } from '../fb/components/RouteContext';
 import { UserRoutesProvider } from '../fb/components/UserRoutesContext';
 import { FirebaseAuthProvider } from '../fb/firebase/auth/FirebaseAuthContext';
 
+const ORG_ID = 'o-1DMMAY-na1'; // Fill this in here
+
 export default function Index() {
     return (
-        <FirebaseAuthProvider>
-            <AiracDataProvider>
-                <UserRoutesProvider>
-                    <RouteProvider>
-                        <PrintProvider>
-                            <div id="modal-root" data-testid="modal-root"></div>
-                            <AppContainer id="app">
-                                <MainMapProvider>
-                                    <DisplayedContent />
-                                </MainMapProvider>
-                            </AppContainer>
-                            <PrintContent>{''}</PrintContent>
-                            <PrintPreview />
-                        </PrintProvider>
-                    </RouteProvider>
-                </UserRoutesProvider>
-            </AiracDataProvider>
-        </FirebaseAuthProvider>
+        <>
+            <FullStory org={ORG_ID} />
+            <FirebaseAuthProvider>
+                <AiracDataProvider>
+                    <UserRoutesProvider>
+                        <RouteProvider>
+                            <PrintProvider>
+                                <div id="modal-root" data-testid="modal-root"></div>
+                                <AppContainer id="app">
+                                    <MainMapProvider>
+                                        <DisplayedContent />
+                                    </MainMapProvider>
+                                </AppContainer>
+                                <PrintContent>{''}</PrintContent>
+                                <PrintPreview />
+                            </PrintProvider>
+                        </RouteProvider>
+                    </UserRoutesProvider>
+                </AiracDataProvider>
+            </FirebaseAuthProvider>
+        </>
     );
 }
 

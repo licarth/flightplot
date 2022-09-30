@@ -51,6 +51,7 @@
         "react": "^18.2.0",
         "react-chartjs-2": "^4",
         "react-dom": "^18.2.0",
+        "react-fullstory": "^1.4.0",
         "react-leaflet": "^4.0.2",
         "react-resize-detector": "^7.1.2",
         "react-social-login-buttons": "^3.6.1",

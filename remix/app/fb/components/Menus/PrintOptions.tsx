@@ -74,8 +74,13 @@ export const PrintOptions = () => {
                 >
                     Ajouter un zone d'impression
                 </Button>
-                <PrintButton type="primary" disabled={chartsLoading} onClick={() => window.print()}>
-                    {chartsLoading ? '⏳ Chargement des cartes...' : 'Imprimer le dossier'}
+                <PrintButton
+                    type="primary"
+                    disabled={chartsLoading}
+                    onClick={() => window.print()}
+                    loading={chartsLoading}
+                >
+                    {chartsLoading ? 'Chargement des cartes...' : 'Imprimer le dossier'}
                 </PrintButton>
             </Space>
         </PrintDiv>

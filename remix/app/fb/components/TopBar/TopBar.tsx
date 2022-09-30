@@ -1,4 +1,6 @@
+import { UserOutlined } from '@ant-design/icons';
 import { type User } from '@firebase/auth';
+import { Avatar, Dropdown, Menu } from 'antd';
 import { useRef } from 'react';
 import styled from 'styled-components';
 import { useFirebaseAuth } from '~/fb/firebase/auth/FirebaseAuthContext';
@@ -9,8 +11,6 @@ import { useRoute } from '../useRoute';
 export const TopBar = () => {
     const { user, googleSignIn, anonymousSignIn, signOut } = useFirebaseAuth();
     const loginModal = useRef<ModalHandle>(null);
-    const { setRoute } = useRoute();
-
     return (
         <TopBarContainer>
             <AppLogo>
@@ -27,15 +27,7 @@ export const TopBar = () => {
                 )}
                 {user && (
                     <>
-                        <UserBadge user={user} />
-                        <LoginButton
-                            onClick={() => {
-                                setRoute(undefined);
-                                signOut();
-                            }}
-                        >
-                            Déconnexion
-                        </LoginButton>
+                        <UserBadge user={user} signOut={signOut} />
                     </>
                 )}
                 {!user && (
@@ -75,11 +67,47 @@ const AppLogo = styled.div`
     margin-top: 10px;
 `;
 
-const UserBadge = ({ user }: { user: User }) => (
-    <UserBadgeContainer>
-        {user.isAnonymous ? 'Anonymous User' : user.displayName}
-    </UserBadgeContainer>
-);
+const UserBadge = ({ user, signOut }: { user: User; signOut: () => void }) => {
+    const { setRoute } = useRoute();
+    const menu = (
+        <Menu
+            items={[
+                {
+                    label: (
+                        <span
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                                setRoute(undefined);
+                                signOut();
+                            }}
+                        >
+                            Se déconnecter
+                        </span>
+                    ),
+                    key: '0',
+                },
+            ]}
+        />
+    );
+    return (
+        <Dropdown overlay={menu} trigger={['click']}>
+            <a onClick={(e) => e.preventDefault()}>
+                <UserBadgeContainer>
+                    <>
+                        <img
+                            src={user.photoURL || undefined}
+                            alt=""
+                            referrerPolicy="no-referrer"
+                            style={{ display: 'none' }}
+                        />
+                        <Avatar src={user.photoURL} icon={<UserOutlined />} />
+                        {user.isAnonymous ? 'Anonymous User' : user.displayName}
+                    </>
+                </UserBadgeContainer>
+            </a>
+        </Dropdown>
+    );
+};
 const LogoText = styled.div`
     display: flex;
     align-items: center;
@@ -92,12 +120,15 @@ const RightBox = styled.div`
     align-items: center;
     justify-content: space-around;
     height: 100%;
-    font-family: 'Russo One', sans-serif;
+    font-family: 'Univers';
     padding-left: 10px;
     padding-right: 10px;
 `;
 
-const UserBadgeContainer = styled(RightBox)``;
+const UserBadgeContainer = styled(RightBox)`
+    display: flex;
+    gap: 10px;
+`;
 
 const LogoLeft = styled(LogoText)`
     border: solid #002e94;

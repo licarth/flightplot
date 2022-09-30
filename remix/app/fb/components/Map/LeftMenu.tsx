@@ -17,11 +17,11 @@ const ContainerDiv = styled.div`
             display: flex;
             min-width: 400px;
             width: 400px;
-            overflow: hidden;
             position: absolute;
             top: 10px;
             left: 10px;
             z-index: 100000;
+            filter: drop-shadow(5px 5px 10px #3c3c3c);
         }
     }
 `;
@@ -112,4 +112,5 @@ const StyledCollapse = styled(Collapse)`
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border-radius: 7px;
 `;

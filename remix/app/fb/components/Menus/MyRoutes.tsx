@@ -107,7 +107,12 @@ const RouteLine = ({
                         autoFocus
                     />
                 ) : (
-                    <TitleContainer onClick={() => setEditingTitle(true)}>
+                    <TitleContainer
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingTitle(true);
+                        }}
+                    >
                         {routeName || '<no title>'}
                     </TitleContainer>
                 )}

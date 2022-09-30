@@ -64,7 +64,7 @@ const IgnMap = ({ printArea }: { printArea: PrintArea }) => {
             setChartsLoading(true);
             console.log('fetching map');
             fetch(
-                `https://flightplot.fly.dev/${format.dxMillimeters}x${format.dyMillimeters}/${bottomLeft.lat},${bottomLeft.lng}`,
+                `/${format.dxMillimeters}x${format.dyMillimeters}/${bottomLeft.lat},${bottomLeft.lng}`,
                 {},
             )
                 .then((response) => {

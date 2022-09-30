@@ -1,4 +1,13 @@
 {
+  "hosting": {
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "https://flightplot.fly.dev",
+        "type": 301
+      }
+    ]
+  },
   "emulators": {
     "database": {
       "port": "9000"

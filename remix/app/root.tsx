@@ -1,7 +1,6 @@
-import styles from 'antd/dist/antd.variable.css';
-import type { LinksFunction, MetaFunction } from 'remix';
+import type { LinksFunction, LoaderFunction, MetaFunction } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import {
-    json,
     Links,
     LiveReload,
     Meta,
@@ -10,18 +9,23 @@ import {
     ScrollRestoration,
     useCatch,
     useLoaderData,
-} from 'remix';
+} from '@remix-run/react';
+import styles from 'antd/dist/antd.variable.css';
 import globablStylesUrl from '~styles/global.css';
 import rootStylesUrl from '~styles/index.css';
 import normalizeStylesUrl from '~styles/__normalize__.css';
 
-export async function loader() {
+export const loader: LoaderFunction = async (p) => {
+    if (new URL(p.request.url).host === 'flightplot.fly.dev') {
+        return redirect('https://www.flightplot.fr');
+    }
+
     return json({
         ENV: {
             USE_EMULATORS: process.env.USE_EMULATORS,
         },
     });
-}
+};
 
 export const meta: MetaFunction = () => {
     const description = `Remix startup example`;

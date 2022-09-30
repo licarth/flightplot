@@ -1,10 +1,11 @@
 // import '../fb/firebaseConfig';
+import type { MetaFunction } from '@remix-run/node';
 import FullStory from 'react-fullstory';
-import type { MetaFunction } from 'remix';
 import styled from 'styled-components';
 import { DisplayedContent, PrintContent } from '~/fb/components/Map';
 import { MainMapProvider } from '~/fb/components/Map/MainMapContext';
 import { PrintPreview } from '~/fb/components/Map/PrintPreview';
+import { environmentVariable } from '~/fb/environmentVariable';
 import { AiracDataProvider } from '../fb/components/AiracDataContext';
 import type { LayerEnum } from '../fb/components/layer/Layer';
 import { PrintProvider } from '../fb/components/PrintContext';
@@ -12,12 +13,11 @@ import { RouteProvider } from '../fb/components/RouteContext';
 import { UserRoutesProvider } from '../fb/components/UserRoutesContext';
 import { FirebaseAuthProvider } from '../fb/firebase/auth/FirebaseAuthContext';
 
-const ORG_ID = 'o-1DMMAY-na1'; // Fill this in here
-
-export default function Index() {
+export default () => {
+    const fullstoryOrgId = environmentVariable('FULLSTORY_ORG_ID');
     return (
         <>
-            <FullStory org={ORG_ID} />
+            {fullstoryOrgId && <FullStory org={fullstoryOrgId} />}
             <FirebaseAuthProvider>
                 <AiracDataProvider>
                     <UserRoutesProvider>
@@ -38,7 +38,7 @@ export default function Index() {
             </FirebaseAuthProvider>
         </>
     );
-}
+};
 
 export const meta: MetaFunction = () => {
     return {

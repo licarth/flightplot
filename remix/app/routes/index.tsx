@@ -14,7 +14,7 @@ import { UserRoutesProvider } from '../fb/components/UserRoutesContext';
 import { FirebaseAuthProvider } from '../fb/firebase/auth/FirebaseAuthContext';
 
 export default () => {
-    const fullstoryOrgId = environmentVariable('FULLSTORY_ORG_ID');
+    const fullstoryOrgId = environmentVariable('PUBLIC_FULLSTORY_ORG_ID');
     return (
         <>
             {fullstoryOrgId && <FullStory org={fullstoryOrgId} />}

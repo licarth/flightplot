@@ -25,7 +25,7 @@ const firestoreDb = initializeFirestore(app, {
 //@ts-ignore
 const isStorybook = () => typeof window !== 'undefined' && window.IS_STORYBOOK;
 
-if (environmentVariable('USE_EMULATORS') === 'true' || isStorybook()) {
+if (environmentVariable('PUBLIC_USE_EMULATORS') === 'true' || isStorybook()) {
     console.log('Using Emulators');
     connectDatabaseEmulator(db, 'localhost', 9000);
     connectFirestoreEmulator(firestoreDb, 'localhost', 8080);

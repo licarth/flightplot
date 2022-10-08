@@ -11,6 +11,7 @@ import {
     useLoaderData,
 } from '@remix-run/react';
 import styles from 'antd/dist/antd.variable.css';
+import _ from 'lodash';
 import globablStylesUrl from '~styles/global.css';
 import rootStylesUrl from '~styles/index.css';
 import normalizeStylesUrl from '~styles/__normalize__.css';
@@ -22,7 +23,7 @@ export const loader: LoaderFunction = async (p) => {
 
     return json({
         ENV: {
-            USE_EMULATORS: process.env.USE_EMULATORS,
+            ..._.pickBy(process.env, (value, key) => key.startsWith('PUBLIC_')),
         },
     });
 };

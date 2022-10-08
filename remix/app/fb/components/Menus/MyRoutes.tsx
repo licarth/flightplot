@@ -19,11 +19,15 @@ export const MyRoutes = ({
     onRouteSelect?: OnRouteSelect;
     collapsed?: boolean;
 }) => {
-    const { user } = useFirebaseAuth();
-    const { routes, saveRoute } = useUserRoutes();
+    const { user, loading: authLoading } = useFirebaseAuth();
+    const { routes, saveRoute, loading: routesLoading } = useUserRoutes();
     const { setRoute } = useRoute();
 
-    if (!user) {
+    const loading = authLoading || routesLoading;
+
+    if (loading) {
+        return <>Loading...</>;
+    } else if (!user) {
         return <></>;
     } else {
         return (

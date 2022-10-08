@@ -6,7 +6,7 @@ import { auth } from '~/fb/firebaseConfig';
 
 const provider = new GoogleAuthProvider();
 
-type UserState = User | null;
+type UserState = 'loading' | User | null;
 
 type ContextState = {
     user: UserState;
@@ -15,8 +15,7 @@ type ContextState = {
 const FirebaseAuthContext = React.createContext<ContextState | undefined>(undefined);
 
 const FirebaseAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-    const [user, setUser] = React.useState<UserState>(null);
-    const value = { user };
+    const [user, setUser] = React.useState<UserState>('loading');
 
     React.useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -31,7 +30,7 @@ const FirebaseAuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =
         return unsubscribe;
     }, []);
 
-    return <FirebaseAuthContext.Provider value={value}>{children}</FirebaseAuthContext.Provider>;
+    return <FirebaseAuthContext.Provider value={{ user }}>{children}</FirebaseAuthContext.Provider>;
 };
 
 type UseFirebaseAuth = {
@@ -39,6 +38,7 @@ type UseFirebaseAuth = {
     googleSignIn: () => void;
     anonymousSignIn: () => void;
     signOut: () => void;
+    loading: boolean;
 };
 
 function useFirebaseAuth(): UseFirebaseAuth {
@@ -79,11 +79,13 @@ function useFirebaseAuth(): UseFirebaseAuth {
             });
     };
 
+    const loading = context.user === 'loading';
     return {
-        ...context,
+        user: loading ? null : (context.user as User),
         anonymousSignIn,
         googleSignIn,
         signOut: () => signOut(auth),
+        loading,
     };
 }
 

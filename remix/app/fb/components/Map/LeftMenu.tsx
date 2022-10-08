@@ -1,8 +1,10 @@
-import { Button, Collapse } from 'antd';
+import { Button, Collapse, Spin } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { MyRoutes, PrintOptions, RouteWaypoints } from '~/fb/components/Menus';
+import { useFirebaseAuth } from '~/fb/firebase/auth/FirebaseAuthContext';
 import { useRoute } from '../useRoute';
+import { useUserRoutes } from '../useUserRoutes';
 
 const Panel = styled(Collapse.Panel)`
     font-family: 'Univers';
@@ -36,6 +38,10 @@ export const LeftMenu = () => {
 };
 
 export const RouteDisplay = () => {
+    const { user, loading: authLoading } = useFirebaseAuth();
+    const { loading: routesLoading } = useUserRoutes();
+    const loading = authLoading || routesLoading;
+
     const [activeKey, setActiveKey] = useState<string | string[]>(['routes', 'details', 'print']);
     const { route } = useRoute();
 
@@ -47,25 +53,37 @@ export const RouteDisplay = () => {
                 onChange={(keys) => setActiveKey(keys)}
                 destroyInactivePanel
             >
-                <StyledPanel header="Mes navigations" key={'routes'} $shrinkable>
-                    <MyRoutes onRouteSelect={() => setActiveKey(['details'])} />
-                </StyledPanel>
-                <StyledPanel
-                    $shrinkable
-                    collapsible={(!route && 'disabled') || undefined}
-                    header={
-                        <Header>
-                            {route && `${route?.title} (${route?.totalDistance.toFixed(1)} NM)`}
-                        </Header>
-                    }
-                    style={!route ? { display: 'none' } : {}}
-                    key="details"
-                >
-                    <RouteWaypoints />
-                </StyledPanel>
-                <StyledPanel header="Impression" key="print">
-                    <PrintOptions />
-                </StyledPanel>
+                {loading ? (
+                    <SpinnerContainer>
+                        <Spin size="large" />
+                        <div>Chargement en cours...</div>
+                    </SpinnerContainer>
+                ) : (
+                    <>
+                        {user && (
+                            <StyledPanel header="Mes navigations" key={'routes'} $shrinkable>
+                                <MyRoutes onRouteSelect={() => setActiveKey(['details'])} />
+                            </StyledPanel>
+                        )}
+                        <StyledPanel
+                            $shrinkable
+                            collapsible={(!route && 'disabled') || undefined}
+                            header={
+                                <Header>
+                                    {route &&
+                                        `${route?.title} (${route?.totalDistance.toFixed(1)} NM)`}
+                                </Header>
+                            }
+                            style={!route ? { display: 'none' } : {}}
+                            key="details"
+                        >
+                            <RouteWaypoints />
+                        </StyledPanel>
+                        <StyledPanel header="Impression" key="print">
+                            <PrintOptions />
+                        </StyledPanel>
+                    </>
+                )}
             </StyledCollapse>
         </LeftColumn>
     );
@@ -113,4 +131,13 @@ const StyledCollapse = styled(Collapse)`
     flex-direction: column;
     overflow: hidden;
     border-radius: 7px;
+`;
+
+const SpinnerContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
 `;

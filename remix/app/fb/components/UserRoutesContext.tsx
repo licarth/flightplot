@@ -21,19 +21,24 @@ export const UserRoutesContext = createContext<{
         lastChangeAt: number,
         callback: (newRoute: Route) => void,
     ) => Unsubscribe;
+    loading: boolean;
 }>({
     routes: {},
     saveRoute: () => {},
     deleteRoute: () => {},
     lastLocalChangeAt: 0,
     listenToRouteChanges: () => () => {},
+    loading: false,
 });
 
 const airacData = AiracData.loadCycle(AiracCycles.SEP_08_2022);
 
+type RoutesState = Record<string, Route> | 'loading';
+
 export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const { user } = useFirebaseAuth();
-    const [routes, setRoutes] = useState<Record<string, Route>>({});
+
+    const [routes, setRoutes] = useState<RoutesState>({});
     const lastLocalChangeAt = useRef<number>(0);
 
     const setLastLocalChangeAt = (current: number) => (lastLocalChangeAt.current = current);
@@ -42,19 +47,10 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
     const db = getDatabase();
 
     const shouldPropagateChange = (newRoute: Route) => {
-        console.log(`remote: ${newRoute.lastChangeAt}`);
-        console.log(`local: ${lastLocalChangeAt.current}`);
         if (newRoute.lastChangeAt && lastLocalChangeAt) {
-            console.log(
-                `${
-                    newRoute.lastChangeAt > lastLocalChangeAt.current ? 'remote' : 'local'
-                } more recent`,
-            );
             if (newRoute.lastChangeAt > lastLocalChangeAt.current) {
-                console.log('ROUTE UPDATE FROM OTHER WINDOW');
                 return true;
             } else {
-                console.log('IGNORING OWN ROUTE UPDATE');
                 return false;
             }
         } else {
@@ -65,10 +61,9 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
 
     const listenToRouteChanges = useCallback(
         (routeId: UUID, lastChangeAt: number, routeCallback: (newRoute: Route) => void) => {
-            const route = routes[routeId.toString()];
+            const route = routes === 'loading' ? undefined : routes[routeId.toString()];
             setLastLocalChangeAt(lastChangeAt);
             if (route) {
-                console.log(`Listening to route updates for ${route.title}`);
                 const dbAddress = `routes/${user?.uid}/${routeId.toString()}`;
                 const newRouteCallback = (newRoute: Route): void => {
                     if (shouldPropagateChange(newRoute)) {
@@ -134,7 +129,11 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
             setLastLocalChangeAt(route.lastChangeAt || 0);
             set(aRef, routeJson)
                 .then(() => {
-                    setRoutes((routes) => ({ ...routes, [route.id.toString()]: route }));
+                    setRoutes((routes) =>
+                        routes === 'loading'
+                            ? { [route.id.toString()]: route }
+                            : { ...routes, [route.id.toString()]: route },
+                    );
                 })
                 .catch((reason) => console.error(`Connection rejected: ${reason}`));
         },
@@ -152,14 +151,16 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
         [user],
     );
 
+    const loading = routes === 'loading';
     return (
         <UserRoutesContext.Provider
             value={{
-                routes,
+                routes: loading ? {} : routes,
                 saveRoute,
                 deleteRoute,
                 lastLocalChangeAt: lastLocalChangeAt.current || 0,
                 listenToRouteChanges,
+                loading,
             }}
         >
             {children}

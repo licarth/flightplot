@@ -5,7 +5,7 @@ import { UserRoutesContext } from './UserRoutesContext';
 export type SetRouteTitle = ({ title, routeId }: { title: string; routeId: UUID }) => void;
 
 export const useUserRoutes = () => {
-    const { routes, saveRoute, deleteRoute, lastLocalChangeAt, listenToRouteChanges } =
+    const { routes, saveRoute, deleteRoute, lastLocalChangeAt, listenToRouteChanges, loading } =
         useContext(UserRoutesContext);
 
     const setRouteTitle: SetRouteTitle = ({ title, routeId }) => {
@@ -24,5 +24,6 @@ export const useUserRoutes = () => {
         deleteRoute,
         lastLocalChangeAt,
         listenToRouteChanges,
+        loading,
     };
 };

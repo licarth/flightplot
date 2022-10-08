@@ -12,7 +12,7 @@ export const Aerodromes = ({
     onClick,
     mapBounds,
 }: {
-    onClick: (aerodrome: Aerodrome) => void;
+    onClick: (event: MouseEvent, aerodrome: Aerodrome) => void;
     mapBounds: MapBounds;
 }) => {
     const { airacData } = useAiracData();
@@ -43,7 +43,7 @@ export const Aerodromes = ({
                                 eventHandlers={{
                                     click: (e) => {
                                         preventDefault(e);
-                                        onClick(aerodrome);
+                                        onClick(e.originalEvent, aerodrome);
                                     },
                                 }}
                             >

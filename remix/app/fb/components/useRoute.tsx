@@ -26,11 +26,21 @@ export type ReplaceWaypoint = ({
     newWaypoint: Waypoint;
 }) => void;
 
+export type UseRouteProps = ReturnType<typeof useRoute>;
+
 export const useRoute = () => {
     const { route, setRoute, elevation, switchRoute, airspaceOverlaps } = useContext(RouteContext);
 
     const addLatLngWaypoint = useCallback(
-        ({ latLng, position, name }: { latLng: LatLng; position?: number; name?: string }) => {
+        ({
+            latLng,
+            position,
+            name,
+        }: {
+            latLng: LatLng;
+            position?: number;
+            name?: string | null;
+        }) => {
             setRoute((oldRoute) =>
                 (oldRoute || Route.empty()).addWaypoint({
                     position,

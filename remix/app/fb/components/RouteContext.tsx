@@ -13,13 +13,15 @@ import { FORMATS } from './PrintContext';
 import { useUserRoutes } from './useUserRoutes';
 
 const emptyElevation = { distancesFromStartInNm: [], elevations: [] };
-export const RouteContext = createContext<{
+type RouteContextProps = {
     route?: Route;
     setRoute: React.Dispatch<React.SetStateAction<Route | undefined>>;
     elevation: ElevationAtPoint;
     switchRoute: (routeId: UUID) => void;
     airspaceOverlaps: AirspaceSegmentOverlap[];
-}>({
+};
+
+export const RouteContext = createContext<RouteContextProps>({
     setRoute: () => {},
     switchRoute: (routeId: UUID) => {},
     elevation: emptyElevation,

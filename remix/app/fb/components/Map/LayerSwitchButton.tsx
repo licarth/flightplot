@@ -14,7 +14,6 @@ export const LayerSwitchButton = () => {
             position: 'topright',
         },
         onAdd: function (map) {
-            console.log('this is the control');
             var button = L.DomUtil.create('div');
 
             button.style.width = '30px';

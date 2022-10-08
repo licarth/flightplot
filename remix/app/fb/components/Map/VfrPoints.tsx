@@ -15,7 +15,7 @@ export const VfrPoints = ({
     onClick,
     mapBounds,
 }: {
-    onClick: (vfrPoint: VfrPoint) => void;
+    onClick: (event, vfrPoint: VfrPoint) => void;
     mapBounds: MapBounds;
 }) => {
     const { airacData } = useAiracData();
@@ -45,7 +45,7 @@ export const VfrPoints = ({
                                 eventHandlers={{
                                     click: (e) => {
                                         preventDefault(e);
-                                        onClick(vfrPoint);
+                                        onClick(e.originalEvent, vfrPoint);
                                     },
                                 }}
                             >
@@ -55,7 +55,7 @@ export const VfrPoints = ({
                                     eventHandlers={{
                                         click: (e) => {
                                             preventDefault(e);
-                                            onClick(vfrPoint);
+                                            onClick(e.originalEvent, vfrPoint);
                                         },
                                     }}
                                 ></Polygon>

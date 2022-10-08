@@ -3,6 +3,7 @@ import type { MetaFunction } from '@remix-run/node';
 import FullStory from 'react-fullstory';
 import styled from 'styled-components';
 import { DisplayedContent, PrintContent } from '~/fb/components/Map';
+import { FixtureFocusProvider } from '~/fb/components/Map/FixtureFocusContext';
 import { MainMapProvider } from '~/fb/components/Map/MainMapContext';
 import { PrintPreview } from '~/fb/components/Map/PrintPreview';
 import { environmentVariable } from '~/fb/environmentVariable';
@@ -22,16 +23,18 @@ export default () => {
                 <AiracDataProvider>
                     <UserRoutesProvider>
                         <RouteProvider>
-                            <PrintProvider>
-                                <div id="modal-root" data-testid="modal-root"></div>
-                                <AppContainer id="app">
-                                    <MainMapProvider>
-                                        <DisplayedContent />
-                                    </MainMapProvider>
-                                </AppContainer>
-                                <PrintContent>{''}</PrintContent>
-                                <PrintPreview />
-                            </PrintProvider>
+                            <FixtureFocusProvider>
+                                <PrintProvider>
+                                    <div id="modal-root" data-testid="modal-root"></div>
+                                    <AppContainer id="app">
+                                        <MainMapProvider>
+                                            <DisplayedContent />
+                                        </MainMapProvider>
+                                    </AppContainer>
+                                    <PrintContent>{''}</PrintContent>
+                                    <PrintPreview />
+                                </PrintProvider>
+                            </FixtureFocusProvider>
                         </RouteProvider>
                     </UserRoutesProvider>
                 </AiracDataProvider>

@@ -7,7 +7,7 @@ export const Vors = ({
     onClick,
     mapBounds,
 }: {
-    onClick: (aerodrome: Aerodrome) => void;
+    onClick: (event: MouseEvent, aerodrome: Aerodrome) => void;
     mapBounds: MapBounds;
 }) => {
     const { airacData } = useAiracData();

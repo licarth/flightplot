@@ -1,7 +1,7 @@
 import type { Line } from 'cheap-ruler';
 import CheapRuler from 'cheap-ruler';
 import { Fragment, useEffect, useState } from 'react';
-import { Circle, Polyline, useMap, useMapEvent } from 'react-leaflet';
+import { Circle, Polyline, useMap } from 'react-leaflet';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
 import type { Route, Waypoint } from '../../../../domain';
 import type { LatLng } from '../../../../domain/LatLng';
@@ -29,10 +29,6 @@ export const FlightPlanningLayer = ({
     } = routeContext;
 
     const route = routeFromContext!; // See parent component
-
-    useMapEvent('click', (e) => {
-        addLatLngWaypoint({ latLng: e.latlng });
-    });
 
     const leafletMap = useMap();
     const routeId = route.id.toString();

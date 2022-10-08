@@ -88,12 +88,10 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
 
     useEffect(() => {
         const db = getDatabase();
-        console.log(`requesting route with user ${user ? user.uid : 'none'}`);
         unsubscribeAllRoutes && unsubscribeAllRoutes();
         const newU = onValue(
             ref(db, `routes/${user?.uid}`),
             (routes) => {
-                console.log('Routes object has changed !');
                 const routesObject = routes.val() as Record<string, string | null>;
                 const routesOrError = _.omitBy(
                     _.mapValues(routesObject, (v) =>

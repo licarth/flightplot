@@ -3,6 +3,8 @@ import { useEffect, useRef } from 'react';
 import { MapContainer, ZoomControl } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
+import { FixtureDetails } from './FixtureDetails';
+import { useFixtureFocus } from './FixtureFocusContext';
 import { InnerMapContainer } from './InnerMapContainer';
 import { useMainMap } from './MainMapContext';
 
@@ -24,8 +26,11 @@ export const LeafletMapContainer = ({ setMap }: { setMap: (map: Map) => void }) 
         map?.invalidateSize();
     }, [width, height, map]);
 
+    const { fixture, clear: clearFixture } = useFixtureFocus();
+
     return (
         <MapSizeDetector ref={ref}>
+            {fixture && <FixtureDetails fixture={fixture} onClose={clearFixture} />}
             {MapContainer && (
                 <MapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
                     <InnerMapContainer />
@@ -37,6 +42,7 @@ export const LeafletMapContainer = ({ setMap }: { setMap: (map: Map) => void }) 
 };
 
 const MapSizeDetector = styled.div`
+    position: relative;
     justify-items: stretch;
     flex-grow: 1;
     display: flex;

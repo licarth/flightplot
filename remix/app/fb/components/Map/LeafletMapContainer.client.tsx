@@ -1,4 +1,4 @@
-import type { LatLngTuple, Map } from 'leaflet';
+import type { LatLngTuple } from 'leaflet';
 import { useEffect, useRef } from 'react';
 import { MapContainer, ZoomControl } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';
@@ -11,10 +11,10 @@ import { useMainMap } from './MainMapContext';
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 8;
 
-export const LeafletMapContainer = ({ setMap }: { setMap: (map: Map) => void }) => {
+export const LeafletMapContainer = () => {
     const params = { center: defaultLatLng, zoom };
     const { width, height, ref } = useResizeDetector();
-    const { map } = useMainMap();
+    const { map, setMap } = useMainMap();
 
     const mapRef = useRef(null);
 
@@ -32,14 +32,18 @@ export const LeafletMapContainer = ({ setMap }: { setMap: (map: Map) => void }) 
         <MapSizeDetector ref={ref}>
             {fixture && <FixtureDetails fixture={fixture} onClose={clearFixture} />}
             {MapContainer && (
-                <MapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
+                <StyledMapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
                     <InnerMapContainer />
                     <ZoomControl position="topright" />
-                </MapContainer>
+                </StyledMapContainer>
             )}
         </MapSizeDetector>
     );
 };
+
+const StyledMapContainer = styled(MapContainer)`
+    min-height: 800px;
+`;
 
 const MapSizeDetector = styled.div`
     position: relative;

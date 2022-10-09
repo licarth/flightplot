@@ -15,6 +15,7 @@ const ContainerDiv = styled.div`
 
     @media (min-width: 1024px) {
         & {
+            pointer-events: none;
             height: 100%;
             display: flex;
             min-width: 400px;
@@ -90,6 +91,7 @@ export const RouteDisplay = () => {
 };
 
 const LeftColumn = styled.div`
+    pointer-events: none;
     display: flex;
     flex-grow: 1;
     flex-direction: column;
@@ -127,6 +129,7 @@ export const NewNavButton = styled(Button)`
 `;
 
 const StyledCollapse = styled(Collapse)`
+    pointer-events: auto;
     display: flex;
     flex-direction: column;
     overflow: hidden;

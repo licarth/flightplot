@@ -1,5 +1,5 @@
-import type { LatLng, LatLngExpression } from 'leaflet';
 import type Leaflet from 'leaflet';
+import type { LatLng, LatLngExpression } from 'leaflet';
 import { useRef, useState } from 'react';
 import { Circle, Marker, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
@@ -64,9 +64,6 @@ export const LatLngWaypointMarker = ({
                 dragend: (event) => {
                     onDragEnd && onDragEnd(event.target.getLatLng());
                 },
-                click: (event) => {
-                    onClick && onClick();
-                },
             }}
         >
             <Circle
@@ -84,7 +81,7 @@ export const LatLngWaypointMarker = ({
                 permanent={editingName}
                 offset={[15, 0]}
                 ref={tooltipRef}
-                interactive={!!editingName}
+                // interactive={!!editingName}
                 key={`tooltip-${waypointNumber}-${editingName}`}
                 eventHandlers={{
                     click: preventDefault,

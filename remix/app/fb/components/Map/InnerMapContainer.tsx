@@ -32,14 +32,14 @@ export const InnerMapContainer = () => {
     useMapEvent('click', (e) => {
         if (e.originalEvent.ctrlKey || e.originalEvent.metaKey) {
             addLatLngWaypoint({ latLng: e.latlng });
-        } else clear();
+        } else {
+            clear();
+        }
     });
 
     const onFixtureClick = (event: MouseEvent, fixture: FocusableFixture) => {
-        event.stopPropagation();
         if (event.ctrlKey || event.metaKey) {
             addFixtureToRoute({ fixture, routeContext });
-
             return;
         }
         setFixture(fixture);

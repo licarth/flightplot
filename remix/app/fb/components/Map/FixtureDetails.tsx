@@ -5,6 +5,7 @@ import { useRoute } from '../useRoute';
 import { addFixtureToRoute } from './addFixtureToRoute';
 import { Colors } from './Colors';
 import type { FocusableFixture } from './FixtureFocusContext';
+import { StyledAerodromeLogo } from './StyledAerodromeLogo';
 
 type FixtureDetailsProps = {
     fixture: FocusableFixture;
@@ -17,8 +18,14 @@ export const FixtureDetails = ({ fixture, onClose }: FixtureDetailsProps) => {
     if (fixture && isAerodrome(fixture)) {
         const frequency = fixture.frequencies.atis[0]?.frequency;
         content = (
-            <>
-                {fixture.name} ({fixture.aerodromeAltitude} ft)
+            <Description>
+                <Inline>
+                    <AerodromeLogoContainer>
+                        <StyledAerodromeLogo aerodrome={fixture} />
+                    </AerodromeLogoContainer>{' '}
+                    {fixture.name} ({fixture.aerodromeAltitude} ft)
+                </Inline>
+
                 <span>
                     {fixture.status === 'RST' && 'Usage restreint'}
                     {fixture.status === 'CAP' && 'Ouvert à la CAP'}
@@ -39,21 +46,21 @@ export const FixtureDetails = ({ fixture, onClose }: FixtureDetailsProps) => {
                     </Frequency>
                 </span>
                 <Space />
-            </>
+            </Description>
         );
     } else if (isVfrPoint(fixture)) {
         content = (
-            <>
+            <Description>
                 <span>{fixture.name}</span>
                 <span>{`${fixture.description}`}</span>
-            </>
+            </Description>
         );
     }
 
     return (
         <FixtureDetailsContainer>
             <CloseButton onClick={onClose} />
-            <Description>{content}</Description>
+            {content}
             {isAerodrome(fixture) && !['MIL', 'OFF', 'PRV'].includes(fixture.status) && (
                 <Button
                     onClick={() => {
@@ -88,6 +95,15 @@ export const isVfrPoint = (fixture: any): fixture is VfrPoint => {
 const Description = styled.div`
     display: flex;
     flex-direction: column;
+`;
+const Inline = styled.div`
+    display: flex;
+`;
+
+const AerodromeLogoContainer = styled.div`
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-right: 0.25rem;
 `;
 
 const CloseButton = styled.div`

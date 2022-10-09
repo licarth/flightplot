@@ -9,7 +9,6 @@ import { VerticalProfileChartWithHook } from '../VerticalProfileChart';
 import { H2 } from './H2';
 import { LeafletMapContainer } from './LeafletMapContainer.client';
 import { LeftMenu } from './LeftMenu';
-import { useMainMap } from './MainMapContext';
 
 export type DisplayedLayers = {
     [keys in LayerEnum]: boolean;
@@ -22,7 +21,6 @@ export type MapBounds = [number, number, number, number];
 type Section = 'routes' | 'waypoints' | 'print-options' | undefined;
 
 export const DisplayedContent = ({}: LeafletMapProps) => {
-    const { setMap } = useMainMap();
     const { route } = useRoute();
     const [mounted, setMounted] = React.useState(false);
     const [expandedSection, setExpandedSection] = useState<Section>();
@@ -42,7 +40,7 @@ export const DisplayedContent = ({}: LeafletMapProps) => {
                 <AppBody>
                     <RightSide>
                         <LeftMenu />
-                        {mounted ? <LeafletMapContainer setMap={setMap} /> : <></>}
+                        {mounted ? <LeafletMapContainer /> : <></>}
                         {/* @ts-ignore */}
                         {route?.length > 0 && <VerticalProfile />}
                         <MobileComponents>

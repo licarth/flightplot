@@ -8,6 +8,7 @@ import type { LatLng } from '../../../../domain/LatLng';
 import type { LatLngWaypoint } from '../../../../domain/Waypoint';
 import { AerodromeWaypoint, AerodromeWaypointType } from '../../../../domain/Waypoint';
 import type { useRoute } from '../../useRoute';
+import { useFixtureFocus } from '../FixtureFocusContext';
 import { preventDefault } from '../preventDefault';
 import { AerodromeWaypointMarker } from './AerodromeWaypointMarker';
 import type { WaypointType } from './LatLngWaypointMarker';
@@ -31,6 +32,7 @@ export const FlightPlanningLayer = ({
     const route = routeFromContext!; // See parent component
 
     const leafletMap = useMap();
+    const { setFixture } = useFixtureFocus();
     const routeId = route.id.toString();
     useEffect(() => {
         route.waypoints.length > 0 &&
@@ -71,7 +73,6 @@ export const FlightPlanningLayer = ({
                             type={waypointType(w, i)}
                             position={w.latLng}
                             onDelete={() => removeWaypoint(i)}
-                            onClick={() => addSameWaypointAgain(i)}
                             onDragEnd={(latLng) => {
                                 setTemporaryWaypoint(null);
                                 return replaceWaypoint({
@@ -99,7 +100,6 @@ export const FlightPlanningLayer = ({
                             key={`waypoint-${w.id}`}
                             label={w.name}
                             onDelete={() => removeWaypoint(i)}
-                            onClick={() => addSameWaypointAgain(i)}
                             waypointNumber={i}
                             type={waypointType(w, i)}
                             position={w.latLng}

@@ -1,5 +1,5 @@
-import type { LatLngExpression } from 'leaflet';
 import type Leaflet from 'leaflet';
+import type { LatLngExpression } from 'leaflet';
 import { useRef } from 'react';
 import { Circle, Marker, Tooltip, useMap } from 'react-leaflet';
 import { preventDefault } from '../preventDefault';
@@ -48,11 +48,6 @@ export const AerodromeWaypointMarker = ({
             ref={markerRef}
             title={label}
             icon={getIcon(type)}
-            eventHandlers={{
-                click: (event) => {
-                    onClick && onClick();
-                },
-            }}
         >
             <Circle
                 key={`circle-${waypointNumber}`}

@@ -5,7 +5,6 @@ import type { Aerodrome } from 'ts-aerodata-france';
 import { toLatLng } from '../../../domain/LatLng';
 import { useAiracData } from '../useAiracData';
 import type { MapBounds } from './DisplayedContent';
-import { preventDefault } from './preventDefault';
 import { StyledAerodromeLogo } from './StyledAerodromeLogo';
 
 export const Aerodromes = ({
@@ -22,11 +21,7 @@ export const Aerodromes = ({
         <>
             {mapBounds &&
                 airacData.getAerodromesInBbox(...mapBounds).map((aerodrome) => {
-                    const { latLng, icaoCode, magneticVariation, runways, status } = aerodrome;
-                    const {
-                        mainRunway: { magneticOrientation },
-                    } = runways;
-                    const hasPavedRunway = runways.runways.some((r) => r.surface === 'asphalt');
+                    const { latLng, icaoCode, status } = aerodrome;
                     const l = toLatLng(latLng);
 
                     return (
@@ -42,21 +37,11 @@ export const Aerodromes = ({
                                 attributes={{ class: 'overflow-visible' }}
                                 eventHandlers={{
                                     click: (e) => {
-                                        preventDefault(e);
                                         onClick(e.originalEvent, aerodrome);
                                     },
                                 }}
                             >
-                                {
-                                    <StyledAerodromeLogo
-                                        title={`${icaoCode}`}
-                                        $military={status === 'MIL'}
-                                        $pavedRunway={hasPavedRunway}
-                                        $magneticVariation={magneticVariation}
-                                        $magneticOrientation={magneticOrientation}
-                                        $closed={status === 'OFF'}
-                                    />
-                                }
+                                {<StyledAerodromeLogo aerodrome={aerodrome} />}
                                 {displayAerodromesLabels && (
                                     <Polygon
                                         fill={false}
@@ -70,7 +55,7 @@ export const Aerodromes = ({
                                             direction={'bottom'}
                                         >
                                             <AdDescription style={{ color: getColor(status) }}>
-                                                <AdIcaoCode>{aerodrome.icaoCode}</AdIcaoCode>
+                                                <AdIcaoCode>{`${aerodrome.icaoCode}`}</AdIcaoCode>
                                                 <div>{aerodrome.mapShortName}</div>
                                             </AdDescription>
                                         </StyledTooltip>

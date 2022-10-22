@@ -1,6 +1,6 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import 'antd/dist/antd.css';
-import { AiracCycles, AiracData } from 'ts-aerodata-france';
+import { AiracData } from 'ts-aerodata-france';
 import { RouteDisplay } from '~/fb/components/Map/LeftMenu';
 import { FirebaseAuthProvider } from '~/fb/firebase/auth/FirebaseAuthContext';
 import '../app/styles/global.css';
@@ -29,7 +29,7 @@ export default {
     argTypes: {},
 } as ComponentMeta<typeof RouteDisplay>;
 
-const airacData = AiracData.loadCycle(AiracCycles.SEP_08_2022);
+const airacData = AiracData.loadCycle();
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 
 const SetRoute = () => {

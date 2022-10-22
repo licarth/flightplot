@@ -10,11 +10,7 @@ import {
     useCatch,
     useLoaderData,
 } from '@remix-run/react';
-import styles from 'antd/dist/antd.variable.css';
 import _ from 'lodash';
-import globablStylesUrl from '~styles/global.css';
-import rootStylesUrl from '~styles/index.css';
-import normalizeStylesUrl from '~styles/__normalize__.css';
 
 export const loader: LoaderFunction = async (p) => {
     if (new URL(p.request.url).host === 'flightplot.fly.dev') {
@@ -50,7 +46,7 @@ export const links: LinksFunction = () => {
         'https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Russo+One&display=swap',
     ];
     return [
-        { rel: 'stylesheet', href: styles },
+        // { rel: 'stylesheet', href: styles },
         {
             rel: 'preconnect',
             href: 'https://fonts.googleapis.com',
@@ -60,19 +56,19 @@ export const links: LinksFunction = () => {
             href: 'https://fonts.gstatic.com',
             crossOrigin: 'true',
         },
-        {
-            rel: 'stylesheet',
-            href: normalizeStylesUrl,
-        },
-        {
-            rel: 'stylesheet',
-            href: globablStylesUrl,
-        },
-        {
-            rel: 'stylesheet',
-            href: rootStylesUrl,
-        },
-        ...stylesheets.map((href) => ({ rel: 'stylesheet', href })),
+        // {
+        //     rel: 'stylesheet',
+        //     href: normalizeStylesUrl,
+        // },
+        // {
+        //     rel: 'stylesheet',
+        //     href: globablStylesUrl,
+        // },
+        // {
+        //     rel: 'stylesheet',
+        //     href: rootStylesUrl,
+        // },
+        // ...stylesheets.map((href) => ({ rel: 'stylesheet', href })),
     ];
 };
 

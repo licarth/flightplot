@@ -7,7 +7,7 @@ import { circle, planeArrival, planeDeparture } from './Icons';
 
 export type WaypointType = 'departure' | 'arrival' | 'intermediate';
 
-export const AerodromeWaypointMarker = ({
+export const FixtureWaypointMarker = ({
     position,
     label,
     circleColor,

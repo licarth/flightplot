@@ -1,19 +1,19 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta } from '@storybook/react';
 import 'antd/dist/antd.css';
 import styled from 'styled-components';
-import { AiracCycles, AiracData } from 'ts-aerodata-france';
+import { AiracData } from 'ts-aerodata-france';
 import { FixtureDetails as F } from '~/fb/components/Map/FixtureDetails';
 import '../app/styles/global.css';
 
-const airacData = AiracData.loadCycle(AiracCycles.SEP_08_2022);
-
-const FixtureDetails = () => {
+const FixtureDetails = ({ airacData }: { airacData: AiracData }) => {
+    const LFMT = airacData.aerodromes.find(({ icaoCode }) => `${icaoCode}` === 'LFMT')!;
+    const LFMT_W = airacData.vfrPoints.find(
+        ({ icaoCode, name }) => `${icaoCode}` === 'LFMT' && name === 'W',
+    )!;
+    const FJR = airacData.vors.find(({ ident }) => `${ident}` === 'FJR')!;
     return (
         <Outer>
-            <F
-                fixture={airacData.aerodromes.find(({ icaoCode }) => `${icaoCode}` === 'LFMT')!}
-                onClose={() => {}}
-            />
+            <F fixtures={[LFMT, LFMT_W, FJR]} clickedLocation={LFMT.latLng} onClose={() => {}} />
         </Outer>
     );
 };
@@ -32,8 +32,11 @@ export default {
     argTypes: {},
 } as ComponentMeta<typeof FixtureDetails>;
 
-const Template: ComponentStory<typeof FixtureDetails> = (args) => {
-    return <FixtureDetails />;
-};
+//@ts-ignore
+export const Default = (args, { loaded: airacData }) => <FixtureDetails airacData={airacData} />;
 
-export const Default = Template.bind({});
+Default.loaders = [
+    async () => ({
+        airacData: await AiracData.loadCurrentCycle(),
+    }),
+];

@@ -1,0 +1,16 @@
+{
+    "waypoints": [
+        { "icaoCode": "LFMT", "altitude": null, "waypointType": "RUNWAY" },
+        {
+            "altitude": null,
+            "id": "4a7dd720-e395-41f8-9191-bf8761b5afe9",
+            "latLng": { "lat": 43.681944, "lng": 4.213889 },
+            "name": "AS"
+        },
+        { "icaoCode": "LFNG", "altitude": null, "waypointType": "RUNWAY" }
+    ],
+    "id": "aff2fddb-cc7c-4bde-bd92-21466fa0f738",
+    "title": "Test1",
+    "printAreas": [],
+    "lastChangeAt": 1665340303607
+}

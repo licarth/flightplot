@@ -5,43 +5,36 @@ import type { Aerodrome } from 'ts-aerodata-france';
 import { toLatLng } from '../../../domain/LatLng';
 import { useAiracData } from '../useAiracData';
 import type { MapBounds } from './DisplayedContent';
+import { useFixtureFocus } from './FixtureFocusContext';
 import { StyledAerodromeLogo } from './StyledAerodromeLogo';
 
-export const Aerodromes = ({
-    onClick,
-    mapBounds,
-}: {
-    onClick: (event: MouseEvent, aerodrome: Aerodrome) => void;
-    mapBounds: MapBounds;
-}) => {
-    const { airacData } = useAiracData();
+export const Aerodromes = ({ mapBounds }: { mapBounds: MapBounds }) => {
+    const { airacData, loading } = useAiracData();
     const leafletMap = useMap();
     const displayAerodromesLabels = leafletMap.getZoom() > 8;
+    const { highlightedFixture } = useFixtureFocus();
+
     return (
         <>
             {mapBounds &&
+                !loading &&
                 airacData.getAerodromesInBbox(...mapBounds).map((aerodrome) => {
                     const { latLng, icaoCode, status } = aerodrome;
                     const l = toLatLng(latLng);
 
+                    const shouldBeHighlighted = highlightedFixture?.name === aerodrome.name;
                     return (
                         <Fragment key={`ad-${icaoCode}`}>
                             <SVGOverlay
                                 key={`aerodrome-${icaoCode}`}
-                                interactive={true}
                                 bounds={[
                                     // Note: this is pure guess.
                                     [l.lat + 0.02, l.lng - 0.02],
                                     [l.lat - 0.02, l.lng + 0.02],
                                 ]}
                                 attributes={{ class: 'overflow-visible' }}
-                                eventHandlers={{
-                                    click: (e) => {
-                                        onClick(e.originalEvent, aerodrome);
-                                    },
-                                }}
                             >
-                                {<StyledAerodromeLogo aerodrome={aerodrome} />}
+                                {<Logo aerodrome={aerodrome} $highlighted={shouldBeHighlighted} />}
                                 {displayAerodromesLabels && (
                                     <Polygon
                                         fill={false}
@@ -90,6 +83,10 @@ const getColor = (status: Aerodrome['status']) => {
             return '#002e94ff';
     }
 };
+
+const Logo = styled(StyledAerodromeLogo)<{ $highlighted: boolean }>`
+    ${({ $highlighted }) => $highlighted && `filter: drop-shadow(3px 5px 1px rgb(0 0 0 / 0.4));`}
+`;
 
 const StyledTooltip = styled(Tooltip)`
     line-height: 90%;

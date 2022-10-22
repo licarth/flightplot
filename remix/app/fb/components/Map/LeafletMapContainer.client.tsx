@@ -1,5 +1,7 @@
+import hotkeys from 'hotkeys-js';
 import type { LatLngTuple } from 'leaflet';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { MapContainer, ZoomControl } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
@@ -15,6 +17,26 @@ export const LeafletMapContainer = () => {
     const params = { center: defaultLatLng, zoom };
     const { width, height, ref } = useResizeDetector();
     const { map, setMap } = useMainMap();
+    const [cursor, setCursor] = useState('crosshair');
+
+    useHotkeys(
+        '*',
+        () => {
+            if (hotkeys.command) {
+                setCursor('copy');
+            }
+        },
+        { keydown: true },
+    );
+    useHotkeys(
+        '*',
+        () => {
+            if ((!hotkeys.shift && hotkeys.command) || (hotkeys.shift && !hotkeys.command)) {
+                setCursor('crosshair');
+            }
+        },
+        { keyup: true },
+    );
 
     const mapRef = useRef(null);
 
@@ -26,24 +48,30 @@ export const LeafletMapContainer = () => {
         map?.invalidateSize();
     }, [width, height, map]);
 
-    const { fixture, clear: clearFixture } = useFixtureFocus();
+    const { clickedLocation, fixtures, clear: clearFixture } = useFixtureFocus();
 
     return (
         <MapSizeDetector ref={ref}>
-            {fixture && <FixtureDetails fixture={fixture} onClose={clearFixture} />}
+            {clickedLocation && (
+                <FixtureDetails
+                    fixtures={fixtures}
+                    clickedLocation={clickedLocation}
+                    onClose={clearFixture}
+                />
+            )}
             {MapContainer && (
-                <StyledMapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
-                    <InnerMapContainer />
-                    <ZoomControl position="topright" />
-                </StyledMapContainer>
+                <Outer $cursor={cursor}>
+                    <StyledMapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
+                        <InnerMapContainer />
+                        <ZoomControl position="topright" />
+                    </StyledMapContainer>
+                </Outer>
             )}
         </MapSizeDetector>
     );
 };
 
-const StyledMapContainer = styled(MapContainer)`
-    min-height: 800px;
-`;
+const StyledMapContainer = styled(MapContainer)``;
 
 const MapSizeDetector = styled.div`
     position: relative;
@@ -53,4 +81,13 @@ const MapSizeDetector = styled.div`
     * {
         color-scheme: only light;
     }
+`;
+const Outer = styled.div<{ $cursor: string }>`
+    /* ${({ $cursor }) => $cursor && `cursor: ${$cursor}`}; */
+    * {
+        ${({ $cursor }) => $cursor && `cursor: ${$cursor}`};
+    }
+    /* justify-items: stretch; */
+    flex-grow: 1;
+    display: flex;
 `;

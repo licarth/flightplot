@@ -53,6 +53,7 @@ export const LatLngWaypointMarker = ({
             position={position}
             ref={markerRef}
             title={label}
+            interactive={false}
             icon={getIcon(type)}
             eventHandlers={{
                 contextmenu: (event) => {

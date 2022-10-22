@@ -1,14 +1,21 @@
 import type { PropsWithChildren } from 'react';
-import React, { createContext } from 'react';
-import { AiracCycles, AiracData } from 'ts-aerodata-france';
+import React, { createContext, useEffect, useState } from 'react';
+import { AiracData } from 'ts-aerodata-france';
+import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
 
 export const AiracDataContext = createContext<{
-    airacData: AiracData;
-}>({
-    airacData: AiracData.loadCycle(AiracCycles.SEP_08_2022),
-});
+    airacData?: AiracData;
+}>({});
 
 export const AiracDataProvider: React.FC<PropsWithChildren> = ({ children }) => {
-    const airacData = AiracData.loadCycle(AiracCycles.SEP_08_2022);
+    const [airacData, setAiracData] = useState<AiracData>();
+
+    useEffect(() => {
+        AiracData.loadCycle(currentCycle).then((data) => {
+            console.log(data.aerodromes.length);
+            setAiracData(data);
+        });
+    }, []);
+
     return <AiracDataContext.Provider value={{ airacData }}>{children}</AiracDataContext.Provider>;
 };

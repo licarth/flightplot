@@ -1,16 +1,21 @@
 import type { Line } from 'cheap-ruler';
 import CheapRuler from 'cheap-ruler';
-import { Fragment, useEffect, useState } from 'react';
-import { Circle, Polyline, useMap } from 'react-leaflet';
+import { Fragment, useState } from 'react';
+import { Circle, Polyline, SVGOverlay } from 'react-leaflet';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
+import { VfrPointWaypoint } from '~/domain/Waypoint/VfrPointWaypoint';
+import { VorPointWaypoint } from '~/domain/Waypoint/VorPointWaypoint';
+import { Target as TargetIcon } from '~/generated/icons';
 import type { Route, Waypoint } from '../../../../domain';
 import type { LatLng } from '../../../../domain/LatLng';
+import { toLatLng } from '../../../../domain/LatLng';
 import type { LatLngWaypoint } from '../../../../domain/Waypoint';
 import { AerodromeWaypoint, AerodromeWaypointType } from '../../../../domain/Waypoint';
 import type { useRoute } from '../../useRoute';
+import { boxAround } from '../boxAround';
 import { useFixtureFocus } from '../FixtureFocusContext';
 import { preventDefault } from '../preventDefault';
-import { AerodromeWaypointMarker } from './AerodromeWaypointMarker';
+import { FixtureWaypointMarker } from './FixtureWaypointMarker';
 import type { WaypointType } from './LatLngWaypointMarker';
 import { LatLngWaypointMarker } from './LatLngWaypointMarker';
 
@@ -23,7 +28,6 @@ export const FlightPlanningLayer = ({
 }) => {
     const {
         route: routeFromContext,
-        addSameWaypointAgain,
         replaceWaypoint,
         removeWaypoint,
         addLatLngWaypoint,
@@ -31,18 +35,7 @@ export const FlightPlanningLayer = ({
 
     const route = routeFromContext!; // See parent component
 
-    const leafletMap = useMap();
-    const { setFixture } = useFixtureFocus();
-    const routeId = route.id.toString();
-    useEffect(() => {
-        route.waypoints.length > 0 &&
-            leafletMap.flyToBounds(route.leafletBoundingBox, {
-                maxZoom: 11,
-                animate: false,
-                padding: [100, 100],
-            });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [leafletMap, routeId]);
+    const { clickedLocation, highlightedFixture, highlightedLocation } = useFixtureFocus();
 
     type TemporaryWaypoint = {
         waypointBefore?: Waypoint;
@@ -63,112 +56,125 @@ export const FlightPlanningLayer = ({
 
     return (
         <>
-            {route.waypoints.map((w, i) => (
-                <Fragment key={`wp-${i}-${w.id}`}>
-                    {isLatLngWaypoint(w) && (
-                        <LatLngWaypointMarker
-                            key={`wpmarker-${w.id}`}
-                            label={w.name ? w.name : undefined}
-                            waypointNumber={i}
-                            type={waypointType(w, i)}
-                            position={w.latLng}
-                            onDelete={() => removeWaypoint(i)}
-                            onDragEnd={(latLng) => {
-                                setTemporaryWaypoint(null);
-                                return replaceWaypoint({
-                                    waypointPosition: i,
-                                    newWaypoint: w.clone({ latLng }),
-                                });
-                            }}
-                            setName={(name) => {
-                                replaceWaypoint({
-                                    waypointPosition: i,
-                                    newWaypoint: w.clone({ name }),
-                                });
-                            }}
-                            onDrag={(latLng) => {
-                                return setTemporaryWaypoint({
-                                    waypoint: w.clone({ latLng }),
-                                    waypointAfter: route.waypoints[i + 1],
-                                    waypointBefore: route.waypoints[i - 1],
-                                });
-                            }}
-                        />
-                    )}
-                    {AerodromeWaypoint.isAerodromeWaypoint(w) && (
-                        <AerodromeWaypointMarker
-                            key={`waypoint-${w.id}`}
-                            label={w.name}
-                            onDelete={() => removeWaypoint(i)}
-                            waypointNumber={i}
-                            type={waypointType(w, i)}
-                            position={w.latLng}
-                        />
-                    )}
-                    {route.waypoints[i + 1] && (
-                        <Polyline
-                            color={'#000000a2'}
-                            weight={10}
-                            lineCap={'square'}
-                            eventHandlers={{
-                                click: (e) => {
-                                    preventDefault(e);
-                                    return addLatLngWaypoint({
-                                        latLng: pointToLeafletLatLng(
-                                            ruler.pointOnLine(
-                                                toLine([
-                                                    route.waypoints[i].latLng,
-                                                    route.waypoints[i + 1].latLng,
-                                                ]),
-                                                toCheapRulerPoint(e.latlng),
-                                            ).point,
-                                        ),
-                                        position: i + 1,
+            {clickedLocation && !highlightedFixture && !highlightedLocation && (
+                <SVGOverlay
+                    key={`clicked-location-${clickedLocation.lat}-${clickedLocation.lng}`}
+                    bounds={boxAround(toCheapRulerPoint(toLatLng(clickedLocation)), 10000)}
+                    attributes={{ class: 'overflow-visible' }}
+                    opacity={0.6}
+                >
+                    <TargetIcon />
+                </SVGOverlay>
+            )}
+            {route &&
+                route.waypoints.map((w, i) => (
+                    <Fragment key={`wp-${i}-${w.id}`}>
+                        {isLatLngWaypoint(w) && (
+                            <LatLngWaypointMarker
+                                key={`wpmarker-${w.id}`}
+                                label={w.name ? w.name : undefined}
+                                waypointNumber={i}
+                                type={waypointType(w, i)}
+                                position={w.latLng}
+                                onDelete={() => removeWaypoint(i)}
+                                onDragEnd={(latLng) => {
+                                    setTemporaryWaypoint(null);
+                                    return replaceWaypoint({
+                                        waypointPosition: i,
+                                        newWaypoint: w.clone({ latLng }),
                                     });
-                                },
-                            }}
-                            positions={createLineForRouteSegment(route, i)}
-                        />
-                    )}
-                    {temporaryWaypoint && (
-                        <>
-                            <Circle
-                                key={`circle-temporary`}
-                                fill={false}
-                                center={temporaryWaypoint.waypoint.latLng}
-                                radius={1000 * 2.5 * 1.852}
-                                pathOptions={{
-                                    color: 'black',
-                                    dashArray: '20',
                                 }}
-                                fillOpacity={0}
+                                setName={(name) => {
+                                    replaceWaypoint({
+                                        waypointPosition: i,
+                                        newWaypoint: w.clone({ name }),
+                                    });
+                                }}
+                                onDrag={(latLng) => {
+                                    return setTemporaryWaypoint({
+                                        waypoint: w.clone({ latLng }),
+                                        waypointAfter: route.waypoints[i + 1],
+                                        waypointBefore: route.waypoints[i - 1],
+                                    });
+                                }}
                             />
-                            {temporaryWaypoint.waypointBefore && (
-                                <Polyline
-                                    color={'black'}
-                                    dashArray="20"
-                                    lineCap={'square'}
-                                    positions={lineBetweenWaypoints(
-                                        temporaryWaypoint.waypointBefore,
-                                        temporaryWaypoint.waypoint,
-                                    )}
+                        )}
+                        {(AerodromeWaypoint.isAerodromeWaypoint(w) ||
+                            VfrPointWaypoint.isVfrPointWaypoint(w) ||
+                            VorPointWaypoint.isVorPointWaypoint(w)) && (
+                            <FixtureWaypointMarker
+                                key={`fixture-waypoint-${w.id}`}
+                                label={w.name}
+                                onDelete={() => removeWaypoint(i)}
+                                waypointNumber={i}
+                                type={waypointType(w, i)}
+                                position={w.latLng}
+                            />
+                        )}
+                        {route.waypoints[i + 1] && (
+                            <Polyline
+                                color={'#000000a2'}
+                                weight={10}
+                                lineCap={'square'}
+                                eventHandlers={{
+                                    click: (e) => {
+                                        preventDefault(e);
+                                        return addLatLngWaypoint({
+                                            latLng: pointToLeafletLatLng(
+                                                ruler.pointOnLine(
+                                                    toLine([
+                                                        route.waypoints[i].latLng,
+                                                        route.waypoints[i + 1].latLng,
+                                                    ]),
+                                                    toCheapRulerPoint(e.latlng),
+                                                ).point,
+                                            ),
+                                            position: i + 1,
+                                        });
+                                    },
+                                }}
+                                positions={createLineForRouteSegment(route, i)}
+                            />
+                        )}
+                        {temporaryWaypoint && (
+                            <>
+                                <Circle
+                                    key={`circle-temporary`}
+                                    fill={false}
+                                    center={temporaryWaypoint.waypoint.latLng}
+                                    radius={1000 * 2.5 * 1.852}
+                                    pathOptions={{
+                                        color: 'black',
+                                        dashArray: '20',
+                                    }}
+                                    fillOpacity={0}
                                 />
-                            )}
-                            {temporaryWaypoint.waypointAfter && (
-                                <Polyline
-                                    color={'black'}
-                                    dashArray="20"
-                                    lineCap={'square'}
-                                    positions={lineBetweenWaypoints(
-                                        temporaryWaypoint.waypoint,
-                                        temporaryWaypoint.waypointAfter,
-                                    )}
-                                />
-                            )}
-                        </>
-                    )}
-                </Fragment>
-            ))}
+                                {temporaryWaypoint.waypointBefore && (
+                                    <Polyline
+                                        color={'black'}
+                                        dashArray="20"
+                                        lineCap={'square'}
+                                        positions={lineBetweenWaypoints(
+                                            temporaryWaypoint.waypointBefore,
+                                            temporaryWaypoint.waypoint,
+                                        )}
+                                    />
+                                )}
+                                {temporaryWaypoint.waypointAfter && (
+                                    <Polyline
+                                        color={'black'}
+                                        dashArray="20"
+                                        lineCap={'square'}
+                                        positions={lineBetweenWaypoints(
+                                            temporaryWaypoint.waypoint,
+                                            temporaryWaypoint.waypointAfter,
+                                        )}
+                                    />
+                                )}
+                            </>
+                        )}
+                    </Fragment>
+                ))}
         </>
     );
 };

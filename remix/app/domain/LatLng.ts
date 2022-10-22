@@ -8,6 +8,11 @@ export const toLatLng = (latLng: { lat: Latitude; lng: Longitude }) => ({
     lng: latLng.lng as unknown as number,
 });
 
+export const toDomainLatLng = (latLng: { lat: number; lng: number }) => ({
+    lat: latLng.lat as unknown as Latitude,
+    lng: latLng.lng as unknown as Longitude,
+});
+
 export const latLngCodec = Codec.struct({
     lat: Codec.number,
     lng: Codec.number,

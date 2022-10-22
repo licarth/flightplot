@@ -1,6 +1,5 @@
 import styled from 'styled-components';
-import type { MagneticRunwayOrientation } from 'ts-aerodata-france';
-import type { Aerodrome } from 'ts-aerodata-france';
+import type { Aerodrome, MagneticRunwayOrientation } from 'ts-aerodata-france';
 import { Aerodrome as AdIcon } from '~/generated/icons';
 
 type PropsType = {
@@ -11,8 +10,8 @@ type PropsType = {
     $closed: boolean;
 };
 
-export const StyledAerodromeLogo = ({ aerodrome }: { aerodrome: Aerodrome }) => {
-    const { icaoCode, magneticVariation, runways, status } = aerodrome;
+export const StyledAerodromeLogo = (props: { aerodrome: Aerodrome }) => {
+    const { icaoCode, magneticVariation, runways, status } = props.aerodrome;
     const {
         mainRunway: { magneticOrientation },
     } = runways;
@@ -25,6 +24,7 @@ export const StyledAerodromeLogo = ({ aerodrome }: { aerodrome: Aerodrome }) => 
             $magneticVariation={magneticVariation}
             $magneticOrientation={magneticOrientation}
             $closed={status === 'OFF'}
+            {...props}
         />
     );
 };

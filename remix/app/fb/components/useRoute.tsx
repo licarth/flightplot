@@ -1,5 +1,6 @@
 import { useCallback, useContext } from 'react';
-import type { Aerodrome } from 'ts-aerodata-france';
+import type { Aerodrome, VfrPoint, Vor } from 'ts-aerodata-france';
+import type { VorPointWaypoint } from '~/domain/Waypoint/VorPointWaypoint';
 import { AerodromeWaypoint, AerodromeWaypointType, Route, Waypoint } from '../../domain';
 import type { LatLng } from '../../domain/LatLng';
 import { RouteContext } from './RouteContext';
@@ -63,6 +64,53 @@ export const useRoute = () => {
                     waypoint: Waypoint.fromAerodrome({
                         aerodrome,
                         waypointType: AerodromeWaypointType.RUNWAY,
+                    }),
+                });
+                if (!oldRoute) {
+                    switchRoute(newRoute.id);
+                }
+                return newRoute;
+            });
+        },
+        [setRoute, switchRoute],
+    );
+    const addVorDmeWaypoint = useCallback(
+        ({
+            vorDme,
+            position,
+            qdr = 0,
+            distanceInNm = 0,
+        }: {
+            vorDme: Vor;
+            position?: number;
+            qdr?: VorPointWaypoint['qdr'];
+            distanceInNm?: VorPointWaypoint['distanceInNm'];
+        }) => {
+            setRoute((oldRoute) => {
+                const newRoute = (oldRoute || Route.empty()).addWaypoint({
+                    position,
+                    waypoint: Waypoint.fromVorDme({
+                        vorDme,
+                        qdr,
+                        distanceInNm,
+                    }),
+                });
+                if (!oldRoute) {
+                    switchRoute(newRoute.id);
+                }
+                return newRoute;
+            });
+        },
+        [setRoute, switchRoute],
+    );
+
+    const addVfrPointWaypoint = useCallback(
+        ({ vfrPoint, position }: { vfrPoint: VfrPoint; position?: number }) => {
+            setRoute((oldRoute) => {
+                const newRoute = (oldRoute || Route.empty()).addWaypoint({
+                    position,
+                    waypoint: Waypoint.fromVfrPoint({
+                        vfrPoint,
                     }),
                 });
                 if (!oldRoute) {
@@ -148,6 +196,8 @@ export const useRoute = () => {
         moveWaypoint,
         addAerodromeWaypoint,
         addLatLngWaypoint,
+        addVfrPointWaypoint,
+        addVorDmeWaypoint,
         setAerodromeWaypointType,
         airspaceOverlaps,
     };

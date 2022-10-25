@@ -1,5 +1,6 @@
 import { NmScale } from '@marfle/react-leaflet-nmscale';
-import { useEffect } from 'react';
+import type { LatLng } from 'leaflet';
+import { useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { LayerGroup, useMap, useMapEvent } from 'react-leaflet';
 import { toDomainLatLng } from '~/domain';
@@ -16,6 +17,7 @@ import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
 import { LayerSwitchButton } from './LayerSwitchButton';
 import { useMainMap } from './MainMapContext';
+import { MouseEvents } from './MouseEvents';
 import { VfrPoints } from './VfrPoints';
 import { Vors } from './Vors';
 
@@ -24,6 +26,7 @@ export const InnerMapContainer = () => {
     const { addLatLngWaypoint } = routeContext;
     const leafletMap = useMap();
     const { currentBackgroundLayer, bounds: mapBounds } = useMainMap();
+    const [mouseLocation, setMouseLocation] = useState<LatLng | null>(null);
 
     const shouldRenderAerodromes = leafletMap.getZoom() > 7;
     const shouldRenderVors = leafletMap.getZoom() > 7;
@@ -51,14 +54,22 @@ export const InnerMapContainer = () => {
     });
 
     useMapEvent('mousemove', (e) => {
-        if (mouseMode === 'command') {
-            setHighlightedLocation(toDomainLatLng(e.latlng));
-        }
+        setMouseLocation(e.latlng);
     });
 
     useEffect(() => {
-        mouseMode === 'none' && setHighlightedLocation(undefined);
+        if (mouseMode === 'none' || mouseMode === 'command+shift') {
+            setHighlightedLocation(undefined);
+        } else {
+            mouseLocation && setHighlightedLocation(toDomainLatLng(mouseLocation));
+        }
     }, [mouseMode]);
+
+    useEffect(() => {
+        if (mouseLocation && mouseMode === 'command') {
+            setHighlightedLocation(toDomainLatLng(mouseLocation));
+        }
+    }, [mouseLocation]);
 
     useHotkeys(
         'esc',
@@ -70,6 +81,7 @@ export const InnerMapContainer = () => {
 
     return (
         <>
+            <MouseEvents />
             <DisplayedLayer layer={currentBackgroundLayer} />
             <FlightPlanningLayer routeContext={routeContext} />
             <PrintAreaPreview />

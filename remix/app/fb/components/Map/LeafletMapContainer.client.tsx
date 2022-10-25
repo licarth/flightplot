@@ -37,17 +37,9 @@ export const LeafletMapContainer = () => {
         map?.invalidateSize();
     }, [width, height, map]);
 
-    const { clickedLocation, fixtures, clear: clearFixture } = useFixtureFocus();
-
     return (
         <MapSizeDetector ref={ref}>
-            {clickedLocation && (
-                <FixtureDetails
-                    fixtures={fixtures}
-                    clickedLocation={clickedLocation}
-                    onClose={clearFixture}
-                />
-            )}
+            <FixtureDetailsWindow />
             {MapContainer && (
                 <Outer $cursor={cursor}>
                     <StyledMapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
@@ -58,6 +50,17 @@ export const LeafletMapContainer = () => {
             )}
         </MapSizeDetector>
     );
+};
+
+const FixtureDetailsWindow = () => {
+    const { clickedLocation, fixtures, clear: clearFixture } = useFixtureFocus();
+    return clickedLocation ? (
+        <FixtureDetails
+            fixtures={fixtures}
+            clickedLocation={clickedLocation}
+            onClose={clearFixture}
+        />
+    ) : null;
 };
 
 const StyledMapContainer = styled(MapContainer)``;

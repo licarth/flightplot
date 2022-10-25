@@ -1,10 +1,9 @@
-import hotkeys from 'hotkeys-js';
 import type { LatLngTuple } from 'leaflet';
 import { useEffect, useRef, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { MapContainer, ZoomControl } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
+import { useMouseMode } from '../MouseModeContext';
 import { FixtureDetails } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { InnerMapContainer } from './InnerMapContainer';
@@ -18,25 +17,15 @@ export const LeafletMapContainer = () => {
     const { width, height, ref } = useResizeDetector();
     const { map, setMap } = useMainMap();
     const [cursor, setCursor] = useState('crosshair');
+    const { mouseMode } = useMouseMode();
 
-    useHotkeys(
-        '*',
-        () => {
-            if (hotkeys.command) {
-                setCursor('copy');
-            }
-        },
-        { keydown: true },
-    );
-    useHotkeys(
-        '*',
-        () => {
-            if ((!hotkeys.shift && hotkeys.command) || (hotkeys.shift && !hotkeys.command)) {
-                setCursor('crosshair');
-            }
-        },
-        { keyup: true },
-    );
+    useEffect(() => {
+        if (mouseMode === 'command' || mouseMode === 'command+shift') {
+            setCursor('copy');
+        } else {
+            setCursor('crosshair');
+        }
+    }, [mouseMode]);
 
     const mapRef = useRef(null);
 

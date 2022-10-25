@@ -1,11 +1,11 @@
 import { NmScale } from '@marfle/react-leaflet-nmscale';
-import hotkeys from 'hotkeys-js';
 import { useEffect } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { LayerGroup, useMap, useMapEvent } from 'react-leaflet';
 import { toDomainLatLng } from '~/domain';
 import { OaciLayer, OpenStreetMapLayer } from '../layer';
 import { SatelliteLayer } from '../layer/SatelliteLayer';
+import { useMouseMode } from '../MouseModeContext';
 import { useRoute } from '../useRoute';
 import { addFixtureToRoute } from './addFixtureToRoute';
 import { Aerodromes } from './Aerodromes';
@@ -36,44 +36,29 @@ export const InnerMapContainer = () => {
         leafletMap && leafletMap.boxZoom.disable();
     }, [leafletMap]);
 
+    const { mouseMode } = useMouseMode();
+
     useMapEvent('click', (e) => {
-        if (hotkeys.command || hotkeys.ctrl) {
+        if (mouseMode === 'command') {
             e.originalEvent.preventDefault();
-            if (hotkeys.shift) {
-                addLatLngWaypoint({ latLng: e.latlng });
-            } else {
-                highlightedFixture &&
-                    addFixtureToRoute({ fixture: highlightedFixture, routeContext });
-            }
+            highlightedFixture && addFixtureToRoute({ fixture: highlightedFixture, routeContext });
+        } else if (mouseMode === 'command+shift') {
+            e.originalEvent.preventDefault();
+            addLatLngWaypoint({ latLng: e.latlng });
         } else {
             setClickedLocation(toDomainLatLng(e.latlng));
         }
     });
 
     useMapEvent('mousemove', (e) => {
-        if (!hotkeys.shift && (hotkeys.command || hotkeys.ctrl)) {
+        if (mouseMode === 'command') {
             setHighlightedLocation(toDomainLatLng(e.latlng));
         }
     });
 
-    useHotkeys(
-        '*',
-        () => {
-            if (hotkeys.command) {
-                setHighlightedLocation(() => undefined);
-            }
-        },
-        { keyup: true },
-    );
-    useHotkeys(
-        '*',
-        () => {
-            if (hotkeys.shift) {
-                setHighlightedLocation(() => undefined);
-            }
-        },
-        { keydown: true },
-    );
+    useEffect(() => {
+        mouseMode === 'none' && setHighlightedLocation(undefined);
+    }, [mouseMode]);
 
     useHotkeys(
         'esc',

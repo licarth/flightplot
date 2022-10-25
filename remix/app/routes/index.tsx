@@ -1,4 +1,3 @@
-// import '../fb/firebaseConfig';
 import type { MetaFunction } from '@remix-run/node';
 import styles from 'antd/dist/antd.css';
 import FullStory from 'react-fullstory';
@@ -8,6 +7,7 @@ import { DisplayedContent, PrintContent } from '~/fb/components/Map';
 import { FixtureFocusProvider } from '~/fb/components/Map/FixtureFocusContext';
 import { MainMapProvider } from '~/fb/components/Map/MainMapContext';
 import { PrintPreview } from '~/fb/components/Map/PrintPreview';
+import { MouseModeProvider } from '~/fb/components/MouseModeContext';
 import { environmentVariable } from '~/fb/environmentVariable';
 import { AiracDataProvider } from '../fb/components/AiracDataContext';
 import type { LayerEnum } from '../fb/components/layer/Layer';
@@ -32,9 +32,11 @@ export default () => {
                                     <PrintProvider>
                                         <div id="modal-root" data-testid="modal-root"></div>
                                         <AppContainer id="app">
-                                            <MainMapProvider>
-                                                <DisplayedContent />
-                                            </MainMapProvider>
+                                            <MouseModeProvider>
+                                                <MainMapProvider>
+                                                    <DisplayedContent />
+                                                </MainMapProvider>
+                                            </MouseModeProvider>
                                         </AppContainer>
                                         <PrintContent>{''}</PrintContent>
                                         <PrintPreview />

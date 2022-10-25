@@ -1,5 +1,5 @@
 import type { ComponentMeta } from '@storybook/react';
-import 'antd/dist/antd.css';
+
 import styled from 'styled-components';
 import { AiracData } from 'ts-aerodata-france';
 import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';

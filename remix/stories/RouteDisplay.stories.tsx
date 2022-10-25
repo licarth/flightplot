@@ -1,5 +1,5 @@
 import type { ComponentMeta } from '@storybook/react';
-import 'antd/dist/antd.css';
+
 import { AiracData } from 'ts-aerodata-france';
 import { RouteDisplay } from '~/fb/components/Map/LeftMenu';
 import { FirebaseAuthProvider } from '~/fb/firebase/auth/FirebaseAuthContext';

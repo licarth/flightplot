@@ -1,5 +1,5 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import 'antd/dist/antd.css';
+
 import styled from 'styled-components';
 import '../app/styles/global.css';
 

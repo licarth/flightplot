@@ -8,7 +8,20 @@ module.exports = {
     ],
     framework: '@storybook/react',
     webpackFinal: async (config, { configType }) => {
+        const leafletRule = {
+            test: /\.js$/,
+            // if you're smarter than me, you could also do it via MatchPattern 🤷‍♀️
+            include: [/node_modules\/@react-leaflet/, /node_modules\/react-leaflet/],
+            use: [
+                {
+                    loader: 'babel-loader',
+                    options: { presets: [['@babel/preset-env', { modules: 'commonjs' }]] },
+                },
+            ],
+        };
+
         config.resolve.plugins = [new TsconfigPathsPlugin()];
+        config.module.rules.push(leafletRule);
         return config;
     },
     staticDirs: ['../public'],

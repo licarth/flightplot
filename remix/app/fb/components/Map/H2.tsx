@@ -6,4 +6,5 @@ export const H2 = styled.h2<{ marginTop?: number }>`
     text-align: center;
     background: #002e94;
     color: white;
+    cursor: pointer;
 `;

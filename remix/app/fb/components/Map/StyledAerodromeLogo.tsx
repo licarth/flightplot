@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import type { MagneticRunwayOrientation } from 'ts-aerodata-france';
-import { Aerodrome } from '~/generated/icons';
+import type { Aerodrome, MagneticRunwayOrientation } from 'ts-aerodata-france';
+import { Aerodrome as AdIcon } from '~/generated/icons';
 
 type PropsType = {
     $magneticVariation: number;
@@ -10,7 +10,26 @@ type PropsType = {
     $closed: boolean;
 };
 
-export const StyledAerodromeLogo = styled(Aerodrome)<PropsType>`
+export const StyledAerodromeLogo = (props: { aerodrome: Aerodrome }) => {
+    const { icaoCode, magneticVariation, runways, status } = props.aerodrome;
+    const {
+        mainRunway: { magneticOrientation },
+    } = runways;
+    const hasPavedRunway = runways.runways.some((r) => r.surface === 'asphalt');
+    return (
+        <StyledAerodromeLogoComponent
+            title={`${icaoCode}`}
+            $military={status === 'MIL'}
+            $pavedRunway={hasPavedRunway}
+            $magneticVariation={magneticVariation}
+            $magneticOrientation={magneticOrientation}
+            $closed={status === 'OFF'}
+            {...props}
+        />
+    );
+};
+
+const StyledAerodromeLogoComponent = styled(AdIcon)<PropsType>`
     #closed {
         ${({ $closed }) => !$closed && `display: none !important;`}
     }

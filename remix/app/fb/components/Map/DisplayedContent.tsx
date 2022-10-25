@@ -1,15 +1,17 @@
+import { Drawer } from 'antd';
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import Modal, { type ModalHandle } from '../../Modal';
+import { useHelpPage } from '../HelpPageContext';
 import type { LayerEnum } from '../layer/Layer';
 import { MyRoutes, RouteWaypoints } from '../Menus';
+import { NotionPage } from '../Notion';
 import { TopBar } from '../TopBar/TopBar';
 import { useRoute } from '../useRoute';
 import { VerticalProfileChartWithHook } from '../VerticalProfileChart';
 import { H2 } from './H2';
 import { LeafletMapContainer } from './LeafletMapContainer.client';
 import { LeftMenu } from './LeftMenu';
-import { useMainMap } from './MainMapContext';
 
 export type DisplayedLayers = {
     [keys in LayerEnum]: boolean;
@@ -22,7 +24,6 @@ export type MapBounds = [number, number, number, number];
 type Section = 'routes' | 'waypoints' | 'print-options' | undefined;
 
 export const DisplayedContent = ({}: LeafletMapProps) => {
-    const { setMap } = useMainMap();
     const { route } = useRoute();
     const [mounted, setMounted] = React.useState(false);
     const [expandedSection, setExpandedSection] = useState<Section>();
@@ -31,18 +32,34 @@ export const DisplayedContent = ({}: LeafletMapProps) => {
             ? setExpandedSection(() => undefined)
             : setExpandedSection(section);
     };
+    const {
+        setPageId: setHelpPageId,
+        pageId: helpPageId,
+        close,
+        isOpen: isHelpOpen,
+    } = useHelpPage();
     React.useEffect(() => {
         setMounted(true);
+        setHelpPageId('0e2ee51bb50c436796dbb845f9aecc48');
     }, []);
 
     return (
         <>
+            <StyledDrawer
+                placement="right"
+                open={isHelpOpen}
+                width={600}
+                onClose={() => close()}
+                mask={false}
+            >
+                <NotionPage pageId={helpPageId} setPageId={setHelpPageId} />
+            </StyledDrawer>
             <BackgroundContainer onContextMenu={(e) => e.preventDefault()}>
                 <TopBar />
                 <AppBody>
                     <RightSide>
                         <LeftMenu />
-                        {mounted ? <LeafletMapContainer setMap={setMap} /> : <></>}
+                        {mounted ? <LeafletMapContainer /> : <></>}
                         {/* @ts-ignore */}
                         {route?.length > 0 && <VerticalProfile />}
                         <MobileComponents>
@@ -130,4 +147,11 @@ const AppBody = styled.div`
     display: flex;
     align-items: stretch;
     flex-grow: 1;
+`;
+
+const StyledDrawer = styled(Drawer)`
+    z-index: 1001;
+    .ant-drawer-body {
+        padding: 0;
+    }
 `;

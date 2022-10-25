@@ -10,8 +10,8 @@ import {
     useCatch,
     useLoaderData,
 } from '@remix-run/react';
-import styles from 'antd/dist/antd.variable.css';
 import _ from 'lodash';
+import reactNotionStyles from 'react-notion-x/src/styles.css';
 import globablStylesUrl from '~styles/global.css';
 import rootStylesUrl from '~styles/index.css';
 import normalizeStylesUrl from '~styles/__normalize__.css';
@@ -50,7 +50,11 @@ export const links: LinksFunction = () => {
         'https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Russo+One&display=swap',
     ];
     return [
-        { rel: 'stylesheet', href: styles },
+        // { rel: 'stylesheet', href: antdStyles },
+        {
+            rel: 'stylesheet',
+            href: reactNotionStyles,
+        },
         {
             rel: 'preconnect',
             href: 'https://fonts.googleapis.com',

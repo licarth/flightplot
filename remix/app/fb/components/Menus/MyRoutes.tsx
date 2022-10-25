@@ -7,6 +7,7 @@ import { useFirebaseAuth } from '../../firebase/auth/FirebaseAuthContext';
 import Modal from '../../Modal';
 import { CollapsibleDiv } from '../Map/CollapsibleDiv';
 import { NewNavButton } from '../Map/LeftMenu';
+import { useMainMap } from '../Map/MainMapContext';
 import { useRoute } from '../useRoute';
 import { useUserRoutes } from '../useUserRoutes';
 
@@ -75,12 +76,20 @@ const RouteLine = ({
         deleteRoute(route.id);
         setRoute(() => undefined);
     };
+    const { map } = useMainMap();
     return (
         <RouteLineDiv
             isCurrentRoute={isCurrentRoute}
             onClick={() => {
                 onRouteSelect(route);
-                return switchRoute(route.id);
+                switchRoute(route.id);
+                route.waypoints.length > 0 &&
+                    map &&
+                    map.flyToBounds(route.leafletBoundingBox, {
+                        maxZoom: 11,
+                        animate: false,
+                        padding: [100, 100],
+                    });
             }}
         >
             <RouteLineLeft>

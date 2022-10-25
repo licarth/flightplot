@@ -7,11 +7,12 @@ import type { MapBounds } from './DisplayedContent';
 import { IgnAirspaceNameFont } from './IgnAirspaceNameFont';
 
 export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
-    const { airacData } = useAiracData();
+    const { airacData, loading } = useAiracData();
 
     return (
         <>
             {mapBounds &&
+                !loading &&
                 airacData
                     .getDangerZonesInBbox(...mapBounds)
                     .filter(({ type }) => ['P'].includes(type))

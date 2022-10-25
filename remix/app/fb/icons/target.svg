@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="102.30039mm"
+   height="102.30039mm"
+   viewBox="0 0 102.30039 102.30039"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.1 (9c6d41e, 2022-07-14)"
+   sodipodi:docname="target.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.4862272"
+     inkscape:cx="161.81913"
+     inkscape:cy="197.4799"
+     inkscape:window-width="1680"
+     inkscape:window-height="997"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(1.150389,1.1803649)">
+    <ellipse
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2.3;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path9821"
+       cx="50.503895"
+       cy="50.5"
+       rx="19.511978"
+       ry="19.531487" />
+    <circle
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2.3;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path9821-5-2"
+       cx="49.999805"
+       cy="49.96983"
+       r="50.000195" />
+    <path
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2.3;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 50.5,0 V 100.00039"
+       id="path10005" />
+    <path
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2.3;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 0,50.5 H 100.0004"
+       id="path10005-1" />
+  </g>
+</svg>

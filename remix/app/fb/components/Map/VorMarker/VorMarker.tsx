@@ -56,7 +56,7 @@ export const VorMarker = ({
     );
 };
 
-const StyledVor = styled(VorDmeIcon)<PropsType>`
+export const StyledVor = styled(VorDmeIcon)<PropsType>`
     ${({ $mouseOver }) => $mouseOver && `filter: drop-shadow(3px 5px 1px rgb(0 0 0 / 0.4));`}
     #dme {
         ${({ $dme }) => !$dme && `display: none !important;`}

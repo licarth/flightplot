@@ -1,50 +1,32 @@
 import type { Unsubscribe } from 'firebase/database';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
-import { AiracCycles, AiracData, AirspaceType, DangerZoneType } from 'ts-aerodata-france';
-import { AerodromeWaypointType, latLngWaypointFactory, Route, Waypoint } from '../../domain';
+import { AirspaceType, DangerZoneType } from 'ts-aerodata-france';
+import type { Route } from '../../domain';
 import type { AirspaceSegmentOverlap } from '../../domain/AirspaceIntersection/routeAirspaceOverlaps';
 import { routeAirspaceOverlaps } from '../../domain/AirspaceIntersection/routeAirspaceOverlaps';
 import type { UUID } from '../../domain/Uuid/Uuid';
 import type { ElevationAtPoint } from '../elevationOnRoute';
 import { elevationOnRoute } from '../elevationOnRoute';
-import { openElevationApiElevationService } from '../ElevationService/openElevationApiElevationService';
-import { FORMATS } from './PrintContext';
+import { localApiElevationService } from '../ElevationService/googleApiElevationService';
+import { useAiracData } from './useAiracData';
 import { useUserRoutes } from './useUserRoutes';
 
 const emptyElevation = { distancesFromStartInNm: [], elevations: [] };
-export const RouteContext = createContext<{
+type RouteContextProps = {
     route?: Route;
     setRoute: React.Dispatch<React.SetStateAction<Route | undefined>>;
     elevation: ElevationAtPoint;
     switchRoute: (routeId: UUID) => void;
     airspaceOverlaps: AirspaceSegmentOverlap[];
-}>({
+};
+
+export const RouteContext = createContext<RouteContextProps>({
     setRoute: () => {},
     switchRoute: (routeId: UUID) => {},
     elevation: emptyElevation,
     airspaceOverlaps: [],
 });
-
-const airacData = AiracData.loadCycle(AiracCycles.AUG_11_2022);
-const exampleRoute = Route.empty()
-    .setTitle('Toto')
-    .addWaypoint({
-        position: 0,
-        waypoint: Waypoint.fromAerodrome({
-            aerodrome: airacData.aerodromes[3],
-            waypointType: AerodromeWaypointType.RUNWAY,
-        }),
-    })
-    .addWaypoint({
-        position: 1,
-        waypoint: latLngWaypointFactory({
-            altitude: 1500,
-            name: 'WPT 1',
-            latLng: { lat: 42, lng: 3 },
-        }),
-    })
-    .addPrintArea({ bottomLeft: { lat: 42, lng: 3 }, pageFormat: FORMATS.A4_PORTRAIT });
 
 export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const { routes, saveRoute, listenToRouteChanges } = useUserRoutes();
@@ -57,6 +39,8 @@ export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
         .join('-');
     const [elevation, setElevation] = useState<ElevationAtPoint>(emptyElevation);
 
+    const { airacData } = useAiracData();
+
     useEffect(() => {
         // Update route if it already exists.
         if (route) {
@@ -68,7 +52,7 @@ export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
     useEffect(() => {
         route &&
             elevationOnRoute({
-                elevationService: openElevationApiElevationService,
+                elevationService: localApiElevationService,
             })(route).then((e) => setElevation(e));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [route, route?.waypoints]);
@@ -92,7 +76,7 @@ export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
     };
 
     const airspaceOverlaps = useMemo(() => {
-        return route
+        return route && airacData
             ? routeAirspaceOverlaps({
                   route,
                   airspaces: [
@@ -108,7 +92,7 @@ export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
               })
             : [];
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [overlapDeterministicChangeKey]);
+    }, [overlapDeterministicChangeKey, airacData]);
 
     return (
         <RouteContext.Provider

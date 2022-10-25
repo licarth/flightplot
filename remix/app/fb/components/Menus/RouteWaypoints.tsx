@@ -13,8 +13,10 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import { Button } from 'antd';
 import { useCallback } from 'react';
 import styled from 'styled-components';
+import { useHelpPage } from '../HelpPageContext';
 import type { Collapsible } from '../Map/CollapsibleDiv';
 import { CollapsibleDiv } from '../Map/CollapsibleDiv';
 import { RouteElement } from '../Map/RouteElement';
@@ -23,6 +25,8 @@ import { useRoute } from '../useRoute';
 export const RouteWaypoints = ({ collapsed }: Collapsible) => {
     const routeContext = useRoute();
     const { route, removeWaypoint, moveWaypoint } = routeContext;
+
+    const { goToPage } = useHelpPage();
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -57,6 +61,14 @@ export const RouteWaypoints = ({ collapsed }: Collapsible) => {
                                 <br />
                                 🖱️ Cliquez sur la carte pour ajouter un point de report ou un
                                 terrain de départ.
+                                <br />
+                                <Button
+                                    onClick={() => {
+                                        goToPage('1beae6f637464a0182175343863ba252');
+                                    }}
+                                >
+                                    Aide
+                                </Button>
                             </div>
                         )}
                         <DndContext

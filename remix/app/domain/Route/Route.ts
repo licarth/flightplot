@@ -2,7 +2,6 @@ import CheapRuler from 'cheap-ruler';
 import { pipe } from 'fp-ts/lib/function';
 import * as Codec from 'io-ts/lib/Codec';
 import type { AiracData } from 'ts-aerodata-france';
-import { AiracCycles } from 'ts-aerodata-france';
 import { fromClassCodec } from '../../iots';
 import type { Aircraft } from '../Aircraft';
 import { boundingBox } from '../boundingBox';
@@ -340,5 +339,4 @@ const knotsToMetersPerSecond = (v: number) => (v * 1852) / 3600;
 const feetPerMinToMetersPerSecond = (v: number) => v / 60 / 3.28;
 const metersInNauticalMiles = (d: number) => d / 1852;
 
-const propsExample = Route.propsCodec(AiracCycles.SEP_08_2022);
-type RouteProps = Codec.TypeOf<typeof propsExample>;
+type RouteProps = Codec.TypeOf<ReturnType<typeof Route.propsCodec>>;

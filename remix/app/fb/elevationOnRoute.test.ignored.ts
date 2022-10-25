@@ -1,13 +1,13 @@
 import { Route, Waypoint } from '../domain';
 import { elevationOnRoute } from './elevationOnRoute';
-import { openElevationApiElevationService } from './ElevationService/openElevationApiElevationService';
+import { localApiElevationService } from './ElevationService/googleApiElevationService';
 
 describe.skip('elevationOnRoute', () => {
     it('should return something', async () => {
         expect(
             (
                 await elevationOnRoute({
-                    elevationService: openElevationApiElevationService,
+                    elevationService: localApiElevationService,
                 })(
                     new Route({
                         waypoints: [

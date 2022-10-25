@@ -1,6 +1,6 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta } from '@storybook/react';
 import 'antd/dist/antd.css';
-import { AiracCycles, AiracData } from 'ts-aerodata-france';
+import { AiracData } from 'ts-aerodata-france';
 import { RouteDisplay } from '~/fb/components/Map/LeftMenu';
 import { FirebaseAuthProvider } from '~/fb/firebase/auth/FirebaseAuthContext';
 import '../app/styles/global.css';
@@ -14,6 +14,7 @@ import { foldW } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { draw } from 'io-ts/lib/Decoder';
 import { useEffect } from 'react';
+import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
 import { useRoute } from '~/fb/components/useRoute';
 import { UserRoutesProvider } from '~/fb/components/UserRoutesContext';
 import routeJSON from './route.json';
@@ -29,10 +30,9 @@ export default {
     argTypes: {},
 } as ComponentMeta<typeof RouteDisplay>;
 
-const airacData = AiracData.loadCycle(AiracCycles.SEP_08_2022);
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 
-const SetRoute = () => {
+const SetRoute = ({ airacData }: { airacData: AiracData }) => {
     const { setRoute } = useRoute();
 
     useEffect(() => {
@@ -54,12 +54,13 @@ const SetRoute = () => {
     return null;
 };
 
-const Template: ComponentStory<typeof RouteDisplay> = (args) => {
+//@ts-ignore
+export const Default = (args, { loaded: { airacData } }) => {
     return (
         <FirebaseAuthProvider>
             <UserRoutesProvider>
                 <RouteProvider>
-                    <SetRoute />
+                    <SetRoute airacData={airacData} />
                     <RouteDisplay {...args} />;
                 </RouteProvider>
             </UserRoutesProvider>
@@ -67,4 +68,8 @@ const Template: ComponentStory<typeof RouteDisplay> = (args) => {
     );
 };
 
-export const Default = Template.bind({});
+Default.loaders = [
+    async () => ({
+        airacData: await AiracData.loadCycle(currentCycle),
+    }),
+];

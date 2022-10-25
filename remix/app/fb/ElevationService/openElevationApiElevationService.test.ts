@@ -1,8 +1,8 @@
-import { openElevationApiElevationService } from './openElevationApiElevationService';
+import { localApiElevationService } from './googleApiElevationService';
 
 describe('openElevationApiElevationService', () => {
     it.skip('should return correct elevation for 2 points in the sea', async () => {
-        const res = await openElevationApiElevationService.getElevationsForLatLngs([
+        const res = await localApiElevationService.getElevationsForLatLngs([
             { lat: 42, lng: 2 },
             { lat: 43, lng: 2.1 },
             { lat: 43, lng: 2.2 },

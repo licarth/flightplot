@@ -8,7 +8,7 @@ import { routeAirspaceOverlaps } from '../../domain/AirspaceIntersection/routeAi
 import type { UUID } from '../../domain/Uuid/Uuid';
 import type { ElevationAtPoint } from '../elevationOnRoute';
 import { elevationOnRoute } from '../elevationOnRoute';
-import { openElevationApiElevationService } from '../ElevationService/openElevationApiElevationService';
+import { localApiElevationService } from '../ElevationService/googleApiElevationService';
 import { useAiracData } from './useAiracData';
 import { useUserRoutes } from './useUserRoutes';
 
@@ -52,7 +52,7 @@ export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
     useEffect(() => {
         route &&
             elevationOnRoute({
-                elevationService: openElevationApiElevationService,
+                elevationService: localApiElevationService,
             })(route).then((e) => setElevation(e));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [route, route?.waypoints]);

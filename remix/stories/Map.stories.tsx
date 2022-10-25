@@ -1,10 +1,11 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta } from '@storybook/react';
 import { foldW } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { draw } from 'io-ts/lib/Decoder';
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import { AiracCycles, AiracData } from 'ts-aerodata-france';
+import { AiracData } from 'ts-aerodata-france';
+import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
 import { Route } from '~/domain';
 import { AiracDataProvider } from '~/fb/components/AiracDataContext';
 import { FixtureFocusProvider } from '~/fb/components/Map/FixtureFocusContext';
@@ -15,8 +16,6 @@ import { useRoute } from '~/fb/components/useRoute';
 import { FirebaseAuthProvider } from '~/fb/firebase/auth/FirebaseAuthContext';
 import '../app/styles/global.css';
 import routeJSON from './route1.json';
-
-const airacData = AiracData.loadCycle(AiracCycles.SEP_08_2022);
 
 const RouteInit = ({ route }: { route: Route }) => {
     const { setRoute } = useRoute();
@@ -51,28 +50,41 @@ export default {
     argTypes: {},
 } as ComponentMeta<typeof Map>;
 
-const Template: ComponentStory<typeof Map> = (args) => {
+//@ts-ignore
+export const Default = (args) => {
     return <Map {...args} />;
 };
 
-export const Default = Template.bind({});
-export const WithRoute = Template.bind({});
-export const Montpellier = Template.bind({});
-
-WithRoute.args = {
-    route: pipe(
-        Route.codec(airacData).decode(routeJSON),
-        foldW(
-            (e) => {
-                console.log(draw(e));
-                return Route.empty();
-            },
-            (r) => {
-                return r;
-            },
-        ),
-    ),
+//@ts-ignore
+export const WithRoute = (args, { loaded: { airacData } }) => {
+    return (
+        <Map
+            route={pipe(
+                Route.codec(airacData).decode(routeJSON),
+                foldW(
+                    (e) => {
+                        console.log(draw(e));
+                        return Route.empty();
+                    },
+                    (r) => {
+                        return r;
+                    },
+                ),
+            )}
+        />
+    );
 };
+
+//@ts-ignore
+export const Montpellier = (args) => {
+    return <Map {...args} />;
+};
+
+WithRoute.loaders = [
+    async () => ({
+        airacData: await AiracData.loadCycle(currentCycle),
+    }),
+];
 
 const Container = styled.div`
     height: 100%;

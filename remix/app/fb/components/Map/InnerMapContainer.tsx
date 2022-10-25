@@ -21,9 +21,9 @@ import { Vors } from './Vors';
 
 export const InnerMapContainer = () => {
     const routeContext = useRoute();
-    const { route, addLatLngWaypoint } = routeContext;
+    const { addLatLngWaypoint } = routeContext;
     const leafletMap = useMap();
-    const { currentBackgroundLayer, bounds: mapBounds, map } = useMainMap();
+    const { currentBackgroundLayer, bounds: mapBounds } = useMainMap();
 
     const shouldRenderAerodromes = leafletMap.getZoom() > 7;
     const shouldRenderVors = leafletMap.getZoom() > 7;
@@ -74,16 +74,6 @@ export const InnerMapContainer = () => {
         },
         { keydown: true },
     );
-
-    // useHotkeys(
-    //     '*',
-    //     () => {
-    //         if (hotkeys.command) {
-    //             setHighlightedLocation(toDomainLatLng(e.latlng));
-    //         }
-    //     },
-    //     { keydown: true },
-    // );
 
     useHotkeys(
         'esc',

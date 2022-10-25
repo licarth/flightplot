@@ -23,7 +23,7 @@ const ContainerDiv = styled.div`
             position: absolute;
             top: 10px;
             left: 10px;
-            z-index: 100000;
+            z-index: 1000;
             filter: drop-shadow(5px 5px 10px #3c3c3c);
         }
     }

@@ -1,16 +1,18 @@
-import { UserOutlined } from '@ant-design/icons';
+import { QuestionOutlined, UserOutlined } from '@ant-design/icons';
 import { type User } from '@firebase/auth';
-import { Avatar, Dropdown, Menu } from 'antd';
+import { Avatar, Button, Dropdown, Menu } from 'antd';
 import { useRef } from 'react';
 import styled from 'styled-components';
 import { useFirebaseAuth } from '~/fb/firebase/auth/FirebaseAuthContext';
 import { Login } from '~/fb/Login';
 import Modal, { type ModalHandle } from '~/fb/Modal';
+import { useHelpPage } from '../HelpPageContext';
 import { useRoute } from '../useRoute';
 
 export const TopBar = () => {
     const { user, googleSignIn, anonymousSignIn, signOut } = useFirebaseAuth();
     const loginModal = useRef<ModalHandle>(null);
+    const { open } = useHelpPage();
     return (
         <TopBarContainer>
             <AppLogo>
@@ -19,6 +21,15 @@ export const TopBar = () => {
             </AppLogo>
 
             <RightButtons>
+                <Button
+                    type="text"
+                    icon={<QuestionOutlined />}
+                    onClick={() => {
+                        open();
+                    }}
+                >
+                    Aide
+                </Button>
                 {!user && (
                     //@ts-ignore
                     <LoginButton onClick={() => loginModal.current?.open()}>
@@ -53,6 +64,7 @@ const TopBarContainer = styled.div`
 const RightButtons = styled.div`
     display: flex;
     justify-content: flex-end;
+    align-items: center;
 `;
 const AppLogo = styled.div`
     height: 30px;

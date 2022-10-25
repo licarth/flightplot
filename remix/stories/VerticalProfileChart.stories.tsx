@@ -8,7 +8,7 @@ import { Route } from '~/domain/Route';
 import { VerticalProfileChart } from '~/fb/components/VerticalProfileChart/VerticalProfileChart';
 import type { ElevationAtPoint } from '~/fb/elevationOnRoute';
 import { elevationOnRoute, emptyElevation } from '~/fb/elevationOnRoute';
-import { openElevationApiElevationService } from '~/fb/ElevationService/openElevationApiElevationService';
+import { localApiElevationService } from '~/fb/ElevationService/googleApiElevationService';
 import '../app/styles/global.css';
 import routeJSON from './route.json';
 import shortRouteJSON from './shortRoute.json';
@@ -28,7 +28,7 @@ const Template: ComponentStory<typeof VerticalProfileChart> = (args) => {
 
     useEffect(() => {
         elevationOnRoute({
-            elevationService: openElevationApiElevationService,
+            elevationService: localApiElevationService,
         })(args.route).then((e) => setElevation(e));
     }, []);
 

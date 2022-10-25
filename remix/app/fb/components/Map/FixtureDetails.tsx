@@ -6,6 +6,7 @@ import type { LatLng } from '~/domain';
 import { latLngWaypointFactory, toLeafletLatLng } from '~/domain';
 import { Target } from '~/generated/icons';
 import VfrPointLogo from '~/generated/icons/VfrPoint';
+import { useHelpPage } from '../HelpPageContext';
 import { useRoute } from '../useRoute';
 import { addFixtureToRoute } from './addFixtureToRoute';
 import { Colors } from './Colors';
@@ -26,78 +27,13 @@ export const FixtureDetails = ({ fixtures, clickedLocation, onClose }: FixtureDe
     const { highlightedFixture } = useFixtureFocus();
     // const routeContext = useRoute();
     const content = fixtures.map((fixture, i) => {
-        // if (fixture && isAerodrome(fixture)) {
-        //     // const frequency = fixture.frequencies.atis[0]?.frequency;
-        //     return (
-        //         <Description key={`fixture-${i}`}>
-        //             <Inline>
-        //                 <AerodromeLogoContainer>
-        //                     <StyledAerodromeLogo aerodrome={fixture} />
-        //                 </AerodromeLogoContainer>
-        //                 {fixture.name} ({fixture.aerodromeAltitude} ft)
-        //             </Inline>
-
-        //             <span>
-        //                 {fixture.status === 'RST' && 'Usage restreint'}
-        //                 {fixture.status === 'CAP' && 'Ouvert à la CAP'}
-        //                 {fixture.status === 'MIL' && 'Terrain Militaire'}
-        //                 {fixture.status === 'OFF' && 'Terrain Fermé'}
-        //                 {fixture.status === 'PRV' && 'Terrain Privé'}
-        //             </span>
-        //             <span>
-        //                 {/* <Frequency>
-        //                     <span
-        //                     style={{
-        //                         textDecoration: frequency ? undefined : 'line-through',
-        //                     }}
-        //                     >
-        //                     ATIS
-        //                     </span>
-        //                     {` ${frequency ? frequency : ''}`}
-        //                 </Frequency> */}
-        //             </span>
-        //             <Space />
-        //         </Description>
-        //     );
         return <FixtureRow key={`fixture-${i}`} fixture={fixture} />;
-        // content.push(
-        //     <>
-        //         {isAerodrome(fixture) && !['MIL', 'OFF', 'PRV'].includes(fixture.status) && (
-        //             <>
-        //                 {/* <Button
-        //                     onClick={() => {
-        //                         window.open(
-        //                             `https://us-central1-outintown-eu.cloudfunctions.net/vacpdf?q=${fixture.icaoCode}`,
-        //                             );
-        //                         }}
-        //                         >
-        //                         Carte VAC
-        //                     </Button> */}
-        //                 {/* <InlineButtons>
-        //                     <Button
-        //                         type="primary"
-        //                         onClick={() => {
-        //                             addFixtureToRoute({ fixture, routeContext });
-        //                         }}
-        //                         >
-        //                         Atterrir
-        //                         </Button>
-        //                         <Button
-        //                         onClick={() => {
-        //                             addFixtureToRoute({ fixture, routeContext });
-        //                         }}
-        //                         >
-        //                         Survoler
-        //                         </Button>
-        //                     </InlineButtons> */}
-        //             </>
-        //         )}
-        //     </>,
-        // );
     });
 
+    const { isOpen: isHelpOpen } = useHelpPage();
+
     return (
-        <FixtureDetailsContainer>
+        <FixtureDetailsContainer isHelpOpen={isHelpOpen}>
             {highlightedFixture ? (
                 <FixtureRow fixture={highlightedFixture} />
             ) : (
@@ -292,9 +228,10 @@ const CloseButton = styled.div`
     cursor: pointer;
 `;
 
-const FixtureDetailsContainer = styled.div`
+const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
+    transition: all 0.3s;
     padding: 1rem;
-    right: 50px;
+    right: ${({ isHelpOpen }) => 50 + (isHelpOpen ? 600 : 0)}px;
     top: 10px;
     width: 350px;
     max-width: 500px;

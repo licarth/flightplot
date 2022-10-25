@@ -6,7 +6,7 @@ export const WaypointIdFactory = (id = uuidv4()) => `${id}`;
 
 export const latLngWaypointFactory = ({
     id = WaypointIdFactory(),
-    name = 'waypointName',
+    name = '',
     latLng = { lat: 43, lng: 0 },
     altitude = null,
 }: Partial<WaypointProps> = {}) => LatLngWaypoint.create({ id, name, latLng, altitude });

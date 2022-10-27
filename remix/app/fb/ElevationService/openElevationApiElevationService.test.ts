@@ -1,4 +1,4 @@
-import { localApiElevationService } from './googleApiElevationService';
+import { localApiElevationService } from './localApiElevationService';
 
 describe('openElevationApiElevationService', () => {
     it.skip('should return correct elevation for 2 points in the sea', async () => {

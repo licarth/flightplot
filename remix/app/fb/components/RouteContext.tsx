@@ -8,7 +8,7 @@ import { routeAirspaceOverlaps } from '../../domain/AirspaceIntersection/routeAi
 import type { UUID } from '../../domain/Uuid/Uuid';
 import type { ElevationAtPoint } from '../elevationOnRoute';
 import { elevationOnRoute } from '../elevationOnRoute';
-import { localApiElevationService } from '../ElevationService/googleApiElevationService';
+import { localApiElevationService } from '../ElevationService/localApiElevationService';
 import { useAiracData } from './useAiracData';
 import { useUserRoutes } from './useUserRoutes';
 

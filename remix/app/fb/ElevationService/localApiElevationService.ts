@@ -1,22 +1,13 @@
 import type { ElevationService } from './ElevationService';
 
-export const openElevationApiElevationService: ElevationService = {
+export const localApiElevationService: ElevationService = {
     getElevationsForLatLngs: async (latLngs) => {
         if (latLngs.length === 0) return [];
-        const jsonResult: {
-            results: Array<{
-                latitude: number;
-                longitude: number;
-                elevation: number;
-            }>;
-        } = await postData('https://api.open-elevation.com/api/v1/lookup', {
-            locations: latLngs.map(({ lat, lng }) => ({
-                latitude: lat,
-                longitude: lng,
-            })),
+        const jsonResult: Array<number> = await postData(`/elevation?locations`, {
+            locations: latLngs.map(({ lat, lng }) => [lat, lng]),
         });
 
-        return jsonResult.results.map(({ elevation }) => elevation * 3.28084);
+        return jsonResult.map((elevation) => elevation * 3.28084);
     },
 };
 

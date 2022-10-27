@@ -1,5 +1,6 @@
+import { useLoaderData } from '@remix-run/react';
 import type { LoaderFunction } from 'remix';
-import { redirect, useLoaderData } from 'remix';
+import { redirect } from 'remix';
 import styled from 'styled-components';
 import { requireUserId } from '~/utils/session.server';
 

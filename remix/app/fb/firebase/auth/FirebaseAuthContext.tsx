@@ -1,4 +1,4 @@
-import type { User } from '@firebase/auth';
+import type { User, UserCredential } from '@firebase/auth';
 import { GoogleAuthProvider, signInAnonymously, signInWithPopup, signOut } from '@firebase/auth';
 import * as React from 'react';
 import { FullStoryAPI } from 'react-fullstory';
@@ -46,11 +46,18 @@ function useFirebaseAuth(): UseFirebaseAuth {
     if (context === undefined) {
         throw new Error('useFirebaseAuth must be used within a FirebaseAuthProvider');
     }
+    const sendIdTokenToServer = ({ user }: UserCredential) => {
+        user.getIdToken().then((idToken) => {
+            return fetch('/session', {
+                method: 'POST',
+                body: JSON.stringify({ idToken }),
+            });
+        });
+    };
+
     const anonymousSignIn = () =>
         signInAnonymously(auth)
-            .then(() => {
-                // Do nothing, will be done automatically with auth.onAuthStateChanged().
-            })
+            .then(sendIdTokenToServer)
             .catch((error) => {
                 // const errorCode = error.code;
                 // const errorMessage = error.message;
@@ -59,14 +66,7 @@ function useFirebaseAuth(): UseFirebaseAuth {
 
     const googleSignIn = () => {
         signInWithPopup(auth, provider)
-            .then((result) => {
-                // This gives you a Google Access Token. You can use it to access the Google API.
-                // const credential = GoogleAuthProvider.credentialFromResult(result);
-                // const token = credential.accessToken;
-                // The signed-in user info.
-                // const user = result.user;
-                // ...
-            })
+            .then(sendIdTokenToServer)
             .catch((error) => {
                 // // Handle Errors here.
                 // const errorCode = error.code;
@@ -84,7 +84,7 @@ function useFirebaseAuth(): UseFirebaseAuth {
         user: loading ? null : (context.user as User),
         anonymousSignIn,
         googleSignIn,
-        signOut: () => signOut(auth),
+        signOut: () => signOut(auth).then(() => fetch('/logout')),
         loading,
     };
 }

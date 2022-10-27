@@ -10,7 +10,7 @@ export const Vors = ({ mapBounds }: { mapBounds: MapBounds }) => {
             {mapBounds &&
                 !loading &&
                 airacData.getVorsInBbox(...mapBounds).map((vor) => {
-                    return <VorMarker vor={vor} />;
+                    return <VorMarker key={`vor-${vor.name}`} vor={vor} />;
                 })}
         </>
     );

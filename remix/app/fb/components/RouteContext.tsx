@@ -44,7 +44,7 @@ export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
     useEffect(() => {
         // Update route if it already exists.
         if (route) {
-            console.log('Saving route');
+            console.log('Saving route', route.id);
             saveRoute(route);
         }
     }, [route, saveRoute]);
@@ -99,8 +99,8 @@ export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
             value={{
                 route,
                 setRoute,
-                elevation,
                 switchRoute,
+                elevation,
                 airspaceOverlaps,
             }}
         >

@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
 import { useRoute } from '~/fb/components/useRoute';
 import { UserRoutesProvider } from '~/fb/components/UserRoutesContext';
+import { useUserRoutes } from '~/fb/components/useUserRoutes';
 import routeJSON from './route.json';
 
 const email = 'user@domain.com';
@@ -34,22 +35,25 @@ export default {
 
 const SetRoute = ({ airacData }: { airacData: AiracData }) => {
     const { setRoute } = useRoute();
+    const { saveRoute } = useUserRoutes();
+    const route = pipe(
+        Route.codec(airacData).decode(routeJSON),
+        foldW(
+            (e) => {
+                console.log(draw(e));
+                return Route.empty();
+            },
+            (r) => {
+                return r;
+            },
+        ),
+    );
 
     useEffect(() => {
-        setRoute(
-            pipe(
-                Route.codec(airacData).decode(routeJSON),
-                foldW(
-                    (e) => {
-                        console.log(draw(e));
-                        return Route.empty();
-                    },
-                    (r) => {
-                        return r;
-                    },
-                ),
-            ),
-        );
+        setRoute(route);
+    }, []);
+    useEffect(() => {
+        saveRoute(route);
     }, []);
     return null;
 };

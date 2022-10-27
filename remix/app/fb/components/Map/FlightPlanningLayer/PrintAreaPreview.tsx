@@ -30,6 +30,7 @@ export const PrintAreaPreview = () => {
                 route.printAreas &&
                 route.printAreas.map((printArea, i) => (
                     <SinglePrintAreaPreview
+                        key={`print-area-${i}`}
                         route={route}
                         setRoute={setRoute}
                         currentPrintAreaIndex={i}

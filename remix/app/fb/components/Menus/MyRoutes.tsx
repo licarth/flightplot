@@ -1,4 +1,4 @@
-import { Input } from 'antd';
+import { Button, Input } from 'antd';
 import _ from 'lodash';
 import { useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -73,26 +73,25 @@ const RouteLine = ({
     const isCurrentRoute = currentlyEditedRoute?.id.toString() === route.id.toString();
     const deleteConfirmModal = useRef(null);
     const deleteRouteAndUnfocus = () => {
-        deleteRoute(route.id);
         setRoute(() => undefined);
+        deleteRoute(route.id);
     };
     const { map } = useMainMap();
     return (
-        <RouteLineDiv
-            isCurrentRoute={isCurrentRoute}
-            onClick={() => {
-                onRouteSelect(route);
-                switchRoute(route.id);
-                route.waypoints.length > 0 &&
-                    map &&
-                    map.flyToBounds(route.leafletBoundingBox, {
-                        maxZoom: 11,
-                        animate: false,
-                        padding: [100, 100],
-                    });
-            }}
-        >
-            <RouteLineLeft>
+        <RouteLineDiv isCurrentRoute={isCurrentRoute}>
+            <RouteLineLeft
+                onClick={() => {
+                    onRouteSelect(route);
+                    switchRoute(route.id);
+                    route.waypoints.length > 0 &&
+                        map &&
+                        map.flyToBounds(route.leafletBoundingBox, {
+                            maxZoom: 11,
+                            animate: false,
+                            padding: [100, 100],
+                        });
+                }}
+            >
                 {editingTitle ? (
                     <StyledNameInput
                         id={`input-route-title-name-${route.id}`}
@@ -137,22 +136,25 @@ const RouteLine = ({
                         .join(' → ')}
                 </RouteSummaryContainer>
             </RouteLineLeft>
-            <DeleteDiv
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return route.waypoints.length > 0
-                        ? // @ts-ignore
-                          deleteConfirmModal.current?.open()
-                        : deleteRouteAndUnfocus();
-                }}
-            >
-                🗑️
-            </DeleteDiv>
+            <RouteLineButtons>
+                <DeleteDiv
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        return route.waypoints.length > 0
+                            ? // @ts-ignore
+                              deleteConfirmModal.current?.open()
+                            : deleteRouteAndUnfocus();
+                    }}
+                >
+                    🗑️
+                </DeleteDiv>
+            </RouteLineButtons>
             <Modal fade={false} defaultOpened={false} ref={deleteConfirmModal}>
                 <ConfirmDeleteRouteDiv>
                     Êtes-vous sûr(e) de vouloir supprimer cette navigation ?<br />
                     <ConfirmDeleteRouteButton
+                        autoFocus
                         onClick={() => {
                             //@ts-ignore
                             deleteConfirmModal.current?.close();
@@ -190,7 +192,7 @@ const ConfirmDeleteRouteButton = styled.button`
     height: 30px;
 `;
 
-const DeleteDiv = styled.button`
+const DeleteDiv = styled(Button)`
     background: none;
     border: none;
     display: inline-block;
@@ -199,6 +201,7 @@ const DeleteDiv = styled.button`
 `;
 
 const StyledNameInput = styled(Input)`
+    flex-grow: 1;
     width: 100px;
 `;
 
@@ -215,7 +218,7 @@ const RouteLineDiv = styled.div<{ isCurrentRoute: boolean }>`
 
 const RouteLineLeft = styled.div`
     display: flex;
-    justify-content: space-between;
+    flex-grow: 1;
 `;
 
 const TitleContainer = styled.div`
@@ -226,3 +229,5 @@ const TitleContainer = styled.div`
     border-bottom: 1px solid #000;
     text-decoration: none;
 `;
+
+const RouteLineButtons = styled.div``;

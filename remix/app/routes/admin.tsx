@@ -10,7 +10,7 @@ export default () => {
         <AppContainer id="app">
             <h1>This is an admin page</h1>
             <h2>Memoizee statistics</h2>
-            <p>{memoizee.logStats}</p>
+            <LogOutput>{memoizee.logStats}</LogOutput>
         </AppContainer>
     );
 };
@@ -36,3 +36,7 @@ const computeAdminStats = () => {
         },
     };
 };
+
+const LogOutput = styled.pre`
+    white-space: pre-wrap;
+`;

@@ -16,7 +16,8 @@
         "test": "jest",
         "test-pr": "jest",
         "storybook": "start-storybook -p 6006",
-        "build-storybook": "build-storybook"
+        "build-storybook": "build-storybook",
+        "emulators": "firebase emulators:start --only database,firestore,auth"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.0.5",

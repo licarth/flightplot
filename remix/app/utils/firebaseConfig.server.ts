@@ -13,24 +13,28 @@ let auth: Auth;
 let initializationOptions: AppOptions = {};
 if (getApps().length === 0) {
     if (environmentVariable('PUBLIC_USE_EMULATORS') === 'true') {
-        process.env['FIRESTORE_EMULATOR_HOST'] = 'localhost:8082';
+        console.log('🔸 Using Emulators in the Backend');
+        process.env['FIREBASE_AUTH_EMULATOR_HOST'] = 'localhost:8082';
         initializationOptions = {
             ...initializationOptions,
             projectId: 'flightplot-web',
         };
     } else {
+        const serviceAccount = environmentVariable('FIREBASE_SERVICE_ACCOUNT_KEY');
+        if (!serviceAccount) {
+            throw new Error(
+                'FIREBASE_SERVICE_ACCOUNT_KEY must be set if PUBLIC_USE_EMULATORS is not set to true',
+            );
+        }
         initializationOptions = {
             ...initializationOptions,
-            credential: cert(
-                JSON.parse(environmentVariable('FIREBASE_SERVICE_ACCOUNT_KEY') || '{}'),
-            ),
+            credential: cert(JSON.parse(serviceAccount)),
         };
     }
     app = initializeApp(initializationOptions);
-    auth = getAuth(app);
 } else {
     app = getApp();
-    auth = getAuth(app);
 }
+auth = getAuth(app);
 
 export { auth };

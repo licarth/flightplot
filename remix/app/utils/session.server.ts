@@ -37,11 +37,13 @@ export async function destroyUserSession(request: Request) {
 
 export async function requireUserId(request: Request) {
     const session = await getUserSession(request);
+    const sessionCookie = session.get('session_cookie') as string;
     try {
-        return auth.verifyIdToken(session.get('idToken') as string, true).then((decodedClaims) => {
+        return auth.verifySessionCookie(sessionCookie, true).then((decodedClaims) => {
             return decodedClaims;
         });
-    } catch {
+    } catch (e) {
+        console.error(`Cannot verify session cookie ${sessionCookie}`, e);
         return null;
     }
 }

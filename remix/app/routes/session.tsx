@@ -11,7 +11,11 @@ export const action: ActionFunction = async ({ request }) => {
         const session = await getSession();
         session.set('idToken', idToken);
         const { email } = await auth.verifyIdToken(idToken);
+        const sessionCookie = await auth.createSessionCookie(idToken, {
+            expiresIn: 60 * 60 * 24 * 5,
+        });
 
+        session.set('session_cookie', sessionCookie);
         session.set('email', email);
 
         console.log('session_email', session.get('email'));

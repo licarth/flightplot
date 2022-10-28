@@ -31,9 +31,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 const computeAdminStats = () => {
     const memProfile = require('memoizee/profile');
     const logStats = memProfile.log();
+    const stats = memProfile.statistics;
     return {
         memoizee: {
             logStats,
+            stats,
         },
     };
 };

@@ -101,10 +101,10 @@ const MouseTooltip = () => {
             <Polygon
                 key={'overlay-po'}
                 positions={[
-                    [0, 0],
-                    [0, 90],
-                    [90, 90],
-                    [90, 0],
+                    [-180, -90],
+                    [-180, 90],
+                    [180, 90],
+                    [180, -90],
                 ]}
                 pathOptions={{ weight: 0, fillOpacity: 0 }}
             >

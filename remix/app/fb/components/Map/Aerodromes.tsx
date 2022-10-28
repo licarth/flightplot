@@ -1,12 +1,58 @@
-import { Fragment } from 'react';
-import { Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
+import { Fragment, memo, useMemo } from 'react';
+import { Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Aerodrome } from 'ts-aerodata-france';
-import { toLatLng } from '../../../domain/LatLng';
+import { toLatLng } from '~/domain';
 import { useAiracData } from '../useAiracData';
 import type { MapBounds } from './DisplayedContent';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { StyledAerodromeLogo } from './StyledAerodromeLogo';
+import { Z_INDEX_AD_NAMES } from './zIndex';
+
+const AdPolygon: React.FC<{
+    aerodrome: Aerodrome;
+    displayAerodromesLabels: boolean;
+    shouldBeHighlighted: boolean;
+}> = memo(function AdPolygon({ aerodrome, displayAerodromesLabels, shouldBeHighlighted }) {
+    const l = toLatLng(aerodrome.latLng);
+    return (
+        <SVGOverlay
+            key={`aerodrome-${aerodrome.icaoCode}`}
+            bounds={[
+                // Note: this is pure guess.
+                [l.lat + 0.02, l.lng - 0.02],
+                [l.lat - 0.02, l.lng + 0.02],
+            ]}
+            attributes={{ class: 'overflow-visible' }}
+        >
+            {<Logo aerodrome={aerodrome} $highlighted={shouldBeHighlighted} />}
+            {displayAerodromesLabels && (
+                <Polygon
+                    fill={false}
+                    fillOpacity={0}
+                    opacity={0}
+                    positions={[[l.lat - 0.015, l.lng]]}
+                >
+                    <Pane
+                        name={`aerodrome-tooltip-${aerodrome.icaoCode}-${aerodrome.mapShortName}`}
+                        style={{ zIndex: Z_INDEX_AD_NAMES }}
+                    >
+                        <StyledTooltip
+                            key={`tooltip-wpt-${aerodrome.icaoCode}-${aerodrome.mapShortName}`}
+                            permanent
+                            direction={'bottom'}
+                        >
+                            <AdDescription style={{ color: getColor(aerodrome.status) }}>
+                                <AdIcaoCode>{`${aerodrome.icaoCode}`}</AdIcaoCode>
+                                <div>{aerodrome.mapShortName}</div>
+                            </AdDescription>
+                        </StyledTooltip>
+                    </Pane>
+                </Polygon>
+            )}
+        </SVGOverlay>
+    );
+});
 
 export const Aerodromes = ({ mapBounds }: { mapBounds: MapBounds }) => {
     const { airacData, loading } = useAiracData();
@@ -14,47 +60,32 @@ export const Aerodromes = ({ mapBounds }: { mapBounds: MapBounds }) => {
     const displayAerodromesLabels = leafletMap.getZoom() > 8;
     const { highlightedFixture } = useFixtureFocus();
 
+    const highlightedFixtureName = useMemo(() => highlightedFixture?.name, [highlightedFixture]);
+
+    const aerodromesInBbox = useMemo(
+        () => airacData?.getAerodromesInBbox(...mapBounds),
+        [mapBounds, airacData],
+    );
+
+    if (loading) {
+        return null;
+    }
+
     return (
         <>
             {mapBounds &&
                 !loading &&
-                airacData.getAerodromesInBbox(...mapBounds).map((aerodrome) => {
-                    const { latLng, icaoCode, status } = aerodrome;
-                    const l = toLatLng(latLng);
+                aerodromesInBbox?.map((aerodrome) => {
+                    const { icaoCode } = aerodrome;
 
-                    const shouldBeHighlighted = highlightedFixture?.name === aerodrome.name;
+                    const shouldBeHighlighted = highlightedFixtureName === aerodrome.name;
                     return (
                         <Fragment key={`ad-${icaoCode}`}>
-                            <SVGOverlay
-                                key={`aerodrome-${icaoCode}`}
-                                bounds={[
-                                    // Note: this is pure guess.
-                                    [l.lat + 0.02, l.lng - 0.02],
-                                    [l.lat - 0.02, l.lng + 0.02],
-                                ]}
-                                attributes={{ class: 'overflow-visible' }}
-                            >
-                                {<Logo aerodrome={aerodrome} $highlighted={shouldBeHighlighted} />}
-                                {displayAerodromesLabels && (
-                                    <Polygon
-                                        fill={false}
-                                        fillOpacity={0}
-                                        opacity={0}
-                                        positions={[[l.lat - 0.015, l.lng]]}
-                                    >
-                                        <StyledTooltip
-                                            key={`tooltip-wpt-${icaoCode}-${aerodrome.mapShortName}`}
-                                            permanent
-                                            direction={'bottom'}
-                                        >
-                                            <AdDescription style={{ color: getColor(status) }}>
-                                                <AdIcaoCode>{`${aerodrome.icaoCode}`}</AdIcaoCode>
-                                                <div>{aerodrome.mapShortName}</div>
-                                            </AdDescription>
-                                        </StyledTooltip>
-                                    </Polygon>
-                                )}
-                            </SVGOverlay>
+                            <AdPolygon
+                                aerodrome={aerodrome}
+                                displayAerodromesLabels={displayAerodromesLabels}
+                                shouldBeHighlighted={shouldBeHighlighted}
+                            />
                         </Fragment>
                     );
                 })}

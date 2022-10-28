@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo } from 'react';
 import { Polygon, SVGOverlay } from 'react-leaflet';
 import type { LatLng } from 'ts-aerodata-france';
 import { toLeafletLatLng } from '~/domain';
@@ -15,9 +15,11 @@ type Props = {
     thickBorderColor: string;
     thinDashArray: string;
     prefix: string;
+    highlighted?: boolean;
 };
 
-export const AirspaceSVGPolygon = ({
+export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
+    highlighted,
     geometry,
     children,
     name,
@@ -26,8 +28,7 @@ export const AirspaceSVGPolygon = ({
     thickBorderColor,
     thinDashArray,
     prefix,
-}: Props) => {
-    const [mouseOver, setMouseOver] = useState(false);
+}: Props) {
     const leafletGeom = geometry.map(toLeafletLatLng);
     const geom = leafletGeom
         .map(convertToWebMercator)
@@ -50,6 +51,7 @@ export const AirspaceSVGPolygon = ({
                 }}
                 key={'overlay' + i}
                 bounds={bbox}
+                interactive={false}
             >
                 <svg
                     xmlSpace={'preserve'}
@@ -78,7 +80,7 @@ export const AirspaceSVGPolygon = ({
                     />
                     <path
                         stroke={thinBorderColor}
-                        strokeWidth={mouseOver ? 0.6 : 0.3}
+                        strokeWidth={highlighted ? 0.6 : 0.3}
                         fillOpacity={0.2}
                         strokeDasharray={thinDashArray}
                         d={d}
@@ -88,20 +90,12 @@ export const AirspaceSVGPolygon = ({
                 <Polygon
                     key={'overlay-po' + i}
                     positions={leafletGeom}
-                    interactive={true}
+                    interactive={false}
                     pathOptions={{ weight: 0, fillOpacity: 0 }}
-                    eventHandlers={{
-                        mouseover: () => {
-                            setMouseOver(true);
-                        },
-                        mouseout: () => {
-                            setMouseOver(false);
-                        },
-                    }}
                 >
                     {children}
                 </Polygon>
             </SVGOverlay>
         </>
     );
-};
+});

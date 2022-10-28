@@ -1,13 +1,18 @@
-import { Tooltip } from 'react-leaflet';
 import styled from 'styled-components';
 import { useAiracData } from '../useAiracData';
 import { Colors } from './Colors';
 import { AirspaceSVGPolygon } from './CtrSVGPolygon/AirspaceSVGPolygon';
 import type { MapBounds } from './DisplayedContent';
-import { IgnAirspaceNameFont } from './IgnAirspaceNameFont';
+import { useFixtureFocus } from './FixtureFocusContext';
 
 export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
     const { airacData, loading } = useAiracData();
+
+    const {
+        underMouse: { airspaces },
+    } = useFixtureFocus();
+
+    const highlightedAirspaces = airspaces.map((a) => a.name);
 
     return (
         <>
@@ -27,28 +32,8 @@ export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
                                 thickBorderColor={Colors.pThickBorder}
                                 thinDashArray=""
                                 prefix="p"
-                            >
-                                <Tooltip
-                                    sticky
-                                    opacity={1}
-                                    offset={[10, 0]}
-                                    key={`tooltip-airspace-${name}`}
-                                >
-                                    <Centered>
-                                        <IgnAirspaceNameFont $color={Colors.pThickBorder}>
-                                            <b>{name}</b>
-                                            <br />
-                                            <div>
-                                                <i>
-                                                    {higherLimit.toString()}
-                                                    <hr />
-                                                    {lowerLimit.toString()}
-                                                </i>
-                                            </div>
-                                        </IgnAirspaceNameFont>
-                                    </Centered>
-                                </Tooltip>
-                            </AirspaceSVGPolygon>
+                                highlighted={highlightedAirspaces.includes(name)}
+                            />
                         );
                     })}
         </>

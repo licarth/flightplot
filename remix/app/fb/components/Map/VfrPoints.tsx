@@ -1,73 +1,36 @@
 import CheapRuler from 'cheap-ruler';
-import { Fragment } from 'react';
-import { Polygon, SVGOverlay, Tooltip } from 'react-leaflet';
+import { Fragment, memo, useMemo } from 'react';
+import { Pane, Polygon, SVGOverlay, Tooltip } from 'react-leaflet';
 import styled from 'styled-components';
+import { VfrPoint } from 'ts-aerodata-france';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
 import { toLeafletLatLng } from '../../../domain';
 import { useAiracData } from '../useAiracData';
 import { boxAround } from './boxAround';
 import type { MapBounds } from './DisplayedContent';
 import { isVfrPoint } from './FixtureDetails';
+import type { FocusableFixture } from './FixtureFocusContext';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { pointToLeafletLatLng } from './FlightPlanningLayer';
+import { Z_INDEX_VFR_NAMES } from './zIndex';
 
 export const VfrPoints = ({ mapBounds }: { mapBounds: MapBounds }) => {
     const { airacData, loading } = useAiracData();
     const { highlightedFixture } = useFixtureFocus();
+    const vfrPointsInBbox = useMemo(
+        () => airacData?.getVfrPointsInBbox(...mapBounds),
+        [airacData, mapBounds],
+    );
 
     let components: JSX.Element[] | undefined = [];
     if (mapBounds && !loading) {
-        components = airacData.getVfrPointsInBbox(...mapBounds).map((vfrPoint) => {
-            const { name, latLng, icaoCode } = vfrPoint;
-            const ruler = new CheapRuler(Number(latLng.lat), 'nauticalmiles');
-            const center = toCheapRulerPoint(toLeafletLatLng(latLng));
-            const bottomRight = pointToLeafletLatLng(ruler.offset(center, 0.5, -0.5));
-            const top = pointToLeafletLatLng(ruler.offset(center, 0, 0.4));
-            const left = pointToLeafletLatLng(ruler.offset(center, -0.35, -0.2));
-            const right = pointToLeafletLatLng(ruler.offset(center, 0.35, -0.2));
-
-            const bounds = boxAround(toCheapRulerPoint(bottomRight), 10);
-
-            const shouldBeHighlighted =
-                (highlightedFixture &&
-                    isVfrPoint(highlightedFixture) &&
-                    highlightedFixture?.name === vfrPoint.name &&
-                    highlightedFixture?.icaoCode === vfrPoint.icaoCode) ||
-                false;
-            return (
-                <Fragment key={`${icaoCode}/${name}`}>
-                    {
-                        <div title={`${icaoCode}`}>
-                            <SVGOverlay
-                                attributes={{
-                                    stroke: 'red',
-                                    class: 'overflow-visible',
-                                }}
-                                bounds={bounds}
-                                interactive={true}
-                            >
-                                <StyledPolygon
-                                    key={name + shouldBeHighlighted}
-                                    $highlighted={shouldBeHighlighted}
-                                    color={shouldBeHighlighted ? 'red' : '#002e94'}
-                                    positions={[top, left, right]}
-                                ></StyledPolygon>
-                                <Polygon color="#002e94" positions={[right]}>
-                                    <StyledTooltip
-                                        $highlighted={shouldBeHighlighted}
-                                        key={`tooltip-wpt-${icaoCode}-${name}-${shouldBeHighlighted}`}
-                                        permanent
-                                        direction={'right'}
-                                    >
-                                        {name}
-                                    </StyledTooltip>
-                                </Polygon>
-                            </SVGOverlay>
-                        </div>
-                    }
-                </Fragment>
-            );
-        });
+        components = vfrPointsInBbox?.map((vfrPoint) => (
+            <VfrPoint
+                key={`vfr-point-${vfrPoint.icaoCode}/${vfrPoint.name}`}
+                vfrPoint={vfrPoint}
+                highlightedFixture={highlightedFixture}
+            />
+        ));
     }
     return <>{components}</>;
 };
@@ -98,3 +61,66 @@ const StyledTooltip = styled(Tooltip)<{ $highlighted: boolean }>`
         display: none;
     }
 `;
+
+const VfrPoint = memo(function VfrPoint({
+    vfrPoint,
+    highlightedFixture,
+}: {
+    vfrPoint: VfrPoint;
+    highlightedFixture?: FocusableFixture;
+}) {
+    const { name, latLng, icaoCode } = vfrPoint;
+    const ruler = new CheapRuler(Number(latLng.lat), 'nauticalmiles');
+    const center = toCheapRulerPoint(toLeafletLatLng(latLng));
+    const bottomRight = pointToLeafletLatLng(ruler.offset(center, 0.5, -0.5));
+    const top = pointToLeafletLatLng(ruler.offset(center, 0, 0.4));
+    const left = pointToLeafletLatLng(ruler.offset(center, -0.35, -0.2));
+    const right = pointToLeafletLatLng(ruler.offset(center, 0.35, -0.2));
+
+    const bounds = boxAround(toCheapRulerPoint(bottomRight), 10);
+
+    const shouldBeHighlighted =
+        (highlightedFixture &&
+            isVfrPoint(highlightedFixture) &&
+            highlightedFixture?.name === vfrPoint.name &&
+            highlightedFixture?.icaoCode === vfrPoint.icaoCode) ||
+        false;
+    return (
+        <Fragment key={`${icaoCode}/${name}`}>
+            {
+                <div title={`${icaoCode}`}>
+                    <SVGOverlay
+                        attributes={{
+                            stroke: 'red',
+                            class: 'overflow-visible',
+                        }}
+                        bounds={bounds}
+                        interactive={true}
+                    >
+                        <StyledPolygon
+                            key={name + shouldBeHighlighted}
+                            $highlighted={shouldBeHighlighted}
+                            color={shouldBeHighlighted ? 'red' : '#002e94'}
+                            positions={[top, left, right]}
+                        />
+                        <Polygon color="#002e94" positions={[right]}>
+                            <Pane
+                                name={`tooltip-wpt-${icaoCode}-${name}-${shouldBeHighlighted}`}
+                                style={{ zIndex: Z_INDEX_VFR_NAMES }}
+                            >
+                                <StyledTooltip
+                                    $highlighted={shouldBeHighlighted}
+                                    key={`tooltip-wpt-${icaoCode}-${name}-${shouldBeHighlighted}`}
+                                    permanent
+                                    direction={'right'}
+                                >
+                                    {name}
+                                </StyledTooltip>
+                            </Pane>
+                        </Polygon>
+                    </SVGOverlay>
+                </div>
+            }
+        </Fragment>
+    );
+});

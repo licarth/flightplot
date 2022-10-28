@@ -54,13 +54,17 @@ export const LeafletMapContainer = () => {
 
 const FixtureDetailsWindow = () => {
     const { clickedLocation, fixtures, clear: clearFixture } = useFixtureFocus();
-    return clickedLocation ? (
-        <FixtureDetails
-            fixtures={fixtures}
-            clickedLocation={clickedLocation}
-            onClose={clearFixture}
-        />
-    ) : null;
+    return (
+        <>
+            {clickedLocation ? (
+                <FixtureDetails
+                    fixtures={fixtures}
+                    clickedLocation={clickedLocation}
+                    onClose={clearFixture}
+                />
+            ) : null}
+        </>
+    );
 };
 
 const StyledMapContainer = styled(MapContainer)``;

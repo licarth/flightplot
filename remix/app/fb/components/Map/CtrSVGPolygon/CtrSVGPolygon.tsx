@@ -1,19 +1,24 @@
-import { Tooltip } from 'react-leaflet';
+import { memo } from 'react';
 import type { Airspace } from 'ts-aerodata-france';
 import { Colors } from '../Colors';
-import { IgnAirspaceNameFont } from '../IgnAirspaceNameFont';
 import { AirspaceSVGPolygon } from './AirspaceSVGPolygon';
 
 type CtrSVGPolygonProps = {
     ctr: Airspace;
     i: number;
+    highlighted?: boolean;
 };
 
-export const CtrSVGPolygon = ({ ctr, i }: CtrSVGPolygonProps) => {
-    const { geometry, name, lowerLimit, higherLimit, airspaceClass } = ctr;
+export const CtrSVGPolygon = memo(function CtrSVGPolygon({
+    ctr,
+    i,
+    highlighted,
+}: CtrSVGPolygonProps) {
+    const { geometry, name } = ctr;
 
     return (
         <AirspaceSVGPolygon
+            highlighted={highlighted || false}
             key={`ctr-${name}`}
             i={i}
             geometry={geometry}
@@ -22,22 +27,6 @@ export const CtrSVGPolygon = ({ ctr, i }: CtrSVGPolygonProps) => {
             thickBorderColor={Colors.ctrBorderLightBlue}
             thinDashArray="5, 5"
             prefix="ctr"
-        >
-            <Tooltip sticky opacity={1} offset={[10, 0]} key={`tooltip-airspace-${name}`}>
-                <IgnAirspaceNameFont>
-                    <b>
-                        {name} [{airspaceClass}]
-                    </b>
-                    <br />
-                    <div>
-                        <i>
-                            {higherLimit.toString()}
-                            <hr />
-                            {lowerLimit.toString()}
-                        </i>
-                    </div>
-                </IgnAirspaceNameFont>
-            </Tooltip>
-        </AirspaceSVGPolygon>
+        />
     );
-};
+});

@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react';
-import { Polygon, SVGOverlay, Tooltip } from 'react-leaflet';
+import { Pane, Polygon, SVGOverlay, Tooltip } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Vor } from 'ts-aerodata-france';
 import { toLeafletLatLng } from '~/domain';
@@ -7,6 +7,7 @@ import { toLatLng } from '~/domain/LatLng';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
 import VorDmeIcon from '~/generated/icons/VorDme';
 import { boxAround } from '../boxAround';
+import { Z_INDEX_VFR_NAMES } from '../zIndex';
 
 type PropsType = {
     $dme?: boolean;
@@ -45,10 +46,16 @@ export const VorMarker = ({
                         stroke={false}
                         positions={[[l.lat + 0.015, l.lng + 0.015]]}
                     >
-                        <StyledTooltip key={`tooltip-vor-${name}`} permanent direction={'bottom'}>
-                            {mapShortName} {ident !== mapShortName && `- ${ident}`} -{' '}
-                            {frequency.toString()}
-                        </StyledTooltip>
+                        <Pane name={`vor-tooltip-${name}`} style={{ zIndex: Z_INDEX_VFR_NAMES }}>
+                            <StyledTooltip
+                                key={`tooltip-vor-${name}`}
+                                permanent
+                                direction={'bottom'}
+                            >
+                                {mapShortName} {ident !== mapShortName && `- ${ident}`} -{' '}
+                                {frequency.toString()}
+                            </StyledTooltip>
+                        </Pane>
                     </Polygon>
                 )}
             </SVGOverlay>

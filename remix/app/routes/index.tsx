@@ -1,5 +1,7 @@
 import type { MetaFunction } from '@remix-run/node';
-import styles from 'antd/dist/antd.css';
+import andtStyles from 'antd/dist/antd.css';
+import leafletStyles from 'leaflet/dist/leaflet.css';
+
 import FullStory from 'react-fullstory';
 import styled from 'styled-components';
 import { HelpPageProvider } from '~/fb/components/HelpPageContext';
@@ -16,7 +18,10 @@ import { RouteProvider } from '../fb/components/RouteContext';
 import { UserRoutesProvider } from '../fb/components/UserRoutesContext';
 import { FirebaseAuthProvider } from '../fb/firebase/auth/FirebaseAuthContext';
 
-export const links = () => [{ rel: 'stylesheet', href: styles }];
+export const links = () => [
+    { rel: 'stylesheet', href: andtStyles },
+    { rel: 'stylesheet', href: leafletStyles },
+];
 
 export default () => {
     const fullstoryOrgId = environmentVariable('PUBLIC_FULLSTORY_ORG_ID');

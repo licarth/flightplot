@@ -44,7 +44,6 @@ export const meta: MetaFunction = () => {
 
 export const links: LinksFunction = () => {
     const stylesheets = [
-        'https://unpkg.com/leaflet@1.6.0/dist/leaflet.css',
         'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
         'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
         'https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Russo+One&display=swap',

@@ -2,7 +2,7 @@ import CheapRuler from 'cheap-ruler';
 import { Fragment, memo, useMemo } from 'react';
 import { Pane, Polygon, SVGOverlay, Tooltip } from 'react-leaflet';
 import styled from 'styled-components';
-import { VfrPoint } from 'ts-aerodata-france';
+import type { VfrPoint } from 'ts-aerodata-france';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
 import { toLeafletLatLng } from '../../../domain';
 import { useAiracData } from '../useAiracData';
@@ -25,7 +25,7 @@ export const VfrPoints = ({ mapBounds }: { mapBounds: MapBounds }) => {
     let components: JSX.Element[] | undefined = [];
     if (mapBounds && !loading) {
         components = vfrPointsInBbox?.map((vfrPoint) => (
-            <VfrPoint
+            <VfrPointC
                 key={`vfr-point-${vfrPoint.icaoCode}/${vfrPoint.name}`}
                 vfrPoint={vfrPoint}
                 highlightedFixture={highlightedFixture}
@@ -62,7 +62,7 @@ const StyledTooltip = styled(Tooltip)<{ $highlighted: boolean }>`
     }
 `;
 
-const VfrPoint = memo(function VfrPoint({
+const VfrPointC = memo(function VfrPoint({
     vfrPoint,
     highlightedFixture,
 }: {

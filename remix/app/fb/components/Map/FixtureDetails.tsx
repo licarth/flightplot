@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import formatcoords from 'formatcoords';
 import styled from 'styled-components';
-import type { Aerodrome, VfrPoint, Vor } from 'ts-aerodata-france';
+import type { Aerodrome, Airspace, DangerZone, VfrPoint, Vor } from 'ts-aerodata-france';
 import type { LatLng } from '~/domain';
 import { latLngWaypointFactory, toLeafletLatLng } from '~/domain';
 import { Target } from '~/generated/icons';
@@ -19,15 +19,25 @@ type UseFixtureContextProps = ReturnType<typeof useFixtureFocus>;
 
 type FixtureDetailsProps = {
     fixtures: UseFixtureContextProps['fixtures'];
+    airspaces?: UseFixtureContextProps['underMouse']['airspaces'];
     clickedLocation: UseFixtureContextProps['clickedLocation'];
     onClose: () => void;
 };
 
-export const FixtureDetails = ({ fixtures, clickedLocation, onClose }: FixtureDetailsProps) => {
+export const FixtureDetails = ({
+    fixtures = [],
+    clickedLocation,
+    onClose,
+    airspaces = [],
+}: FixtureDetailsProps) => {
     const { highlightedFixture } = useFixtureFocus();
-    // const routeContext = useRoute();
-    const content = fixtures.map((fixture, i) => {
+
+    const fixtureElements = fixtures.map((fixture, i) => {
         return <FixtureRow key={`fixture-${i}`} fixture={fixture} />;
+    });
+
+    const airspaceElements = airspaces.map((airspace, i) => {
+        return <AirspaceRow key={`fixture-${i}`} airspace={airspace} />;
     });
 
     const { isOpen: isHelpOpen } = useHelpPage();
@@ -44,7 +54,10 @@ export const FixtureDetails = ({ fixtures, clickedLocation, onClose }: FixtureDe
                             <TargetCard latLng={toLeafletLatLng(clickedLocation)} />
                         </Row>
                     )}
-                    <ContentList>{content}</ContentList>
+                    <ContentList>
+                        {fixtureElements}
+                        {airspaceElements}
+                    </ContentList>
                 </>
             )}
         </FixtureDetailsContainer>
@@ -57,6 +70,18 @@ const FixtureRow = ({ fixture }: { fixture: FocusableFixture }) => {
             {isVfrPoint(fixture) && <VfrPointCard vfrPoint={fixture} />}
             {isAerodrome(fixture) && <AerodromeCard aerodrome={fixture} />}
             {isVor(fixture) && <VorCard vor={fixture} />}
+        </Row>
+    );
+};
+
+const AirspaceRow = ({ airspace }: { airspace: Airspace | DangerZone }) => {
+    const { name } = airspace;
+    return (
+        <Row>
+            <Description>
+                <LogoContainer>{/* <StyledAerodromeLogo aerodrome={aerodrome} /> */}</LogoContainer>
+                <div>{name}</div>
+            </Description>
         </Row>
     );
 };

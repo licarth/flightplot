@@ -53,12 +53,18 @@ export const LeafletMapContainer = () => {
 };
 
 const FixtureDetailsWindow = () => {
-    const { clickedLocation, fixtures, clear: clearFixture } = useFixtureFocus();
+    const {
+        clickedLocation,
+        fixtures,
+        clear: clearFixture,
+        atClickedLocation: { airspaces },
+    } = useFixtureFocus();
     return (
         <>
             {clickedLocation ? (
                 <FixtureDetails
                     fixtures={fixtures}
+                    airspaces={airspaces}
                     clickedLocation={clickedLocation}
                     onClose={clearFixture}
                 />

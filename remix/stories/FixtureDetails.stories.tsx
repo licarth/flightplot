@@ -12,9 +12,17 @@ const FixtureDetails = ({ airacData }: { airacData: AiracData }) => {
         ({ icaoCode, name }) => `${icaoCode}` === 'LFMT' && name === 'W',
     )!;
     const FJR = airacData.vors.find(({ ident }) => `${ident}` === 'FJR')!;
+    const CTR_MONTPELLIER = airacData.airspaces.find(
+        ({ name }) => `${name}` === 'CTR MONTPELLIER',
+    )!;
     return (
         <Outer>
-            <F fixtures={[LFMT, LFMT_W, FJR]} clickedLocation={LFMT.latLng} onClose={() => {}} />
+            <F
+                fixtures={[LFMT, LFMT_W, FJR]}
+                airspaces={[CTR_MONTPELLIER]}
+                clickedLocation={LFMT.latLng}
+                onClose={() => {}}
+            />
         </Outer>
     );
 };

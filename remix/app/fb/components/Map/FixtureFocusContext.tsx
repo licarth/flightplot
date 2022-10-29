@@ -30,6 +30,7 @@ export const FixtureFocusContext = createContext<{
     clickedLocation?: LatLng;
     setClickedLocation: (latLng: LatLng) => void;
     fixtures: FocusableFixture[];
+    atClickedLocation: UnderMouse;
     underMouse: UnderMouse;
     clear: () => void;
 }>({
@@ -38,6 +39,9 @@ export const FixtureFocusContext = createContext<{
     setClickedLocation: () => {},
     setHighlightedLocation: () => {},
     setMouseLocation: () => {},
+    atClickedLocation: {
+        airspaces: [],
+    },
     underMouse: { airspaces: [] },
 });
 
@@ -71,7 +75,10 @@ export const FixtureFocusProvider: React.FC<PropsWithChildren> = ({ children }) 
     const clear = () => setClickedLocation(() => undefined);
     const { airacData, loading } = useAiracData();
     const fixtures = loading ? [] : getFixtures(airacData, clickedLocation);
-    const airspaces = loading || !mouseLocation ? [] : getAirspaces(airacData, mouseLocation);
+    const airspacesUnderMouse =
+        loading || !mouseLocation ? [] : getAirspaces(airacData, mouseLocation);
+    const airspacesAtClickedLocation =
+        loading || !clickedLocation ? [] : getAirspaces(airacData, clickedLocation);
     const highlightedFixtures = loading ? [] : getFixtures(airacData, highlightedLocation);
     const highlightedFixture = highlightedFixtures ? highlightedFixtures[0] : undefined;
 
@@ -88,7 +95,8 @@ export const FixtureFocusProvider: React.FC<PropsWithChildren> = ({ children }) 
                 setHighlightedLocation,
                 mouseLocation,
                 setMouseLocation: throttledSetMouseLocation,
-                underMouse: { airspaces: airspaces || [] },
+                underMouse: { airspaces: airspacesUnderMouse || [] },
+                atClickedLocation: { airspaces: airspacesAtClickedLocation || [] },
             }}
         >
             {children}

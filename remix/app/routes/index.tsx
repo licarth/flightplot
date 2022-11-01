@@ -9,6 +9,7 @@ import { DisplayedContent, PrintContent } from '~/fb/components/Map';
 import { FixtureFocusProvider } from '~/fb/components/Map/FixtureFocusContext';
 import { MainMapProvider } from '~/fb/components/Map/MainMapContext';
 import { PrintPreview } from '~/fb/components/Map/PrintPreview';
+import { TemporaryMapBoundsProvider } from '~/fb/components/Map/TemporaryMapCenterContext';
 import { MouseModeProvider } from '~/fb/components/MouseModeContext';
 import { environmentVariable } from '~/fb/environmentVariable';
 import { AiracDataProvider } from '../fb/components/AiracDataContext';
@@ -39,7 +40,9 @@ export default () => {
                                         <AppContainer id="app">
                                             <MouseModeProvider>
                                                 <MainMapProvider>
-                                                    <DisplayedContent />
+                                                    <TemporaryMapBoundsProvider>
+                                                        <DisplayedContent />
+                                                    </TemporaryMapBoundsProvider>
                                                 </MainMapProvider>
                                             </MouseModeProvider>
                                         </AppContainer>

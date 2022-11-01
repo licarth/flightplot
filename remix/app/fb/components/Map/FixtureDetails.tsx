@@ -7,13 +7,13 @@ import { latLngWaypointFactory, toLeafletLatLng } from '~/domain';
 import { Target } from '~/generated/icons';
 import VfrPointLogo from '~/generated/icons/VfrPoint';
 import { useHelpPage } from '../HelpPageContext';
+import { StyledAerodromeLogo } from '../StyledAerodromeLogo';
+import { StyledVor } from '../StyledVor';
 import { useRoute } from '../useRoute';
 import { addFixtureToRoute } from './addFixtureToRoute';
 import { Colors } from './Colors';
 import type { FocusableFixture } from './FixtureFocusContext';
 import { useFixtureFocus } from './FixtureFocusContext';
-import { StyledAerodromeLogo } from './StyledAerodromeLogo';
-import { StyledVor } from './VorMarker';
 
 type UseFixtureContextProps = ReturnType<typeof useFixtureFocus>;
 
@@ -237,7 +237,7 @@ const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
     max-width: 500px;
     max-height: 40vh;
     position: absolute;
-    z-index: 10000;
+    z-index: 600;
     background-color: white;
     filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
     display: flex;

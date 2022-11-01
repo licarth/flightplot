@@ -7,14 +7,18 @@ import { useFirebaseAuth } from '~/fb/firebase/auth/FirebaseAuthContext';
 import { Login } from '~/fb/Login';
 import Modal, { type ModalHandle } from '~/fb/Modal';
 import { useHelpPage } from '../HelpPageContext';
+import { SearchBar } from '../SearchBar';
+import { useAiracData } from '../useAiracData';
 import { useRoute } from '../useRoute';
 
 export const TopBar = () => {
     const { user, googleSignIn, anonymousSignIn, signOut } = useFirebaseAuth();
     const loginModal = useRef<ModalHandle>(null);
     const { open } = useHelpPage();
+    const { airacData } = useAiracData();
     return (
         <TopBarContainer>
+            <SearchBar airacData={airacData} />
             <AppLogo>
                 <LogoLeft>FLIGHT</LogoLeft>
                 <LogoRight>PLOT</LogoRight>
@@ -59,6 +63,8 @@ const TopBarContainer = styled.div`
     display: flex;
     height: 50px;
     justify-content: space-between;
+    align-items: center;
+    margin-left: 1rem;
 `;
 
 const RightButtons = styled.div`
@@ -76,7 +82,6 @@ const AppLogo = styled.div`
     vertical-align: middle;
     flex-direction: row;
     font-family: 'Russo One', sans-serif;
-    margin-top: 10px;
 `;
 
 const UserBadge = ({ user, signOut }: { user: User; signOut: () => void }) => {

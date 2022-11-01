@@ -10,7 +10,6 @@ export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
     const { airacData, loading } = useAiracData();
 
     const airspacesInView = useMemo(() => {
-        console.log('airspacesInView');
         return loading ? [] : airacData.getAirspacesInBbox(...mapBounds);
     }, [mapBounds]);
 

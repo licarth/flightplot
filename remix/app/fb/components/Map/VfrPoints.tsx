@@ -62,7 +62,7 @@ const StyledTooltip = styled(Tooltip)<{ $highlighted: boolean }>`
     }
 `;
 
-const VfrPointC = memo(function VfrPoint({
+export const VfrPointC = memo(function VfrPoint({
     vfrPoint,
     highlightedFixture,
 }: {

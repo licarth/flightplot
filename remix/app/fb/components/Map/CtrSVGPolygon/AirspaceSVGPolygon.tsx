@@ -10,7 +10,7 @@ type Props = {
     children?: JSX.Element;
     geometry: LatLng[];
     name: string;
-    i: number;
+    i: string | number;
     thinBorderColor: string;
     thickBorderColor: string;
     thinDashArray: string;

@@ -1,4 +1,5 @@
 import { NmScale } from '@marfle/react-leaflet-nmscale';
+import _ from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { LayerGroup, Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
@@ -7,11 +8,13 @@ import { toCheapRulerPoint, toLatLng } from '~/domain';
 import { OaciLayer, OpenStreetMapLayer } from '../layer';
 import { SatelliteLayer } from '../layer/SatelliteLayer';
 import { useRoute } from '../useRoute';
-import { Aerodromes } from './Aerodromes';
+import { AdPolygon, Aerodromes } from './Aerodromes';
 import { Airspaces } from './Airspaces';
 import { boxAround } from './boxAround';
 import { Colors } from './Colors';
+import { AirspaceSVGPolygon } from './CtrSVGPolygon/AirspaceSVGPolygon';
 import { DangerZones } from './DangerZones';
+import { isAerodrome, isVfrPoint } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
@@ -19,9 +22,10 @@ import { IgnAirspaceNameFont } from './IgnAirspaceNameFont';
 import { LayerSwitchButton } from './LayerSwitchButton';
 import { useMainMap } from './MainMapContext';
 import { MouseEvents } from './MouseEvents';
-import { VfrPoints } from './VfrPoints';
+import { useTemporaryMapBounds } from './TemporaryMapCenterContext';
+import { VfrPointC, VfrPoints } from './VfrPoints';
 import { Vors } from './Vors';
-import { Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
+import { Z_INDEX_HIGHLIGHTED_SEARCH_ITEM, Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
 
 export const InnerMapContainer = () => {
     const routeContext = useRoute();
@@ -45,6 +49,14 @@ export const InnerMapContainer = () => {
             {mapBounds && (
                 <>
                     <MouseTooltip />
+                    <LayerGroup>
+                        <Pane
+                            name={`highlighted-item`}
+                            style={{ zIndex: Z_INDEX_HIGHLIGHTED_SEARCH_ITEM }}
+                        >
+                            <HighlightedSearchItem />
+                        </Pane>
+                    </LayerGroup>
                     <Airspaces mapBounds={mapBounds} />
                     <DangerZones mapBounds={mapBounds} />
                     {shouldRenderAerodromes && (
@@ -168,3 +180,35 @@ const StyledTooltip = styled(Tooltip)`
     display: flex;
     gap: 0.5rem;
 `;
+
+const HighlightedSearchItem = () => {
+    const { highlightedItem } = useTemporaryMapBounds();
+    if (isAerodrome(highlightedItem)) {
+        return (
+            <AdPolygon
+                aerodrome={highlightedItem}
+                shouldBeHighlighted
+                displayAerodromesLabels={false}
+            />
+        );
+    } else if (isVfrPoint(highlightedItem)) {
+        return <VfrPointC vfrPoint={highlightedItem} highlightedFixture={highlightedItem} />;
+    } else if (isAirspace(highlightedItem)) {
+        return (
+            <AirspaceSVGPolygon
+                highlighted
+                i={new Date().getTime()}
+                geometry={highlightedItem.geometry}
+                name={highlightedItem.name}
+                thinBorderColor={Colors.red}
+                thickBorderColor={Colors.lightRed}
+                thinDashArray="5, 5"
+                prefix="ctr"
+            />
+        );
+    }
+};
+
+const isAirspace = (item: any): item is Airspace | DangerZone => {
+    return _.has(item, 'type');
+};

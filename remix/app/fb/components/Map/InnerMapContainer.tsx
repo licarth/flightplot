@@ -14,7 +14,7 @@ import { boxAround } from './boxAround';
 import { Colors } from './Colors';
 import { AirspaceSVGPolygon } from './CtrSVGPolygon/AirspaceSVGPolygon';
 import { DangerZones } from './DangerZones';
-import { isAerodrome, isVfrPoint } from './FixtureDetails';
+import { isAerodrome, isVfrPoint, isVor } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
@@ -24,9 +24,9 @@ import { useMainMap } from './MainMapContext';
 import { MouseEvents } from './MouseEvents';
 import { useTemporaryMapBounds } from './TemporaryMapCenterContext';
 import { VfrPointC, VfrPoints } from './VfrPoints';
+import { VorMarker } from './VorMarker';
 import { Vors } from './Vors';
 import { Z_INDEX_HIGHLIGHTED_SEARCH_ITEM, Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
-
 export const InnerMapContainer = () => {
     const routeContext = useRoute();
     const leafletMap = useMap();
@@ -193,6 +193,8 @@ const HighlightedSearchItem = () => {
         );
     } else if (isVfrPoint(highlightedItem)) {
         return <VfrPointC vfrPoint={highlightedItem} highlightedFixture={highlightedItem} />;
+    } else if (isVor(highlightedItem)) {
+        return <VorMarker vor={highlightedItem} highlit />;
     } else if (isAirspace(highlightedItem)) {
         return (
             <AirspaceSVGPolygon
@@ -206,7 +208,7 @@ const HighlightedSearchItem = () => {
                 prefix="ctr"
             />
         );
-    }
+    } else return <></>;
 };
 
 const isAirspace = (item: any): item is Airspace | DangerZone => {

@@ -10,6 +10,7 @@ import {
     useCatch,
     useLoaderData,
 } from '@remix-run/react';
+import keyboardCssStyles from 'keyboard-css/dist/css/main.min.css';
 import _ from 'lodash';
 import reactNotionStyles from 'react-notion-x/src/styles.css';
 import globablStylesUrl from '~styles/global.css';
@@ -74,6 +75,10 @@ export const links: LinksFunction = () => {
         {
             rel: 'stylesheet',
             href: rootStylesUrl,
+        },
+        {
+            rel: 'stylesheet',
+            href: keyboardCssStyles,
         },
         ...stylesheets.map((href) => ({ rel: 'stylesheet', href })),
     ];

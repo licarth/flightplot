@@ -74,17 +74,18 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
                     <use
                         stroke={thickBorderColor}
                         strokeOpacity={0.5}
-                        strokeWidth={3}
+                        strokeWidth={6}
                         clipPath={`url(#${prefix}-clip-${i})`}
                         xlinkHref={`#${prefix}-${i}`}
                     />
-                    <path
+                    <use
                         stroke={thinBorderColor}
-                        strokeWidth={highlighted ? 0.6 : 0.3}
+                        strokeWidth={highlighted ? 1.2 : 0.6}
                         fillOpacity={0.2}
                         strokeDasharray={thinDashArray}
-                        d={d}
-                    ></path>
+                        clipPath={`url(#${prefix}-clip-${i})`}
+                        xlinkHref={`#${prefix}-${i}`}
+                    />
                 </svg>
                 {/* Polygon is only required for tooltip */}
                 <Polygon

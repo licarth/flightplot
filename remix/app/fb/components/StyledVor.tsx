@@ -7,4 +7,15 @@ export const StyledVor = styled(VorDmeIcon)<PropsType>`
     #dme {
         ${({ $dme }) => !$dme && `display: none !important;`}
     }
+    ${({ $highlit }) =>
+        $highlit &&
+        `
+    path {
+        fill: #ff0000 !important;
+        stroke: #ff0000 !important;
+    }
+    circle {
+        stroke: #ff0000 !important;
+    }
+    `}
 `;

@@ -29,7 +29,6 @@ const flyToBoundsOptions: FitBoundsOptions = {
 export const TemporaryMapBoundsProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const { map } = useMainMap();
     const [temporaryBoundsState, setTemporaryBoundsState] = useState<TemporaryBoundsState>();
-    console.log('TemporaryMapBoundsProvider', temporaryBoundsState);
     return (
         <TemporaryMapBoundsContext.Provider
             value={{

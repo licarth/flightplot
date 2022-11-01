@@ -8,7 +8,6 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import styled from 'styled-components';
 import type { AiracData, Airspace, DangerZone } from 'ts-aerodata-france';
 import { boundingBox, toCheapRulerPoint, toLatLng } from '~/domain';
-import VfrPointLogo from '~/generated/icons/VfrPoint';
 import { boxAround } from '../Map/boxAround';
 import { Colors } from '../Map/Colors';
 import { isAerodrome, isVfrPoint, isVor } from '../Map/FixtureDetails';
@@ -16,11 +15,10 @@ import type { FocusableFixture } from '../Map/FixtureFocusContext';
 import { isLatLngWaypoint } from '../Map/FlightPlanningLayer';
 // import { isLatLngWaypoint } from '../Map/FlightPlanningLayer';
 import { useTemporaryMapBounds } from '../Map/TemporaryMapCenterContext';
-import { StyledAerodromeLogo } from '../StyledAerodromeLogo';
-import { StyledVor } from '../StyledVor';
+import { Content } from './Content';
 
-type SearchableAirspace = Airspace | DangerZone;
-type SearchableFixture = FocusableFixture;
+export type SearchableAirspace = Airspace | DangerZone;
+export type SearchableFixture = FocusableFixture;
 export type SearcheableElement = SearchableAirspace | SearchableFixture;
 type AirspaceSearchResult = Fuse.FuseResult<SearchableAirspace>;
 type FixtureSearchResult = Fuse.FuseResult<SearchableFixture>;
@@ -178,7 +176,7 @@ export const SearchBar = ({ airacData }: { airacData?: AiracData }) => {
 const Container = styled.div`
     font-family: 'Futura';
     color: ${Colors.ctrBorderBlue};
-    line-height: 1rem;
+    /* line-height: 1rem; */
     position: relative;
 `;
 
@@ -196,11 +194,7 @@ const AirspaceSearchResults = ({
     return (
         <div>
             {_.take<AirspaceSearchResult>(results, MAX_AIRSPACE_RESULTS).map((searchResult, i) => {
-                const {
-                    item: { name },
-                    matches,
-                    score,
-                } = searchResult;
+                const { item, matches, score } = searchResult;
                 const highlit = selectedIndex === i + 1;
                 return (
                     <MatchLine
@@ -211,11 +205,7 @@ const AirspaceSearchResults = ({
                         }}
                     >
                         <Score score={score} />
-                        <HighlightedMatches
-                            currentlySelected={highlit}
-                            text={name}
-                            matchTuples={_.flatten(matches?.map((m) => m.indices))}
-                        />
+                        <Content item={item} highlit={highlit} matches={matches} />
                     </MatchLine>
                 );
             })}
@@ -254,96 +244,12 @@ const FixtureSearchResults = ({
     );
 };
 
-const Content = ({
-    item,
-    matches,
-    highlit,
-}: {
-    item: FocusableFixture;
-    matches: readonly Fuse.FuseResultMatch[] | undefined;
-    highlit: boolean;
-}) => {
-    if (isAerodrome(item)) {
-        const { name, icaoCode } = item;
-        return (
-            <>
-                <LogoContainer>
-                    <StyledAerodromeLogo aerodrome={item} />
-                </LogoContainer>
-                <HighlightedMatches
-                    currentlySelected={highlit}
-                    text={`${icaoCode}`}
-                    matchTuples={_.flatten(
-                        matches?.filter((m) => m.key === 'icaoCode').map((m) => m.indices),
-                    )}
-                />
-                {` - `}
-                <HighlightedMatches
-                    currentlySelected={highlit}
-                    text={name}
-                    matchTuples={_.flatten(matches?.map((m) => m.indices))}
-                />
-            </>
-        );
-    } else if (isVfrPoint(item)) {
-        const { name, description } = item;
-
-        return (
-            <>
-                <LogoContainer>
-                    <VfrPointLogo />
-                </LogoContainer>
-                <HighlightedMatches
-                    currentlySelected={highlit}
-                    text={name}
-                    matchTuples={_.flatten(
-                        matches?.filter((m) => m.key === 'name').map((m) => m.indices),
-                    )}
-                />
-                {` - `}
-                <HighlightedMatches
-                    currentlySelected={highlit}
-                    text={description}
-                    matchTuples={_.flatten(
-                        matches?.filter((m) => m.key === 'description').map((m) => m.indices),
-                    )}
-                />
-            </>
-        );
-    } else if (isVor(item)) {
-        const { name, ident } = item;
-        return (
-            <>
-                <LogoContainer>
-                    <StyledVor $dme={item.dme} />
-                </LogoContainer>
-
-                <HighlightedMatches
-                    currentlySelected={highlit}
-                    text={name}
-                    matchTuples={_.flatten(
-                        matches?.filter((m) => m.key === 'name').map((m) => m.indices),
-                    )}
-                />
-                {` - `}
-                <HighlightedMatches
-                    currentlySelected={highlit}
-                    text={ident}
-                    matchTuples={_.flatten(
-                        matches?.filter((m) => m.key === 'ident').map((m) => m.indices),
-                    )}
-                />
-            </>
-        );
-    } else return <>null</>;
-};
-
-const HighlightedMatches = ({
+export const HighlightedMatches = ({
     text,
     matchTuples,
     currentlySelected,
 }: {
-    text: string;
+    text: string | null;
     matchTuples: [number, number][];
     currentlySelected?: boolean;
 }) => {
@@ -373,15 +279,11 @@ const HighlightedMatches = ({
         </>
     );
 
-    return <SearchResultContainer>{highlightedText}</SearchResultContainer>;
+    return <>{highlightedText}</>;
 };
 
 const HighlightedPart = styled.span`
     background-color: #ff0;
-`;
-
-const SearchResultContainer = styled.div`
-    /* line-height: 1rem; */
 `;
 
 const MatchLine = styled.div<{ $highlit: boolean }>`
@@ -390,6 +292,7 @@ const MatchLine = styled.div<{ $highlit: boolean }>`
     display: flex;
     padding: 0.5rem;
     background-color: ${(props) => (props.$highlit ? Colors.ctrBorderBlue : 'transparent')};
+    justify-content: stretch;
     ${(props) =>
         props.$highlit &&
         `
@@ -409,7 +312,7 @@ const Score = ({ score }: { score?: number }) => {
     // return <>[{score?.toFixed(2)}] - </>;
 };
 
-const LogoContainer = styled.div`
+export const LogoContainer = styled.div`
     align-self: center;
     width: 1rem;
     height: 1rem;

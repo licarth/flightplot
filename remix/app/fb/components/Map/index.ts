@@ -1,3 +1,4 @@
+export * from './addFixtureToRoute';
 export * from './Aerodromes';
 export * from './DisplayedContent';
 export * from './NavigationLog';

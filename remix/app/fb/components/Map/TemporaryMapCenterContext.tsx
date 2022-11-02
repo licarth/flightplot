@@ -21,9 +21,9 @@ type TemporaryBoundsState = {
 };
 
 const flyToBoundsOptions: FitBoundsOptions = {
-    maxZoom: 11,
+    // maxZoom: 11,
     animate: false,
-    padding: [100, 100],
+    // padding: [100, 100],
 };
 
 export const TemporaryMapBoundsProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -39,29 +39,36 @@ export const TemporaryMapBoundsProvider: React.FC<PropsWithChildren> = ({ childr
                     }
                     setTemporaryBoundsState((previousState) => {
                         const currentBounds = map.getBounds();
-                        return previousState
-                            ? {
-                                  bounds,
-                                  previousBounds: previousState.previousBounds,
-                                  highlightedItem,
-                              }
-                            : {
-                                  bounds,
-                                  previousBounds: currentBounds,
-                                  highlightedItem,
-                              };
+                        const previousBounds = previousState
+                            ? previousState.previousBounds
+                            : currentBounds;
+
+                        if (bounds) {
+                            if (previousBounds.contains(bounds)) {
+                                if (previousBounds.toBBoxString() !== currentBounds.toBBoxString())
+                                    map.flyToBounds(previousBounds, flyToBoundsOptions);
+                                // map.flyToBounds(previousBounds, flyToBoundsOptions);
+                            } else {
+                                map.flyToBounds(bounds, {
+                                    ...flyToBoundsOptions,
+                                    maxZoom: 11,
+                                    padding: [100, 100],
+                                    animate: false,
+                                });
+                            }
+                        } else {
+                            map.flyToBounds(previousBounds, flyToBoundsOptions);
+                        }
+
+                        return {
+                            bounds,
+                            previousBounds: previousBounds,
+                            highlightedItem,
+                        };
                     });
                     // only fly to bounds if highlightedItem is not in current bounds
-                    if (!map.getBounds().contains(bounds)) {
-                        map.flyToBounds(bounds, flyToBoundsOptions);
-                    }
                 },
                 clearTemporaryBounds: () => {
-                    console.log('temporaryBoundsState', temporaryBoundsState);
-                    console.log(
-                        'clearing temporary bounds to ',
-                        temporaryBoundsState?.previousBounds,
-                    );
                     map &&
                         temporaryBoundsState?.previousBounds &&
                         map.flyToBounds(temporaryBoundsState.previousBounds, { animate: false });

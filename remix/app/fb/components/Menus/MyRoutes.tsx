@@ -1,6 +1,7 @@
 import { Button, Input } from 'antd';
 import _ from 'lodash';
 import { useRef, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
 import { AerodromeWaypoint, AerodromeWaypointType, Route } from '../../../domain';
 import { useFirebaseAuth } from '../../firebase/auth/FirebaseAuthContext';
@@ -76,6 +77,7 @@ const RouteLine = ({
         setRoute(() => undefined);
         deleteRoute(route.id);
     };
+
     const { map } = useMainMap();
     return (
         <RouteLineDiv isCurrentRoute={isCurrentRoute}>
@@ -88,7 +90,7 @@ const RouteLine = ({
                         map.flyToBounds(route.leafletBoundingBox, {
                             maxZoom: 11,
                             animate: false,
-                            padding: [100, 100],
+                            padding: isMobile ? undefined : [100, 100], // Problematic on mobile
                         });
                 }}
             >

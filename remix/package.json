@@ -60,6 +60,7 @@
         "proj4": "^2.8.0",
         "react": "^18.2.0",
         "react-chartjs-2": "^4",
+        "react-device-detect": "^2.2.2",
         "react-dom": "^18.2.0",
         "react-fullstory": "^1.4.0",
         "react-hotkeys-hook": "^3.4.7",

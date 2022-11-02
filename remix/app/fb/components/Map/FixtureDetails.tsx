@@ -207,6 +207,7 @@ const Buttons = styled.div`
     align-self: center;
     display: flex;
     justify-self: flex-end;
+    padding-right: 0.5rem;
     /* justify-content: space-between; */
     /* justify-items: stretch; */
 `;
@@ -222,16 +223,18 @@ const CloseButton = styled.div`
     :after {
         content: '×';
     }
-    top: 3px;
-    right: 5px;
-    font-size: large;
+    top: 2px;
+    right: 8px;
+    font-size: 1.5rem;
     cursor: pointer;
 `;
 
 const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
     transition: all 0.3s;
     padding: 1rem;
-    right: ${({ isHelpOpen }) => 50 + (isHelpOpen ? 600 : 0)}px;
+    padding-top: 2rem;
+    padding-right: 0.5rem;
+    right: ${({ isHelpOpen }) => 55 + (isHelpOpen ? 600 : 0)}px;
     top: 10px;
     width: 350px;
     max-width: 500px;
@@ -245,6 +248,10 @@ const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
     border-radius: 5px;
     font-family: 'Futura';
     color: ${Colors.ctrBorderBlue};
+
+    @media (hover: none) {
+        max-width: 80vw;
+    }
 `;
 
 const Frequency = styled.span`

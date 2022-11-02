@@ -1,6 +1,6 @@
 import type Fuse from 'fuse.js';
 import _ from 'lodash';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import VfrPointLogo from '~/generated/icons/VfrPoint';
 import { isAerodrome, isVfrPoint, isVor } from '../Map/FixtureDetails';
@@ -21,10 +21,11 @@ export const Content = ({
     if (isAerodrome(item)) {
         const { name, icaoCode } = item;
         return (
-            <>
-                <LogoContainer>
-                    <StyledAerodromeLogo aerodrome={item} />
-                </LogoContainer>
+            <ContentLine
+                item={item}
+                highlit={highlit}
+                logoComponent={<StyledAerodromeLogo aerodrome={item} />}
+            >
                 <HighlightedMatches
                     currentlySelected={highlit}
                     text={`${icaoCode}`}
@@ -38,7 +39,7 @@ export const Content = ({
                     text={name}
                     matchTuples={_.flatten(matches?.map((m) => m.indices))}
                 />
-            </>
+            </ContentLine>
         );
     } else if (isVfrPoint(item)) {
         const { name, description } = item;
@@ -90,11 +91,13 @@ export const Content = ({
     } else {
         // Airspace & DangerZone
         return (
-            <HighlightedMatches
-                currentlySelected={highlit}
-                text={item.name}
-                matchTuples={_.flatten(matches?.map((m) => m.indices))}
-            />
+            <ContentLine item={item} highlit={highlit} logoComponent={<></>}>
+                <HighlightedMatches
+                    currentlySelected={highlit}
+                    text={item.name}
+                    matchTuples={_.flatten(matches?.map((m) => m.indices))}
+                />
+            </ContentLine>
         );
     }
 };
@@ -110,11 +113,22 @@ const ContentLine = ({
     children: React.ReactNode;
     item: SearcheableElement;
 }) => {
+    const ref = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (highlit) {
+            ref.current?.scrollIntoView({
+                block: 'nearest',
+                inline: 'nearest',
+            });
+        }
+    }, [highlit, ref]);
     return (
-        <ContentLineContainer>
-            <LogoContainer>{logoComponent}</LogoContainer>
-            <div>{children}</div>
-            {isFixture(item) && highlit && <AddToRouteHint />}
+        <ContentLineContainer ref={ref}>
+            <OverflowHidden>
+                <LogoContainer>{logoComponent}</LogoContainer>
+                <Description>{children}</Description>
+                {isFixture(item) && highlit && <AddToRouteHint />}
+            </OverflowHidden>
         </ContentLineContainer>
     );
 };
@@ -128,15 +142,16 @@ const AddToRouteHint = () => {
     );
 };
 
-const isFixture = (item: SearcheableElement): item is SearchableFixture => {
+export const isFixture = (item: SearcheableElement): item is SearchableFixture => {
     return isVor(item) || isAerodrome(item) || isVfrPoint(item);
 };
 
-const isAirspace = (item: SearcheableElement): item is SearchableAirspace => {
+export const isAirspace = (item: SearcheableElement): item is SearchableAirspace => {
     return !isFixture(item);
 };
 
 const ContentLineContainer = styled.div`
+    scroll-margin: 0.5rem;
     display: flex;
     align-items: center;
     flex-grow: 1;
@@ -145,8 +160,31 @@ const ContentLineContainer = styled.div`
 const AddToRouteDiv = styled.div`
     justify-self: flex-end;
     margin-left: auto;
+    flex-shrink: 0;
+    @media (hover: none) {
+        display: none;
+    }
+    @media (max-width: 1200px) {
+        display: none;
+    }
 `;
 
 const Kbd = styled.kbd`
     line-height: 0.4rem;
+    transform: translateY(-3px);
+`;
+
+const Description = styled.div`
+    flex-shrink: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+
+const OverflowHidden = styled.div`
+    width: 100px;
+    display: flex;
+    overflow: hidden;
+    flex-grow: 1;
 `;

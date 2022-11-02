@@ -4,18 +4,21 @@ import type { LatLngBoundsLiteral } from 'leaflet';
 import _ from 'lodash';
 import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Options } from 'react-hotkeys-hook';
 import { useHotkeys } from 'react-hotkeys-hook';
 import styled from 'styled-components';
 import type { AiracData, Airspace, DangerZone } from 'ts-aerodata-france';
 import { boundingBox, toCheapRulerPoint, toLatLng } from '~/domain';
+import { addFixtureToRoute } from '../Map/addFixtureToRoute';
 import { boxAround } from '../Map/boxAround';
 import { Colors } from '../Map/Colors';
 import { isAerodrome, isVfrPoint, isVor } from '../Map/FixtureDetails';
 import type { FocusableFixture } from '../Map/FixtureFocusContext';
 import { isLatLngWaypoint } from '../Map/FlightPlanningLayer';
-// import { isLatLngWaypoint } from '../Map/FlightPlanningLayer';
 import { useTemporaryMapBounds } from '../Map/TemporaryMapCenterContext';
-import { Content } from './Content';
+import { useSearchElement } from '../SearchItemContext';
+import { useRoute } from '../useRoute';
+import { Content, isFixture } from './Content';
 
 export type SearchableAirspace = Airspace | DangerZone;
 export type SearchableFixture = FocusableFixture;
@@ -30,7 +33,9 @@ export const SearchBar = ({ airacData }: { airacData?: AiracData }) => {
     const [searchTerm, setSearchTerm] = useState<string>();
     const [airspaceResults, setAirspaceResults] = useState<AirspaceSearchResult[]>([]);
     const [fixturesResults, setFixturesResults] = useState<FixtureSearchResult[]>([]);
-    const [selectedIndex, setSelectedIndex] = useState<number>(); //Starts at 1
+    const [selectedIndex, setSelectedIndex] = useState<number | undefined>(); //Starts at 1
+
+    const routeContext = useRoute();
 
     const totalResults = airspaceResults.length + fixturesResults.length;
     const allResults = [...fixturesResults, ...airspaceResults];
@@ -70,17 +75,24 @@ export const SearchBar = ({ airacData }: { airacData?: AiracData }) => {
         1000,
     );
 
-    useHotkeys('up', previousResult, []);
-    useHotkeys('down', nextResult, []);
-    // useHotkeys(
-    //     'enter',
-    //     () => {
-    //         selectedIndex && setBoundsForSelectedItem(selectedIndex);
-    //     },
-    //     [selectedIndex],
-    // );
+    const opts: Options = { enableOnTags: ['INPUT'] };
+
+    useHotkeys('up', previousResult, opts, []);
+    useHotkeys('down', nextResult, opts, []);
+    useHotkeys(
+        'command+enter',
+        () => {
+            const item = allResults[selectedIndex! - 1].item;
+            isFixture(item) && addFixtureToRoute({ fixture: item, routeContext });
+        },
+        opts,
+        [],
+    );
+    const { setItem } = useSearchElement();
+
     useEffect(() => {
         selectedIndex && setBoundsForSelectedItem(selectedIndex);
+        setItem(allResults[selectedIndex! - 1]?.item);
     }, [selectedIndex]);
 
     useHotkeys(
@@ -88,6 +100,7 @@ export const SearchBar = ({ airacData }: { airacData?: AiracData }) => {
         () => {
             clearSearch();
         },
+        opts,
         [],
     );
 
@@ -134,27 +147,16 @@ export const SearchBar = ({ airacData }: { airacData?: AiracData }) => {
     return (
         <Container>
             <StyledInput
+                allowClear
+                placeholder="Rechercher un aérodrome, un point VFR, une zone..."
                 autoFocus
-                onKeyDown={(e) => {
-                    if (e.key === 'Down' || e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        nextResult();
-                    } else if (e.key === 'Up' || e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        previousResult();
-                    } else if (e.key === 'Enter') {
-                        // TODO
-                    } else if (e.key === 'Escape' || e.key === 'Esc') {
-                        clearSearch();
-                    }
-                }}
                 value={searchTerm}
                 onChange={(e) => {
                     setSearchTerm(e.target.value);
                     setSelectedIndex(undefined);
                 }}
             />
-            <ResultsContainer>
+            <ResultsContainer $itemSelected={!!selectedIndex}>
                 <FixtureSearchResults
                     results={fixturesResults}
                     selectedIndex={selectedIndex || null}
@@ -174,6 +176,7 @@ export const SearchBar = ({ airacData }: { airacData?: AiracData }) => {
 };
 
 const Container = styled.div`
+    max-width: 90vw;
     font-family: 'Futura';
     color: ${Colors.ctrBorderBlue};
     /* line-height: 1rem; */
@@ -200,7 +203,7 @@ const AirspaceSearchResults = ({
                     <MatchLine
                         key={`airspace-search-result-${i}`}
                         $highlit={highlit}
-                        onMouseEnter={() => {
+                        onClick={() => {
                             setSelectedIndex(indexOffset + i + 1);
                         }}
                     >
@@ -231,7 +234,7 @@ const FixtureSearchResults = ({
                     <MatchLine
                         key={`aerodrome-search-result-${i}`}
                         $highlit={highlit}
-                        onMouseEnter={() => {
+                        onClick={() => {
                             setSelectedIndex(i + 1);
                         }}
                     >
@@ -291,7 +294,8 @@ const MatchLine = styled.div<{ $highlit: boolean }>`
     white-space: pre;
     display: flex;
     padding: 0.5rem;
-    background-color: ${(props) => (props.$highlit ? Colors.ctrBorderBlue : 'transparent')};
+    background-color: ${(props) =>
+        props.$highlit ? `${Colors.ctrBorderBlue} !important` : 'transparent'};
     justify-content: stretch;
     ${(props) =>
         props.$highlit &&
@@ -305,6 +309,10 @@ const MatchLine = styled.div<{ $highlit: boolean }>`
         stroke: white !important;
     }
     `};
+    cursor: pointer;
+    :hover {
+        background-color: ${Colors.ctrBorderLightBlue};
+    }
 `;
 
 const Score = ({ score }: { score?: number }) => {
@@ -317,9 +325,10 @@ export const LogoContainer = styled.div`
     width: 1rem;
     height: 1rem;
     margin-right: 0.4rem;
+    flex-shrink: 0;
 `;
 
-const ResultsContainer = styled.div`
+const ResultsContainer = styled.div<{ $itemSelected?: boolean }>`
     position: absolute;
     /* top: 100%;
         left: 0; */
@@ -329,16 +338,33 @@ const ResultsContainer = styled.div`
     z-index: 700;
     overflow-y: scroll;
     width: 100%;
+
+    @media (hover: none) {
+        width: 95vw;
+    }
+
+    @media (max-width: 500px) {
+        width: 95vw;
+    }
+
     // shadow except on top
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
     // rounded bottom corners
     border-bottom-left-radius: 0.5rem;
     border-bottom-right-radius: 0.5rem;
+    @media (hover: none) {
+        ${(props) => props.$itemSelected && `display: none;`}
+    }
 `;
 
 const StyledInput = styled(Input.Search)`
     width: 500px;
+    max-width: 35vw;
+    @media (max-width: 500px) {
+        width: 100px;
+    }
     align-self: center;
+    margin-right: 0.5rem;
 `;
 
 const getBoundsForSearchResult = (item: SearcheableElement): LatLngBoundsLiteral => {

@@ -12,5 +12,6 @@ module.exports = {
         'react-leaflet',
         '@react-leaflet/core',
         '@marfle/react-leaflet-nmscale',
+        'react-merge-refs',
     ],
 };

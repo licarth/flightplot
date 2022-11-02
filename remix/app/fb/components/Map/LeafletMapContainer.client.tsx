@@ -4,10 +4,12 @@ import { MapContainer, ZoomControl } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
 import { useMouseMode } from '../MouseModeContext';
+import { useSearchElement } from '../SearchItemContext';
 import { FixtureDetails } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { InnerMapContainer } from './InnerMapContainer';
 import { useMainMap } from './MainMapContext';
+import { SearchElementDetails } from './SearchableElementDetails';
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 8;
@@ -53,6 +55,8 @@ export const LeafletMapContainer = () => {
 };
 
 const FixtureDetailsWindow = () => {
+    const { item } = useSearchElement();
+
     const { clickedLocation, fixtures, clear: clearFixture } = useFixtureFocus();
     return (
         <>
@@ -63,6 +67,7 @@ const FixtureDetailsWindow = () => {
                     onClose={clearFixture}
                 />
             ) : null}
+            {item && <SearchElementDetails searchableElement={item} onClose={() => {}} />}
         </>
     );
 };

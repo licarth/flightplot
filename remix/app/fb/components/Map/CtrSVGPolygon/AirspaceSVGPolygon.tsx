@@ -33,7 +33,8 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
     highlightedThinBorderWidth = thinBorderWidth * 3,
     prefix,
 }: Props) {
-    const id = `${prefix}-${name}`;
+    // remove spaces
+    const id = `${prefix}-${name}`.replace(/\s/g, '');
     const leafletGeom = geometry.map(toLeafletLatLng);
     const geom = leafletGeom
         .map(convertToWebMercator)

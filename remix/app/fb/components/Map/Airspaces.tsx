@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { LayerGroup } from 'react-leaflet';
-import { AirspaceType } from 'ts-aerodata-france';
 import { useAiracData } from '../useAiracData';
 import { CtrSVGPolygon } from './CtrSVGPolygon';
 import type { MapBounds } from './DisplayedContent';
 import { useFixtureFocus } from './FixtureFocusContext';
+import { useMainMap } from './MainMapContext';
 
 export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
     const { airacData, loading } = useAiracData();
@@ -17,6 +17,10 @@ export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
         underMouse: { airspaces },
     } = useFixtureFocus();
 
+    const {
+        filters: { showAirspacesStartingBelowFL },
+    } = useMainMap();
+
     const highlightedAirspaces = airspaces.map((a) => a.name);
 
     return (
@@ -24,7 +28,10 @@ export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
             {mapBounds &&
                 !loading &&
                 airspacesInView
-                    .filter(({ type }) => type === AirspaceType.CTR)
+                    .filter(
+                        ({ lowerLimit }) =>
+                            lowerLimit.feetValue <= showAirspacesStartingBelowFL * 100,
+                    )
                     .map((airspace, i) => (
                         <CtrSVGPolygon
                             key={`airspace-${airspace.name}`}

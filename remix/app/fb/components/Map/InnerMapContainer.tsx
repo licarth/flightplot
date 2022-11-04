@@ -100,8 +100,15 @@ const MouseTooltip = () => {
         mouseLocation,
     } = useFixtureFocus();
 
+    const {
+        filters: { showAirspacesStartingBelowFL },
+        airspaceTypesToDisplay,
+    } = useMainMap();
+
     const [filteredAirspaces, airspacesSha] = useMemo(() => {
-        const filteredAirspaces = airspaces.filter((a) => ['CTR', 'P'].includes(a.type));
+        const filteredAirspaces = airspaces
+            .filter((a) => airspaceTypesToDisplay.includes(a.type))
+            .filter(({ lowerLimit }) => lowerLimit.feetValue <= showAirspacesStartingBelowFL * 100);
         const airspacesSha = filteredAirspaces.map((a) => a.name).join(',');
         return [filteredAirspaces, airspacesSha];
     }, [airspaces]);

@@ -5,6 +5,7 @@ import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
 import { useMouseMode } from '../MouseModeContext';
 import { useSearchElement } from '../SearchItemContext';
+import { AirspacesFilters } from '../TopBar/AirspacesFilters';
 import { FixtureDetails } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { InnerMapContainer } from './InnerMapContainer';
@@ -42,6 +43,7 @@ export const LeafletMapContainer = () => {
     return (
         <MapSizeDetector ref={ref}>
             <FixtureDetailsWindow />
+            <AirspacesFilters />
             {MapContainer && (
                 <Outer $cursor={cursor}>
                     <StyledMapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>

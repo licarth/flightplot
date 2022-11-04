@@ -14,7 +14,7 @@ export const CtrSVGPolygon = memo(function CtrSVGPolygon({
     i,
     highlighted,
 }: CtrSVGPolygonProps) {
-    const { geometry, name } = ctr;
+    const { geometry, name, type } = ctr;
 
     return (
         <AirspaceSVGPolygon
@@ -23,10 +23,14 @@ export const CtrSVGPolygon = memo(function CtrSVGPolygon({
             i={i}
             geometry={geometry}
             name={name}
-            thinBorderColor={Colors.ctrBorderBlue}
-            thickBorderColor={Colors.ctrBorderLightBlue}
-            thinDashArray="5, 5"
-            prefix="ctr"
+            thinBorderColor={type === 'CTR' ? Colors.ctrBorderBlue : Colors.tmaBorderViolet}
+            thickBorderColor={
+                type === 'CTR' ? Colors.ctrBorderLightBlue : Colors.tmaBorderLightViolet
+            }
+            thickBorderWidth={type === 'CTR' ? 4 : 6}
+            thinDashArray={type === 'CTR' ? '5, 5' : 'none'}
+            thinBorderWidth={type === 'CTR' ? 0.6 : 0.3}
+            prefix="ctr-tma"
         />
     );
 });

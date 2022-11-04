@@ -7,9 +7,9 @@ export const boundingBox = (latLngs: LatLng[] | WebMercatorCoords[]): [number, n
 
     for (let i = 0; i < latLngs.length; i++) {
         //@ts-ignore
-        const y = latLngs[i].lat || latLngs[i].y;
+        const y = isNaN(latLngs[i].lat) ? latLngs[i].y : latLngs[i].lat;
         //@ts-ignore
-        const x = latLngs[i].lng || latLngs[i].x;
+        const x = isNaN(latLngs[i].lng) ? latLngs[i].x : latLngs[i].lng;
         yy.push(y);
         xx.push(x);
     }

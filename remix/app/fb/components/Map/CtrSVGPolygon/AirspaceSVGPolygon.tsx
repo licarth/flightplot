@@ -10,7 +10,6 @@ type Props = {
     children?: JSX.Element;
     geometry: LatLng[];
     name: string;
-    i: string | number;
     thinBorderColor: string;
     thickBorderColor: string;
     thinDashArray: string;
@@ -26,7 +25,6 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
     geometry,
     children,
     name,
-    i,
     thinBorderColor,
     thickBorderColor,
     thinDashArray,
@@ -35,6 +33,7 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
     highlightedThinBorderWidth = thinBorderWidth * 3,
     prefix,
 }: Props) {
+    const id = `${prefix}-${name}`;
     const leafletGeom = geometry.map(toLeafletLatLng);
     const geom = leafletGeom
         .map(convertToWebMercator)
@@ -54,7 +53,7 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
                 fill: 'none',
                 class: 'overflow-visible',
             }}
-            key={'overlay' + i}
+            key={'overlay' + id}
             bounds={bbox}
             interactive={false}
         >
@@ -66,7 +65,7 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
                     (maxlat - minlat) / 1000
                 }`}
             >
-                <clipPath id={`${prefix}-clip-${i}`}>
+                <clipPath id={`${prefix}-clip-${id}`}>
                     <path d={d}></path>
                 </clipPath>
                 <g
@@ -74,27 +73,27 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
                         display: 'none',
                     }}
                 >
-                    <path id={`${prefix}-${i}`} d={d}></path>
+                    <path id={`${prefix}-${id}`} d={d}></path>
                 </g>
                 <use
                     stroke={thickBorderColor}
                     strokeOpacity={0.5}
                     strokeWidth={thickBorderWidth}
-                    clipPath={`url(#${prefix}-clip-${i})`}
-                    xlinkHref={`#${prefix}-${i}`}
+                    clipPath={`url(#${prefix}-clip-${id})`}
+                    xlinkHref={`#${prefix}-${id}`}
                 />
                 <use
                     stroke={thinBorderColor}
                     strokeWidth={highlighted ? highlightedThinBorderWidth : thinBorderWidth}
                     fillOpacity={0.2}
                     strokeDasharray={thinDashArray}
-                    clipPath={`url(#${prefix}-clip-${i})`}
-                    xlinkHref={`#${prefix}-${i}`}
+                    clipPath={`url(#${prefix}-clip-${id})`}
+                    xlinkHref={`#${prefix}-${id}`}
                 />
             </svg>
             {/* Polygon is only required for tooltip */}
             <Polygon
-                key={'overlay-po' + i}
+                key={'overlay-po' + id}
                 positions={leafletGeom}
                 interactive={false}
                 pathOptions={{ weight: 0, fillOpacity: 0 }}

@@ -22,7 +22,6 @@ export const CtrSVGPolygon = memo(function CtrSVGPolygon({
         <AirspaceSVGPolygon
             highlighted={highlighted || false}
             key={`ctr-${name}`}
-            i={i}
             geometry={geometry}
             name={name}
             thinBorderColor={borderColor(airspace).thin}

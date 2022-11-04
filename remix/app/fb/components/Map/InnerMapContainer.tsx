@@ -159,7 +159,12 @@ export const Centered = styled.div`
     flex-direction: column;
 `;
 
-export const AirspaceContainer = styled.div``;
+export const AirspaceContainer = styled.div`
+    position: relative;
+    text-align: center;
+    font-family: 'Futura';
+    border-radius: 2px;
+`;
 
 const StyledTooltip = styled(Tooltip)`
     display: flex;
@@ -191,13 +196,12 @@ const HighlightedSearchItem = () => {
         return (
             <AirspaceSVGPolygon
                 highlighted
-                i={new Date().getTime()}
                 geometry={highlightedItem.geometry}
                 name={highlightedItem.name}
                 thinBorderColor={Colors.red}
                 thickBorderColor={Colors.lightRed}
                 thinDashArray="5, 5"
-                prefix="ctr"
+                prefix="highlighted-search-airspace-"
             />
         );
     } else return <></>;

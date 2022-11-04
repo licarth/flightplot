@@ -26,6 +26,7 @@ export const AirspaceDescriptionTooltip = ({ airspace }: { airspace: Airspace | 
                         <AirspaceName>{name}</AirspaceName>
                         <AirspaceNameSeparator $color={color} />
                     </AirspaceNameContainer>
+
                     <AltitudeFrame $color={color}>
                         <i>
                             <AltitudeValue>{higherLimit.toString()}</AltitudeValue>
@@ -43,7 +44,9 @@ export const AirspaceDescriptionTooltip = ({ airspace }: { airspace: Airspace | 
                                 )}
                                 <Separator $color={color} />
                             </SeparationLine>
-                            <AltitudeValue>{lowerLimit.toString()}</AltitudeValue>
+                            <AltitudeValue>
+                                {lowerLimit.toString() === 'SFC' ? null : lowerLimit.toString()}
+                            </AltitudeValue>
                         </i>
                     </AltitudeFrame>
                 </IgnAirspaceNameFont>{' '}
@@ -99,6 +102,7 @@ const AirspaceNameContainer = styled.div`
     margin-top: -1rem;
 `;
 
-const AltitudeValue = styled.span`
+const AltitudeValue = styled.div`
     padding: 0 0.5rem 0 0.5rem;
+    min-height: 0.75rem;
 `;

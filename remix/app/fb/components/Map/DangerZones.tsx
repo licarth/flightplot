@@ -36,7 +36,6 @@ export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
                         return (
                             <AirspaceSVGPolygon
                                 key={`p-${name}`}
-                                i={i}
                                 geometry={geometry}
                                 name={name}
                                 thinBorderColor={Colors.pThinBorder}

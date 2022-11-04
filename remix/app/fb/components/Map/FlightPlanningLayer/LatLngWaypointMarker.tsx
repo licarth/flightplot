@@ -53,7 +53,7 @@ export const LatLngWaypointMarker = ({
             position={position}
             ref={markerRef}
             title={label}
-            interactive={false}
+            // interactive={false}
             icon={getIcon(type)}
             eventHandlers={{
                 contextmenu: (event) => {
@@ -67,7 +67,7 @@ export const LatLngWaypointMarker = ({
                 },
             }}
         >
-            <Circle
+            <StyledCircle
                 key={`circle-${waypointNumber}`}
                 fill={false}
                 center={position}
@@ -130,3 +130,9 @@ const getIcon = (waypointType: WaypointType) => {
             return circle;
     }
 };
+
+const StyledCircle = styled(Circle)`
+    :hover {
+        cursor: pointer;
+    }
+`;

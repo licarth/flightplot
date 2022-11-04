@@ -164,6 +164,13 @@ export const AirspaceContainer = styled.div``;
 const StyledTooltip = styled(Tooltip)`
     display: flex;
     gap: 0.5rem;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: blur(3px);
+    ::before {
+        display: none;
+    }
 `;
 
 const HighlightedSearchItem = () => {

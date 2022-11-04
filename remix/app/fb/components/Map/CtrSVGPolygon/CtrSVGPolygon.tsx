@@ -1,3 +1,5 @@
+import { pipe } from 'fp-ts/lib/function';
+import { fold } from 'fp-ts/lib/Option';
 import { memo } from 'react';
 import type { Airspace, AirspaceType } from 'ts-aerodata-france';
 import { Colors } from '../Colors';
@@ -10,11 +12,11 @@ type CtrSVGPolygonProps = {
 };
 
 export const CtrSVGPolygon = memo(function CtrSVGPolygon({
-    ctr,
+    ctr: airspace,
     i,
     highlighted,
 }: CtrSVGPolygonProps) {
-    const { geometry, name, type } = ctr;
+    const { geometry, name, type } = airspace;
 
     return (
         <AirspaceSVGPolygon
@@ -23,21 +25,29 @@ export const CtrSVGPolygon = memo(function CtrSVGPolygon({
             i={i}
             geometry={geometry}
             name={name}
-            thinBorderColor={borderColor(type).thin}
-            thickBorderColor={borderColor(type).thick}
-            thickBorderWidth={3}
+            thinBorderColor={borderColor(airspace).thin}
+            thickBorderColor={borderColor(airspace).thick}
+            thickBorderWidth={thickBorderWidth(airspace)}
             thinDashArray={dashArray(type)}
-            thinBorderWidth={thinBorderWidth(type)}
+            thinBorderWidth={thinBorderWidth(airspace)}
             highlightedThinBorderWidth={highlightedThinBorderWidth(type)}
             prefix="ctr-tma-siv"
         />
     );
 });
 
-function thinBorderWidth(type: AirspaceType): number | undefined {
-    if (type === 'CTR') {
+function thickBorderWidth(airspace: Airspace): number | undefined {
+    if (getAirspaceClass(airspace) === 'E') {
+        return 6;
+    } else {
+        return 3;
+    }
+}
+
+function thinBorderWidth(airspace: Airspace): number | undefined {
+    if (airspace.type === 'CTR') {
         return 0.6;
-    } else if (type === 'SIV') {
+    } else if (airspace.type === 'SIV') {
         return 1.5;
     } else {
         return 0.3;
@@ -55,14 +65,30 @@ function dashArray(type: AirspaceType): string {
     }
 }
 
-function borderColor(type: AirspaceType): { thin: string; thick: string } {
-    if (['CTR', 'CTA', 'TMA'].includes(type)) {
+export function borderColor(airspace: Airspace): { thin: string; thick: string } {
+    const { type } = airspace;
+    const airspaceClass = getAirspaceClass(airspace);
+    if (['B', 'C', 'D'].includes(airspaceClass)) {
         return { thin: Colors.ctrBorderBlue, thick: Colors.ctrBorderLightBlue };
+    } else if (['B', 'C', 'D', 'E'].includes(airspaceClass)) {
+        return { thin: Colors.ctrBorderBlue, thick: Colors.ctrBorderVeryLightBlue };
     } else if (type === 'SIV') {
         return { thin: Colors.sivThinBorder, thick: Colors.sivThickBorder };
+    } else if (['A'].includes(airspaceClass)) {
+        return { thin: Colors.pThinBorder, thick: Colors.pThickBorder };
     } else {
-        return { thin: 'red', thick: 'red' };
+        return { thin: Colors.ctrBorderBlue, thick: Colors.ctrBorderLightBlue };
     }
+}
+
+function getAirspaceClass(airspace: Airspace) {
+    return pipe(
+        airspace.airspaceClass,
+        fold(
+            () => '',
+            (c) => `${c}`,
+        ),
+    );
 }
 
 function highlightedThinBorderWidth(type: AirspaceType): number | undefined {

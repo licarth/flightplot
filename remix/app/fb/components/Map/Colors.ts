@@ -1,6 +1,7 @@
 export const Colors = {
     ctrBorderBlue: '#002e94',
     ctrBorderLightBlue: '#99ABD1',
+    ctrBorderVeryLightBlue: '#BACEE2',
     tmaBorderViolet: '#8c00ff',
     tmaBorderLightViolet: '#D1B3FF',
     pThinBorder: '#940000',

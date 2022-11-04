@@ -19,6 +19,7 @@ export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
 
     const {
         filters: { showAirspacesStartingBelowFL },
+        airspaceTypesToDisplay,
     } = useMainMap();
 
     const highlightedAirspaces = airspaces.map((a) => a.name);
@@ -29,7 +30,8 @@ export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
                 !loading &&
                 airspacesInView
                     .filter(
-                        ({ lowerLimit }) =>
+                        ({ lowerLimit, type }) =>
+                            airspaceTypesToDisplay.includes(type) &&
                             lowerLimit.feetValue <= showAirspacesStartingBelowFL * 100,
                     )
                     .map((airspace, i) => (

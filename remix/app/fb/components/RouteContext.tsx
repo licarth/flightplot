@@ -1,7 +1,6 @@
 import type { Unsubscribe } from 'firebase/database';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
-import { AirspaceType, DangerZoneType } from 'ts-aerodata-france';
 import type { Route } from '../../domain';
 import type { AirspaceSegmentOverlap } from '../../domain/AirspaceIntersection/routeAirspaceOverlaps';
 import { routeAirspaceOverlaps } from '../../domain/AirspaceIntersection/routeAirspaceOverlaps';
@@ -9,6 +8,7 @@ import type { UUID } from '../../domain/Uuid/Uuid';
 import type { ElevationAtPoint } from '../elevationOnRoute';
 import { elevationOnRoute } from '../elevationOnRoute';
 import { localApiElevationService } from '../ElevationService/localApiElevationService';
+import { useMainMap } from './Map/MainMapContext';
 import { useAiracData } from './useAiracData';
 import { useUserRoutes } from './useUserRoutes';
 
@@ -34,9 +34,11 @@ export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
     // const [route, setRoute] = useState<Route>(exampleRoute);
     const [route, setRoute] = useState<Route>();
 
-    const overlapDeterministicChangeKey = route?.waypoints
-        .map((w) => `${w.latLng.lat}-${w.latLng.lng}`)
-        .join('-');
+    const { airspaceTypesToDisplay } = useMainMap();
+
+    const overlapDeterministicChangeKey =
+        route?.waypoints.map((w) => `${w.latLng.lat}-${w.latLng.lng}`).join('-') +
+        airspaceTypesToDisplay.join('-');
     const [elevation, setElevation] = useState<ElevationAtPoint>(emptyElevation);
 
     const { airacData } = useAiracData();
@@ -82,12 +84,10 @@ export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
                   airspaces: [
                       ...airacData
                           .getAirspacesInBbox(...route.boundingBox)
-                          .filter(({ type }) =>
-                              [AirspaceType.CTR, AirspaceType.TMA].includes(type),
-                          ),
+                          .filter(({ type }) => airspaceTypesToDisplay.includes(type)),
                       ...airacData
                           .getDangerZonesInBbox(...route.boundingBox)
-                          .filter(({ type }) => [DangerZoneType.P].includes(type)),
+                          .filter(({ type }) => airspaceTypesToDisplay.includes(type)),
                   ],
               })
             : [];

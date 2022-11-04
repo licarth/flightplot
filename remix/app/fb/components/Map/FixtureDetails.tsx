@@ -234,7 +234,7 @@ const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
     padding: 1rem;
     padding-top: 2rem;
     padding-right: 0.5rem;
-    right: ${({ isHelpOpen }) => 55 + (isHelpOpen ? 600 : 0)}px;
+    right: ${({ isHelpOpen }) => (isHelpOpen ? 620 : 90)}px;
     top: 10px;
     width: 350px;
     max-width: 500px;

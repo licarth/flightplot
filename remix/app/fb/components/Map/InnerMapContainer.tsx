@@ -9,6 +9,7 @@ import { OaciLayer, OpenStreetMapLayer } from '../layer';
 import { SatelliteLayer } from '../layer/SatelliteLayer';
 import { useRoute } from '../useRoute';
 import { AdPolygon, Aerodromes } from './Aerodromes';
+import { AirspaceDescriptionTooltip } from './AirspaceDescriptionTooltip';
 import { Airspaces } from './Airspaces';
 import { boxAround } from './boxAround';
 import { Colors } from './Colors';
@@ -18,7 +19,6 @@ import { isAerodrome, isVfrPoint, isVor } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
-import { IgnAirspaceNameFont } from './IgnAirspaceNameFont';
 import { LayerSwitchButton } from './LayerSwitchButton';
 import { useMainMap } from './MainMapContext';
 import { MouseEvents } from './MouseEvents';
@@ -135,14 +135,16 @@ const MouseTooltip = () => {
                         key={`tooltip-airspace-${airspacesSha}`}
                         offset={[10, 0]}
                     >
-                        {filteredAirspaces.map((airspace, i) => {
-                            return (
-                                <AirspaceDescription
-                                    key={`tooltip-airspace-description-${i}`}
-                                    airspace={airspace}
-                                />
-                            );
-                        })}
+                        {_.sortBy(filteredAirspaces, ({ lowerLimit }) => lowerLimit.feetValue).map(
+                            (airspace, i) => {
+                                return (
+                                    <AirspaceDescriptionTooltip
+                                        key={`tooltip-airspace-description-${i}`}
+                                        airspace={airspace}
+                                    />
+                                );
+                            },
+                        )}
                     </StyledTooltip>
                 </Pane>
             </Polygon>
@@ -150,38 +152,12 @@ const MouseTooltip = () => {
     ) : null;
 };
 
-const Centered = styled.div`
+export const Centered = styled.div`
     display: flex;
     flex-direction: column;
 `;
 
-const AirspaceDescription = ({ airspace }: { airspace: Airspace | DangerZone }) => {
-    const { name, type, lowerLimit, higherLimit } = airspace;
-    const airspaceClass = type === 'CTR' ? airspace.airspaceClass : null;
-    return (
-        <AirspaceContainer>
-            <Centered>
-                <IgnAirspaceNameFont
-                    $color={airspace.type === 'P' ? Colors.pThickBorder : Colors.ctrBorderBlue}
-                >
-                    <b>
-                        {name} {airspaceClass && `[${airspaceClass}]`}
-                    </b>
-                    <br />
-                    <div>
-                        <i>
-                            {higherLimit.toString()}
-                            <hr />
-                            {lowerLimit.toString()}
-                        </i>
-                    </div>
-                </IgnAirspaceNameFont>{' '}
-            </Centered>
-        </AirspaceContainer>
-    );
-};
-
-const AirspaceContainer = styled.div``;
+export const AirspaceContainer = styled.div``;
 
 const StyledTooltip = styled(Tooltip)`
     display: flex;

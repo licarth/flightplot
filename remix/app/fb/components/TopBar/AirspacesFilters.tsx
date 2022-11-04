@@ -2,12 +2,14 @@ import { Slider, Switch } from 'antd';
 import type { SliderMarks } from 'antd/lib/slider';
 import _ from 'lodash';
 import styled from 'styled-components';
+import { Colors } from '../Map';
 import { useMainMap } from '../Map/MainMapContext';
 
 const style = {
     fontSize: 12,
     fontFamily: 'Univers',
 };
+
 const marks: SliderMarks = {
     0: {
         style,
@@ -44,16 +46,30 @@ export const AirspacesFilters = () => {
         setFilters,
         filters: {
             showAirspacesStartingBelowFL,
-            displayModePerAirspaceType: { R, D },
+            displayModePerAirspaceType: { R, D, SIV },
         },
     } = useMainMap();
 
     return (
         <Container>
             <Vertical>
-                <LabelledSwitch>
+                Espaces
+                <LabelledSwitch $color={Colors.sivThinBorder}>
+                    SIV
+                    <GreenSwitch
+                        checked={SIV}
+                        size={'small'}
+                        title="SIV"
+                        onChange={(v) =>
+                            setFilters((f) => ({
+                                ..._.set(f, 'displayModePerAirspaceType.SIV', v),
+                            }))
+                        }
+                    />
+                </LabelledSwitch>
+                <LabelledSwitch $color={Colors.pThinBorder}>
                     R
-                    <Switch
+                    <RedSwitch
                         checked={R}
                         size={'small'}
                         title="R"
@@ -62,9 +78,9 @@ export const AirspacesFilters = () => {
                         }
                     />
                 </LabelledSwitch>
-                <LabelledSwitch>
+                <LabelledSwitch $color={Colors.pThinBorder}>
                     D
-                    <Switch
+                    <RedSwitch
                         checked={D}
                         size={'small'}
                         title="D"
@@ -92,7 +108,9 @@ export const AirspacesFilters = () => {
                                 : `FL${v}`
                             : '',
                 }}
-                onChange={(v) => setFilters((f) => ({ ...f, showAirspacesStartingBelowFL: v }))}
+                onChange={(v) =>
+                    setFilters((f) => ({ ...f, showAirspacesStartingBelowFL: v === 120 ? 400 : v }))
+                }
             />
         </Container>
     );
@@ -106,10 +124,11 @@ const Vertical = styled.div`
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    width: 30px;
+    /* width: 30px; */
     align-self: center;
     font-family: Univers;
     font-size: 5;
+    overflow: hidden;
 `;
 
 const Container = styled.div`
@@ -127,8 +146,17 @@ const Container = styled.div`
     padding: 3px;
 `;
 
-const LabelledSwitch = styled.div`
+const LabelledSwitch = styled.div<{ $color: string }>`
     display: flex;
     gap: 0.25rem;
     align-items: center;
+    color: ${({ $color }) => $color};
+`;
+
+const RedSwitch = styled(Switch)`
+    background-color: ${({ checked }) => checked && Colors.pThickBorder};
+`;
+
+const GreenSwitch = styled(Switch)`
+    background-color: ${({ checked }) => checked && Colors.sivThinBorder};
 `;

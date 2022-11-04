@@ -18,6 +18,7 @@ type Props = {
     highlighted?: boolean;
     thickBorderWidth?: number;
     thinBorderWidth?: number;
+    highlightedThinBorderWidth?: number;
 };
 
 export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
@@ -31,6 +32,7 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
     thinDashArray,
     thickBorderWidth = 6,
     thinBorderWidth = 0.6,
+    highlightedThinBorderWidth = thinBorderWidth * 3,
     prefix,
 }: Props) {
     const leafletGeom = geometry.map(toLeafletLatLng);
@@ -83,7 +85,7 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
                 />
                 <use
                     stroke={thinBorderColor}
-                    strokeWidth={highlighted ? thinBorderWidth * 3 : thinBorderWidth}
+                    strokeWidth={highlighted ? highlightedThinBorderWidth : thinBorderWidth}
                     fillOpacity={0.2}
                     strokeDasharray={thinDashArray}
                     clipPath={`url(#${prefix}-clip-${i})`}

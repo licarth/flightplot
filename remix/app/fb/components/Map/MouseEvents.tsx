@@ -72,6 +72,10 @@ export const MouseEvents = () => {
         setMouseLocation(toDomainLatLng(e.latlng));
     });
 
+    useMapEvent('mouseout', (e) => {
+        setMouseLocation(undefined);
+    });
+
     useEffect(() => {
         if (mouseMode === 'none' || mouseMode === 'command+shift') {
             setHighlightedLocation(undefined);

@@ -34,26 +34,26 @@ export default () => {
                 <FirebaseAuthProvider>
                     <AiracDataProvider>
                         <UserRoutesProvider>
-                            <RouteProvider>
-                                <FixtureFocusProvider>
-                                    <SearcheableElementProvider>
-                                        <PrintProvider>
-                                            <div id="modal-root" data-testid="modal-root"></div>
-                                            <AppContainer id="app">
-                                                <MouseModeProvider>
-                                                    <MainMapProvider>
+                            <MainMapProvider>
+                                <RouteProvider>
+                                    <FixtureFocusProvider>
+                                        <SearcheableElementProvider>
+                                            <PrintProvider>
+                                                <div id="modal-root" data-testid="modal-root"></div>
+                                                <AppContainer id="app">
+                                                    <MouseModeProvider>
                                                         <TemporaryMapBoundsProvider>
                                                             <DisplayedContent />
                                                         </TemporaryMapBoundsProvider>
-                                                    </MainMapProvider>
-                                                </MouseModeProvider>
-                                            </AppContainer>
-                                            <PrintContent>{''}</PrintContent>
-                                            <PrintPreview />
-                                        </PrintProvider>
-                                    </SearcheableElementProvider>
-                                </FixtureFocusProvider>
-                            </RouteProvider>
+                                                    </MouseModeProvider>
+                                                </AppContainer>
+                                                <PrintContent>{''}</PrintContent>
+                                                <PrintPreview />
+                                            </PrintProvider>
+                                        </SearcheableElementProvider>
+                                    </FixtureFocusProvider>
+                                </RouteProvider>
+                            </MainMapProvider>
                         </UserRoutesProvider>
                     </AiracDataProvider>
                 </FirebaseAuthProvider>

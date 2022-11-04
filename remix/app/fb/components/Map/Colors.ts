@@ -5,6 +5,9 @@ export const Colors = {
     tmaBorderLightViolet: '#D1B3FF',
     pThinBorder: '#940000',
     pThickBorder: '#940000',
+    sivThickBorder: '#739880',
+    // sivThinBorder: '#407F56',
+    sivThinBorder: '#2b8049',
     red: '#940000',
     lightRed: '#FF0000',
 };

@@ -11,6 +11,7 @@ const DEFAULT_FILTERS = {
     displayModePerAirspaceType: {
         R: false,
         D: false,
+        SIV: false,
     },
 };
 
@@ -59,15 +60,12 @@ export const MainMapProvider: React.FC<PropsWithChildren> = ({ children }) => {
     }, [map]);
 
     const airspaceTypesToDisplay = [
-        ...(Object.keys(
-            _.pickBy(filters.displayModePerAirspaceType, (v) => v === true),
-        ) as AirspaceType[]),
+        ...Object.keys(_.pickBy(filters.displayModePerAirspaceType, (v) => v === true)),
         'P',
         'TMA',
         'CTR',
         'CTA',
-        'SIV',
-    ];
+    ] as AirspaceType[];
 
     return (
         <MainMapContext.Provider

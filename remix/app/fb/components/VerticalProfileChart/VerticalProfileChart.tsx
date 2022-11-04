@@ -20,6 +20,7 @@ import { AerodromeWaypoint, AerodromeWaypointType } from '../../../domain';
 import { aircraftCollection } from '../../../domain/Aircraft';
 import type { AirspaceSegmentOverlap } from '../../../domain/AirspaceIntersection/routeAirspaceOverlaps';
 import type { ElevationAtPoint } from '../../elevationOnRoute';
+import { Colors } from '../Map';
 
 ChartJS.register(annotationPlugin);
 ChartJS.register(dragData);
@@ -195,7 +196,7 @@ export const VerticalProfileChart = ({
                                   ],
                             fill: false,
                             showLine: true,
-                            borderColor: type === AirspaceType.CTR ? '#002f94ca' : '#001033',
+                            borderColor: spaceBorderCOlor(type),
                             borderWidth: 1,
                             pointHitRadius: 0,
                             pointHoverRadius: 0,
@@ -220,16 +221,7 @@ export const VerticalProfileChart = ({
                                   ],
                             fill: '-1',
                             showLine: true,
-                            backgroundColor:
-                                type === AirspaceType.CTR
-                                    ? '#99ABD1'
-                                    : type === DangerZoneType.P
-                                    ? '#ff00009f'
-                                    : type === DangerZoneType.D
-                                    ? '#ff6a003d'
-                                    : type === DangerZoneType.R
-                                    ? '#ff6a003d'
-                                    : '#21003f7d',
+                            backgroundColor: spaceBackgroundColor(type),
                             borderColor: type === AirspaceType.CTR ? '#002f94ca' : '#001033',
                             borderWidth: 1,
                             pointHitRadius: 0,
@@ -497,6 +489,30 @@ const hashCode = (s: string) => {
     }
     return hash;
 };
+
+function spaceBackgroundColor(type: AirspaceType | DangerZoneType) {
+    return type === AirspaceType.CTR
+        ? '#99ABD1'
+        : type === DangerZoneType.P
+        ? '#ff00009f'
+        : type === DangerZoneType.D
+        ? '#ff6a003d'
+        : type === DangerZoneType.R
+        ? '#ff6a003d'
+        : type === AirspaceType.SIV
+        ? Colors.sivThickBorder
+        : '#21003f7d';
+}
+
+function spaceBorderCOlor(type: AirspaceType | DangerZoneType) {
+    if (type === AirspaceType.CTR) {
+        return '#002f94ca';
+    } else if (type === AirspaceType.SIV) {
+        return Colors.sivThinBorder;
+    } else {
+        return '#001033';
+    }
+}
 
 function canBeDragged(datasetIndex: number, w: Waypoint | null) {
     return !(

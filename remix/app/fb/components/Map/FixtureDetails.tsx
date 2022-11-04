@@ -7,13 +7,13 @@ import { latLngWaypointFactory, toLeafletLatLng } from '~/domain';
 import { Target } from '~/generated/icons';
 import VfrPointLogo from '~/generated/icons/VfrPoint';
 import { useHelpPage } from '../HelpPageContext';
+import { StyledAerodromeLogo } from '../StyledAerodromeLogo';
+import { StyledVor } from '../StyledVor';
 import { useRoute } from '../useRoute';
 import { addFixtureToRoute } from './addFixtureToRoute';
 import { Colors } from './Colors';
 import type { FocusableFixture } from './FixtureFocusContext';
 import { useFixtureFocus } from './FixtureFocusContext';
-import { StyledAerodromeLogo } from './StyledAerodromeLogo';
-import { StyledVor } from './VorMarker';
 
 type UseFixtureContextProps = ReturnType<typeof useFixtureFocus>;
 
@@ -207,6 +207,7 @@ const Buttons = styled.div`
     align-self: center;
     display: flex;
     justify-self: flex-end;
+    padding-right: 0.5rem;
     /* justify-content: space-between; */
     /* justify-items: stretch; */
 `;
@@ -222,22 +223,24 @@ const CloseButton = styled.div`
     :after {
         content: '×';
     }
-    top: 3px;
-    right: 5px;
-    font-size: large;
+    top: 2px;
+    right: 8px;
+    font-size: 1.5rem;
     cursor: pointer;
 `;
 
 const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
     transition: all 0.3s;
     padding: 1rem;
-    right: ${({ isHelpOpen }) => 50 + (isHelpOpen ? 600 : 0)}px;
+    padding-top: 2rem;
+    padding-right: 0.5rem;
+    right: ${({ isHelpOpen }) => (isHelpOpen ? 620 : 90)}px;
     top: 10px;
     width: 350px;
     max-width: 500px;
     max-height: 40vh;
     position: absolute;
-    z-index: 10000;
+    z-index: 600;
     background-color: white;
     filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
     display: flex;
@@ -245,6 +248,10 @@ const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
     border-radius: 5px;
     font-family: 'Futura';
     color: ${Colors.ctrBorderBlue};
+
+    @media (hover: none) {
+        max-width: 80vw;
+    }
 `;
 
 const Frequency = styled.span`

@@ -3,13 +3,13 @@ import { Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Aerodrome } from 'ts-aerodata-france';
 import { toLatLng } from '~/domain';
+import { StyledAerodromeLogo } from '../StyledAerodromeLogo';
 import { useAiracData } from '../useAiracData';
 import type { MapBounds } from './DisplayedContent';
 import { useFixtureFocus } from './FixtureFocusContext';
-import { StyledAerodromeLogo } from './StyledAerodromeLogo';
 import { Z_INDEX_AD_NAMES } from './zIndex';
 
-const AdPolygon: React.FC<{
+export const AdPolygon: React.FC<{
     aerodrome: Aerodrome;
     displayAerodromesLabels: boolean;
     shouldBeHighlighted: boolean;
@@ -116,7 +116,19 @@ const getColor = (status: Aerodrome['status']) => {
 };
 
 const Logo = styled(StyledAerodromeLogo)<{ $highlighted: boolean }>`
-    ${({ $highlighted }) => $highlighted && `filter: drop-shadow(3px 5px 1px rgb(0 0 0 / 0.4));`}
+    ${({ $highlighted }) =>
+        $highlighted &&
+        `
+    filter: drop-shadow(3px 5px 1px rgb(0 0 0 / 0.4));
+    path {
+        // fill in red
+        fill: red !important;
+        stroke: red !important;
+    }
+    circle {
+        stroke: red !important;
+    }
+    `}
 `;
 
 const StyledTooltip = styled(Tooltip)`

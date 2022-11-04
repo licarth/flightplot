@@ -7,20 +7,25 @@ import { useFirebaseAuth } from '~/fb/firebase/auth/FirebaseAuthContext';
 import { Login } from '~/fb/Login';
 import Modal, { type ModalHandle } from '~/fb/Modal';
 import { useHelpPage } from '../HelpPageContext';
+import { SearchBar } from '../SearchBar';
+import { useAiracData } from '../useAiracData';
 import { useRoute } from '../useRoute';
 
 export const TopBar = () => {
     const { user, googleSignIn, anonymousSignIn, signOut } = useFirebaseAuth();
     const loginModal = useRef<ModalHandle>(null);
     const { open } = useHelpPage();
+    const { airacData } = useAiracData();
     return (
         <TopBarContainer>
-            <AppLogo>
-                <LogoLeft>FLIGHT</LogoLeft>
-                <LogoRight>PLOT</LogoRight>
-            </AppLogo>
+            <SearchBar airacData={airacData} />
 
             <RightButtons>
+                <AppLogo>
+                    <LogoLeft>FLIGHT</LogoLeft>
+                    <LogoRight>PLOT</LogoRight>
+                </AppLogo>
+
                 <Button
                     type="text"
                     icon={<QuestionOutlined />}
@@ -59,6 +64,8 @@ const TopBarContainer = styled.div`
     display: flex;
     height: 50px;
     justify-content: space-between;
+    align-items: center;
+    margin-left: 1rem;
 `;
 
 const RightButtons = styled.div`
@@ -69,14 +76,12 @@ const RightButtons = styled.div`
 const AppLogo = styled.div`
     height: 30px;
     display: flex;
-    width: 400px;
     text-align: center;
     justify-content: center;
     align-content: center;
     vertical-align: middle;
     flex-direction: row;
-    font-family: 'Russo One', sans-serif;
-    margin-top: 10px;
+    font-family: 'Univers', sans-serif;
 `;
 
 const UserBadge = ({ user, signOut }: { user: User; signOut: () => void }) => {
@@ -123,7 +128,7 @@ const UserBadge = ({ user, signOut }: { user: User; signOut: () => void }) => {
 const LogoText = styled.div`
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 5px;
     font-size: 1em;
 `;
 
@@ -144,14 +149,16 @@ const UserBadgeContainer = styled(RightBox)`
 
 const LogoLeft = styled(LogoText)`
     border: solid #002e94;
-    border-width: 5px;
+    border-width: 2px;
     color: #002e94;
+    border-radius: 5px 0 0 5px;
 `;
 const LogoRight = styled(LogoText)`
     border: solid #002e94;
     color: white;
     border-width: 5px;
     background: #002e94;
+    border-radius: 0 5px 5px 0;
 `;
 const LoginButton = styled(RightBox)`
     cursor: pointer;

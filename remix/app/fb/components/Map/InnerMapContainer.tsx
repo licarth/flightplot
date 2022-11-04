@@ -1,4 +1,5 @@
 import { NmScale } from '@marfle/react-leaflet-nmscale';
+import _ from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { LayerGroup, Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
@@ -7,22 +8,25 @@ import { toCheapRulerPoint, toLatLng } from '~/domain';
 import { OaciLayer, OpenStreetMapLayer } from '../layer';
 import { SatelliteLayer } from '../layer/SatelliteLayer';
 import { useRoute } from '../useRoute';
-import { Aerodromes } from './Aerodromes';
+import { AdPolygon, Aerodromes } from './Aerodromes';
+import { AirspaceDescriptionTooltip } from './AirspaceDescriptionTooltip';
 import { Airspaces } from './Airspaces';
 import { boxAround } from './boxAround';
 import { Colors } from './Colors';
+import { AirspaceSVGPolygon } from './CtrSVGPolygon/AirspaceSVGPolygon';
 import { DangerZones } from './DangerZones';
+import { isAerodrome, isVfrPoint, isVor } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
-import { IgnAirspaceNameFont } from './IgnAirspaceNameFont';
 import { LayerSwitchButton } from './LayerSwitchButton';
 import { useMainMap } from './MainMapContext';
 import { MouseEvents } from './MouseEvents';
-import { VfrPoints } from './VfrPoints';
+import { useTemporaryMapBounds } from './TemporaryMapCenterContext';
+import { VfrPointC, VfrPoints } from './VfrPoints';
+import { VorMarker } from './VorMarker';
 import { Vors } from './Vors';
-import { Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
-
+import { Z_INDEX_HIGHLIGHTED_SEARCH_ITEM, Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
 export const InnerMapContainer = () => {
     const routeContext = useRoute();
     const leafletMap = useMap();
@@ -45,6 +49,14 @@ export const InnerMapContainer = () => {
             {mapBounds && (
                 <>
                     <MouseTooltip />
+                    <LayerGroup>
+                        <Pane
+                            name={`highlighted-item`}
+                            style={{ zIndex: Z_INDEX_HIGHLIGHTED_SEARCH_ITEM }}
+                        >
+                            <HighlightedSearchItem />
+                        </Pane>
+                    </LayerGroup>
                     <Airspaces mapBounds={mapBounds} />
                     <DangerZones mapBounds={mapBounds} />
                     {shouldRenderAerodromes && (
@@ -88,8 +100,15 @@ const MouseTooltip = () => {
         mouseLocation,
     } = useFixtureFocus();
 
+    const {
+        filters: { showAirspacesStartingBelowFL },
+        airspaceTypesToDisplay,
+    } = useMainMap();
+
     const [filteredAirspaces, airspacesSha] = useMemo(() => {
-        const filteredAirspaces = airspaces.filter((a) => ['CTR', 'P'].includes(a.type));
+        const filteredAirspaces = airspaces
+            .filter((a) => airspaceTypesToDisplay.includes(a.type))
+            .filter(({ lowerLimit }) => lowerLimit.feetValue <= showAirspacesStartingBelowFL * 100);
         const airspacesSha = filteredAirspaces.map((a) => a.name).join(',');
         return [filteredAirspaces, airspacesSha];
     }, [airspaces]);
@@ -116,14 +135,16 @@ const MouseTooltip = () => {
                         key={`tooltip-airspace-${airspacesSha}`}
                         offset={[10, 0]}
                     >
-                        {filteredAirspaces.map((airspace, i) => {
-                            return (
-                                <AirspaceDescription
-                                    key={`tooltip-airspace-description-${i}`}
-                                    airspace={airspace}
-                                />
-                            );
-                        })}
+                        {_.sortBy(filteredAirspaces, ({ lowerLimit }) => lowerLimit.feetValue).map(
+                            (airspace, i) => {
+                                return (
+                                    <AirspaceDescriptionTooltip
+                                        key={`tooltip-airspace-description-${i}`}
+                                        airspace={airspace}
+                                    />
+                                );
+                            },
+                        )}
                     </StyledTooltip>
                 </Pane>
             </Polygon>
@@ -131,40 +152,48 @@ const MouseTooltip = () => {
     ) : null;
 };
 
-const Centered = styled.div`
+export const Centered = styled.div`
     display: flex;
     flex-direction: column;
 `;
 
-const AirspaceDescription = ({ airspace }: { airspace: Airspace | DangerZone }) => {
-    const { name, type, lowerLimit, higherLimit } = airspace;
-    const airspaceClass = type === 'CTR' ? airspace.airspaceClass : null;
-    return (
-        <AirspaceContainer>
-            <Centered>
-                <IgnAirspaceNameFont
-                    $color={airspace.type === 'P' ? Colors.pThickBorder : Colors.ctrBorderBlue}
-                >
-                    <b>
-                        {name} {airspaceClass && `[${airspaceClass}]`}
-                    </b>
-                    <br />
-                    <div>
-                        <i>
-                            {higherLimit.toString()}
-                            <hr />
-                            {lowerLimit.toString()}
-                        </i>
-                    </div>
-                </IgnAirspaceNameFont>{' '}
-            </Centered>
-        </AirspaceContainer>
-    );
-};
-
-const AirspaceContainer = styled.div``;
+export const AirspaceContainer = styled.div``;
 
 const StyledTooltip = styled(Tooltip)`
     display: flex;
     gap: 0.5rem;
 `;
+
+const HighlightedSearchItem = () => {
+    const { highlightedItem } = useTemporaryMapBounds();
+    if (isAerodrome(highlightedItem)) {
+        return (
+            <AdPolygon
+                aerodrome={highlightedItem}
+                shouldBeHighlighted
+                displayAerodromesLabels={false}
+            />
+        );
+    } else if (isVfrPoint(highlightedItem)) {
+        return <VfrPointC vfrPoint={highlightedItem} highlightedFixture={highlightedItem} />;
+    } else if (isVor(highlightedItem)) {
+        return <VorMarker vor={highlightedItem} highlit />;
+    } else if (isAirspace(highlightedItem)) {
+        return (
+            <AirspaceSVGPolygon
+                highlighted
+                i={new Date().getTime()}
+                geometry={highlightedItem.geometry}
+                name={highlightedItem.name}
+                thinBorderColor={Colors.red}
+                thickBorderColor={Colors.lightRed}
+                thinDashArray="5, 5"
+                prefix="ctr"
+            />
+        );
+    } else return <></>;
+};
+
+const isAirspace = (item: any): item is Airspace | DangerZone => {
+    return _.has(item, 'type');
+};

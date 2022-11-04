@@ -9,7 +9,9 @@ import { DisplayedContent, PrintContent } from '~/fb/components/Map';
 import { FixtureFocusProvider } from '~/fb/components/Map/FixtureFocusContext';
 import { MainMapProvider } from '~/fb/components/Map/MainMapContext';
 import { PrintPreview } from '~/fb/components/Map/PrintPreview';
+import { TemporaryMapBoundsProvider } from '~/fb/components/Map/TemporaryMapCenterContext';
 import { MouseModeProvider } from '~/fb/components/MouseModeContext';
+import { SearcheableElementProvider } from '~/fb/components/SearchItemContext';
 import { environmentVariable } from '~/fb/environmentVariable';
 import { AiracDataProvider } from '../fb/components/AiracDataContext';
 import type { LayerEnum } from '../fb/components/layer/Layer';
@@ -32,22 +34,26 @@ export default () => {
                 <FirebaseAuthProvider>
                     <AiracDataProvider>
                         <UserRoutesProvider>
-                            <RouteProvider>
-                                <FixtureFocusProvider>
-                                    <PrintProvider>
-                                        <div id="modal-root" data-testid="modal-root"></div>
-                                        <AppContainer id="app">
-                                            <MouseModeProvider>
-                                                <MainMapProvider>
-                                                    <DisplayedContent />
-                                                </MainMapProvider>
-                                            </MouseModeProvider>
-                                        </AppContainer>
-                                        <PrintContent>{''}</PrintContent>
-                                        <PrintPreview />
-                                    </PrintProvider>
-                                </FixtureFocusProvider>
-                            </RouteProvider>
+                            <MainMapProvider>
+                                <RouteProvider>
+                                    <FixtureFocusProvider>
+                                        <SearcheableElementProvider>
+                                            <PrintProvider>
+                                                <div id="modal-root" data-testid="modal-root"></div>
+                                                <AppContainer id="app">
+                                                    <MouseModeProvider>
+                                                        <TemporaryMapBoundsProvider>
+                                                            <DisplayedContent />
+                                                        </TemporaryMapBoundsProvider>
+                                                    </MouseModeProvider>
+                                                </AppContainer>
+                                                <PrintContent>{''}</PrintContent>
+                                                <PrintPreview />
+                                            </PrintProvider>
+                                        </SearcheableElementProvider>
+                                    </FixtureFocusProvider>
+                                </RouteProvider>
+                            </MainMapProvider>
                         </UserRoutesProvider>
                     </AiracDataProvider>
                 </FirebaseAuthProvider>

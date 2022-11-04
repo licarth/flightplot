@@ -1,6 +1,6 @@
 import CheapRuler from 'cheap-ruler';
 import _ from 'lodash';
-import type { PropsWithChildren } from 'react';
+import type { Dispatch, PropsWithChildren, SetStateAction } from 'react';
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import type {
     Aerodrome,
@@ -21,6 +21,8 @@ export type UnderMouse = {
     airspaces: (Airspace | DangerZone)[];
 };
 
+type CenteredElement = FocusableFixture | Airspace | DangerZone;
+
 export const FixtureFocusContext = createContext<{
     highlightedFixture?: FocusableFixture;
     mouseLocation?: LatLng;
@@ -32,6 +34,8 @@ export const FixtureFocusContext = createContext<{
     fixtures: FocusableFixture[];
     underMouse: UnderMouse;
     clear: () => void;
+    centeredElement?: CenteredElement;
+    setCenteredElement: Dispatch<SetStateAction<CenteredElement | undefined>>;
 }>({
     fixtures: [],
     clear: () => {},
@@ -39,6 +43,7 @@ export const FixtureFocusContext = createContext<{
     setHighlightedLocation: () => {},
     setMouseLocation: () => {},
     underMouse: { airspaces: [] },
+    setCenteredElement: () => {},
 });
 
 const getFixtures = (airacData: AiracData, l?: LatLng) => {
@@ -74,6 +79,7 @@ export const FixtureFocusProvider: React.FC<PropsWithChildren> = ({ children }) 
     const airspaces = loading || !mouseLocation ? [] : getAirspaces(airacData, mouseLocation);
     const highlightedFixtures = loading ? [] : getFixtures(airacData, highlightedLocation);
     const highlightedFixture = highlightedFixtures ? highlightedFixtures[0] : undefined;
+    const [centeredElement, setCenteredElement] = useState<CenteredElement>();
 
     const throttledSetMouseLocation = useMemo(() => _.throttle(setMouseLocation, 50), []);
     return (
@@ -89,6 +95,8 @@ export const FixtureFocusProvider: React.FC<PropsWithChildren> = ({ children }) 
                 mouseLocation,
                 setMouseLocation: throttledSetMouseLocation,
                 underMouse: { airspaces: airspaces || [] },
+                centeredElement,
+                setCenteredElement,
             }}
         >
             {children}

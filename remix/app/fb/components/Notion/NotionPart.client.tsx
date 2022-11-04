@@ -41,6 +41,6 @@ export const NotionPart = ({ recordMap, setPageId }: { recordMap: any; setPageId
 
 const NotionContainer = styled.div`
     .notion-page-icon-hero.notion-page-icon-span {
-        left: 8%;
+        display: none;
     }
 `;

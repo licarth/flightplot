@@ -65,7 +65,7 @@ export const Default = (args, { loaded: { airacData } }) => {
             <UserRoutesProvider>
                 <RouteProvider>
                     <SetRoute airacData={airacData} />
-                    <RouteDisplay {...args} />;
+                    <RouteDisplay {...args} />
                 </RouteProvider>
             </UserRoutesProvider>
         </FirebaseAuthProvider>

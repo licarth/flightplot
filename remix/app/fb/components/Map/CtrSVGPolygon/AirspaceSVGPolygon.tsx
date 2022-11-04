@@ -10,12 +10,15 @@ type Props = {
     children?: JSX.Element;
     geometry: LatLng[];
     name: string;
-    i: number;
+    i: string | number;
     thinBorderColor: string;
     thickBorderColor: string;
     thinDashArray: string;
     prefix: string;
     highlighted?: boolean;
+    thickBorderWidth?: number;
+    thinBorderWidth?: number;
+    highlightedThinBorderWidth?: number;
 };
 
 export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
@@ -27,6 +30,9 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
     thinBorderColor,
     thickBorderColor,
     thinDashArray,
+    thickBorderWidth = 6,
+    thinBorderWidth = 0.6,
+    highlightedThinBorderWidth = thinBorderWidth * 3,
     prefix,
 }: Props) {
     const leafletGeom = geometry.map(toLeafletLatLng);
@@ -42,60 +48,59 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
     );
     const [[minlat, minlng], [maxlat, maxlng]] = boundingBox(geom);
     return (
-        <>
-            <SVGOverlay
-                attributes={{
-                    stroke: 'none',
-                    fill: 'none',
-                    class: 'overflow-visible',
-                }}
-                key={'overlay' + i}
-                bounds={bbox}
-                interactive={false}
+        <SVGOverlay
+            attributes={{
+                stroke: 'none',
+                fill: 'none',
+                class: 'overflow-visible',
+            }}
+            key={'overlay' + i}
+            bounds={bbox}
+            interactive={false}
+        >
+            <svg
+                xmlSpace={'preserve'}
+                overflow={'visible'}
+                id={name}
+                viewBox={`${minlng / 1000} ${minlat / 1000} ${(maxlng - minlng) / 1000} ${
+                    (maxlat - minlat) / 1000
+                }`}
             >
-                <svg
-                    xmlSpace={'preserve'}
-                    overflow={'visible'}
-                    id={name}
-                    viewBox={`${minlng / 1000} ${minlat / 1000} ${(maxlng - minlng) / 1000} ${
-                        (maxlat - minlat) / 1000
-                    }`}
+                <clipPath id={`${prefix}-clip-${i}`}>
+                    <path d={d}></path>
+                </clipPath>
+                <g
+                    style={{
+                        display: 'none',
+                    }}
                 >
-                    <clipPath id={`${prefix}-clip-${i}`}>
-                        <path d={d}></path>
-                    </clipPath>
-                    <g
-                        style={{
-                            display: 'none',
-                        }}
-                    >
-                        <path id={`${prefix}-${i}`} d={d}></path>
-                    </g>
-                    <use
-                        stroke={thickBorderColor}
-                        strokeOpacity={0.5}
-                        strokeWidth={3}
-                        clipPath={`url(#${prefix}-clip-${i})`}
-                        xlinkHref={`#${prefix}-${i}`}
-                    />
-                    <path
-                        stroke={thinBorderColor}
-                        strokeWidth={highlighted ? 0.6 : 0.3}
-                        fillOpacity={0.2}
-                        strokeDasharray={thinDashArray}
-                        d={d}
-                    ></path>
-                </svg>
-                {/* Polygon is only required for tooltip */}
-                <Polygon
-                    key={'overlay-po' + i}
-                    positions={leafletGeom}
-                    interactive={false}
-                    pathOptions={{ weight: 0, fillOpacity: 0 }}
-                >
-                    {children}
-                </Polygon>
-            </SVGOverlay>
-        </>
+                    <path id={`${prefix}-${i}`} d={d}></path>
+                </g>
+                <use
+                    stroke={thickBorderColor}
+                    strokeOpacity={0.5}
+                    strokeWidth={thickBorderWidth}
+                    clipPath={`url(#${prefix}-clip-${i})`}
+                    xlinkHref={`#${prefix}-${i}`}
+                />
+                <use
+                    stroke={thinBorderColor}
+                    strokeWidth={highlighted ? highlightedThinBorderWidth : thinBorderWidth}
+                    fillOpacity={0.2}
+                    strokeDasharray={thinDashArray}
+                    clipPath={`url(#${prefix}-clip-${i})`}
+                    xlinkHref={`#${prefix}-${i}`}
+                />
+            </svg>
+            {/* Polygon is only required for tooltip */}
+            <Polygon
+                key={'overlay-po' + i}
+                positions={leafletGeom}
+                interactive={false}
+                pathOptions={{ weight: 0, fillOpacity: 0 }}
+            >
+                {children}
+            </Polygon>
+        </SVGOverlay>
     );
 });

@@ -4,9 +4,14 @@ import { Colors } from './Colors';
 import { AirspaceSVGPolygon } from './CtrSVGPolygon/AirspaceSVGPolygon';
 import type { MapBounds } from './DisplayedContent';
 import { useFixtureFocus } from './FixtureFocusContext';
+import { useMainMap } from './MainMapContext';
 
 export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
     const { airacData, loading } = useAiracData();
+    const {
+        filters: { showAirspacesStartingBelowFL },
+        airspaceTypesToDisplay,
+    } = useMainMap();
 
     const {
         underMouse: { airspaces },
@@ -20,8 +25,14 @@ export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
                 !loading &&
                 airacData
                     .getDangerZonesInBbox(...mapBounds)
-                    .filter(({ type }) => ['P'].includes(type))
-                    .map(({ geometry, name, lowerLimit, higherLimit }, i) => {
+                    .filter(({ lowerLimit, type }) => {
+                        return (
+                            airspaceTypesToDisplay.includes(type) &&
+                            lowerLimit.feetValue <= showAirspacesStartingBelowFL * 100
+                        );
+                    })
+
+                    .map(({ geometry, name }, i) => {
                         return (
                             <AirspaceSVGPolygon
                                 key={`p-${name}`}

@@ -1,24 +1,27 @@
-import { Fragment, useState } from 'react';
+import { Fragment, memo, useState } from 'react';
 import { Pane, Polygon, SVGOverlay, Tooltip } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Vor } from 'ts-aerodata-france';
 import { toLeafletLatLng } from '~/domain';
 import { toLatLng } from '~/domain/LatLng';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
-import VorDmeIcon from '~/generated/icons/VorDme';
+import { StyledVor } from '../../StyledVor';
 import { boxAround } from '../boxAround';
 import { Z_INDEX_VFR_NAMES } from '../zIndex';
 
-type PropsType = {
+export type PropsType = {
     $dme?: boolean;
     $mouseOver?: boolean;
+    $highlit?: boolean;
 };
 
-export const VorMarker = ({
+export const VorMarker = memo(function VorMarker({
     vor: { name, latLng, dme, mapShortName, frequency, ident },
+    highlit,
 }: {
     vor: Vor;
-}) => {
+    highlit?: boolean;
+}) {
     const [mouseOver, setMouseOver] = useState(false);
     const l = toLatLng(latLng);
     const center = toCheapRulerPoint(toLeafletLatLng(latLng));
@@ -39,7 +42,7 @@ export const VorMarker = ({
                     },
                 }}
             >
-                {<StyledVor $dme={dme} $mouseOver={mouseOver} />}
+                {<StyledVor $dme={dme} $mouseOver={mouseOver} $highlit={highlit} />}
                 {mouseOver && (
                     <Polygon
                         fill={false}
@@ -61,14 +64,7 @@ export const VorMarker = ({
             </SVGOverlay>
         </Fragment>
     );
-};
-
-export const StyledVor = styled(VorDmeIcon)<PropsType>`
-    ${({ $mouseOver }) => $mouseOver && `filter: drop-shadow(3px 5px 1px rgb(0 0 0 / 0.4));`}
-    #dme {
-        ${({ $dme }) => !$dme && `display: none !important;`}
-    }
-`;
+});
 
 const StyledTooltip = styled(Tooltip)`
     background-color: transparent;

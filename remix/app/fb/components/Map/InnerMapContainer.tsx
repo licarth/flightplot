@@ -26,7 +26,7 @@ import { useTemporaryMapBounds } from './TemporaryMapCenterContext';
 import { VfrPointC, VfrPoints } from './VfrPoints';
 import { VorMarker } from './VorMarker';
 import { Vors } from './Vors';
-import { Z_INDEX_HIGHLIGHTED_SEARCH_ITEM, Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
+import { Z_INDEX_AD_LOGO, Z_INDEX_HIGHLIGHTED_SEARCH_ITEM, Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
 export const InnerMapContainer = () => {
     const routeContext = useRoute();
     const leafletMap = useMap();
@@ -61,7 +61,9 @@ export const InnerMapContainer = () => {
                     <DangerZones mapBounds={mapBounds} />
                     {shouldRenderAerodromes && (
                         <LayerGroup>
-                            <Aerodromes mapBounds={mapBounds} />
+                            <Pane name={`aerodromes`} style={{ zIndex: Z_INDEX_AD_LOGO }}>
+                                <Aerodromes mapBounds={mapBounds} />
+                            </Pane>
                         </LayerGroup>
                     )}
                     {shouldRenderVors && (

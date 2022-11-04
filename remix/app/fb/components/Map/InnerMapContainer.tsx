@@ -164,10 +164,10 @@ export const AirspaceContainer = styled.div``;
 const StyledTooltip = styled(Tooltip)`
     display: flex;
     gap: 0.5rem;
-    background-color: transparent;
+    background-color: rgba(255, 255, 255, 0.6);
     border: none;
     box-shadow: none;
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(4px);
     ::before {
         display: none;
     }

@@ -44,7 +44,7 @@ export const DisplayedContent = ({}: LeafletMapProps) => {
 
     return (
         <>
-            {HelpDrawer && (
+            {!!HelpDrawer && (
                 <HelpDrawer
                     close={close}
                     helpPageId={helpPageId}

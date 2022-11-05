@@ -5,7 +5,7 @@ import type { SearcheableElement } from './SearchBar';
 export const SearchItemContext = createContext<{
     item?: SearcheableElement;
     setItem: (item: SearcheableElement) => void;
-}>({});
+}>({ setItem: () => {} });
 
 export const SearcheableElementProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const [item, setItem] = useState<SearcheableElement>();

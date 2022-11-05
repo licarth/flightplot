@@ -2,7 +2,7 @@ import { Slider, Switch } from 'antd';
 import type { SliderMarks } from 'antd/lib/slider';
 import _ from 'lodash';
 import styled from 'styled-components';
-import { Colors } from '../Map';
+import { Colors } from '../Map/Colors';
 import { useMainMap } from '../Map/MainMapContext';
 
 const style = {

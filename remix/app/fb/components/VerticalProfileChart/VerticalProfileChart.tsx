@@ -20,7 +20,7 @@ import { AerodromeWaypoint, AerodromeWaypointType } from '../../../domain';
 import { aircraftCollection } from '../../../domain/Aircraft';
 import type { AirspaceSegmentOverlap } from '../../../domain/AirspaceIntersection/routeAirspaceOverlaps';
 import type { ElevationAtPoint } from '../../elevationOnRoute';
-import { Colors } from '../Map';
+import { Colors } from '../Map/Colors';
 
 ChartJS.register(annotationPlugin);
 ChartJS.register(dragData);

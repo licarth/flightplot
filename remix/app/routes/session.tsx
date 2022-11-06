@@ -1,5 +1,5 @@
-import type { ActionFunction } from 'remix';
-import { json } from 'remix';
+import type { ActionFunction } from '@remix-run/server-runtime';
+import { json } from '@remix-run/server-runtime';
 import '~/utils/firebaseConfig.server';
 import { auth } from '~/utils/firebaseConfig.server';
 import { commitSession, getSession } from '~/utils/session.server';

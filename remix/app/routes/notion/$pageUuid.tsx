@@ -1,5 +1,5 @@
+import type { LinksFunction, LoaderFunction } from '@remix-run/server-runtime';
 import stylesUrl from 'react-notion-x/src/styles.css';
-import type { LinksFunction, LoaderFunction } from 'remix';
 
 export const links: LinksFunction = () => {
     return [

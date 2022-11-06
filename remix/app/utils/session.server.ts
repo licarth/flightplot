@@ -1,4 +1,5 @@
-import { createCookieSessionStorage, json } from 'remix';
+import { createCookieSessionStorage } from '@remix-run/node';
+import { json } from '@remix-run/server-runtime';
 import { auth } from './firebaseConfig.server';
 
 const sessionSecret = process.env.SESSION_SECRET;

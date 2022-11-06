@@ -6,18 +6,20 @@
     "type": "commonjs",
     "scripts": {
         "build": "remix build",
-        "dev": "remix dev",
         "deploy": "flyctl deploy",
         "lint": "eslint app",
         "format": "prettier --write app",
         "icons": "svgr -- app/fb/icons",
         "postinstall": "remix setup node",
-        "start": "remix-serve build",
         "test": "jest",
         "test-pr": "jest",
         "storybook": "start-storybook -p 6006",
         "build-storybook": "build-storybook",
-        "emulators": "firebase emulators:start --only database,firestore,auth"
+        "emulators": "firebase emulators:start --only database,firestore,auth",
+        "dev": "remix build && run-p \"dev:*\"",
+        "dev:node": "cross-env NODE_ENV=development nodemon --require dotenv/config ./server.js --watch ./server.js",
+        "dev:remix": "remix watch",
+        "start": "cross-env NODE_ENV=production node ./server.js"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.0.5",
@@ -30,8 +32,8 @@
         "@fortawesome/react-fontawesome": "^0.2.0",
         "@gregoranders/csv": "^0.0.9",
         "@marfle/react-leaflet-nmscale": "^3.0.0",
-        "@remix-run/react": "^1.7.0",
-        "@remix-run/serve": "^1.7.0",
+        "@remix-run/react": "^1.7.5",
+        "@remix-run/serve": "^1.7.5",
         "@svgr/cli": "^6.3.1",
         "@turf/turf": "^6.5.0",
         "antd": "^4.23.3",
@@ -68,17 +70,23 @@
         "react-notion-x": "^6.15.6",
         "react-resize-detector": "^7.1.2",
         "react-social-login-buttons": "^3.6.1",
-        "remix": "^1.7.0",
         "sharp": "^0.30.7",
         "storybook": "^6.5.12",
         "styled-components": "^5.3.5",
         "ts-aerodata-france": "^0.1.10",
-        "uuid": "^9.0.0"
+        "uuid": "^9.0.0",
+        "@remix-run/express": "^1.7.5",
+        "@remix-run/node": "^1.7.5",
+        "compression": "^1.7.4",
+        "cross-env": "^7.0.3",
+        "express": "^4.18.1",
+        "isbot": "^3.5.4",
+        "morgan": "^1.10.0"
     },
     "devDependencies": {
         "@babel/core": "^7.19.1",
-        "@remix-run/dev": "^1.7.0",
-        "@remix-run/eslint-config": "^1.7.0",
+        "@remix-run/dev": "^1.7.5",
+        "@remix-run/eslint-config": "^1.7.5",
         "@storybook/addon-actions": "^6.5.12",
         "@storybook/addon-essentials": "^6.5.12",
         "@storybook/addon-interactions": "^6.5.12",
@@ -118,7 +126,10 @@
         "prettier": "2.7.1",
         "react-test-renderer": "^18.2.0",
         "tsconfig-paths-webpack-plugin": "^4.0.0",
-        "typescript": "^4.8.3"
+        "typescript": "^4.8.3",
+        "dotenv": "^16.0.2",
+        "nodemon": "^2.0.19",
+        "npm-run-all": "^4.1.5"
     },
     "engines": {
         "node": ">=14"

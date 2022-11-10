@@ -69,6 +69,7 @@
         "react-resize-detector": "^7.1.2",
         "react-social-login-buttons": "^3.6.1",
         "remix": "^1.7.0",
+        "resize-observer-polyfill": "^1.5.1",
         "sharp": "^0.30.7",
         "storybook": "^6.5.12",
         "styled-components": "^5.3.5",

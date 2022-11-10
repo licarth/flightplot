@@ -1,0 +1,20 @@
+project: remix-app
+
+discover: {}
+
+tasks:
+    deploy-preview:
+        cmd: |-
+            export APP_NAME=flightplot-pr-{{ .PR_NUMBER | required }}
+            flyctl launch --copy-config --no-deploy --auto-confirm \
+              --name $APP_NAME \
+              -r mad
+            flyctl secrets set \
+              FIREBASE_SERVICE_ACCOUNT_KEY={{ .FIREBASE_SERVICE_ACCOUNT_KEY }}
+              SESSION_SECRET={{ .SESSION_SECRET }}
+            flyctl deploy --app $APP_NAME
+
+    destroy-preview:
+        cmd: |-
+            export APP_NAME=flightplot-pr-{{ .PR_NUMBER | required }}
+            flyctl apps destroy $APP_NAME -y

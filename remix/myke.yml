@@ -5,7 +5,7 @@ discover: {}
 tasks:
     deploy-preview:
         cmd: |-
-            export APP_NAME=flightplot-pr-{{ .PR_NUMBER | required }}
+            export APP_NAME=flightplot-pr-{{ .DEPLOYMENT_NAME | required }}
             flyctl launch --copy-config --no-deploy --auto-confirm \
               --name $APP_NAME \
               -r mad
@@ -16,5 +16,5 @@ tasks:
 
     destroy-preview:
         cmd: |-
-            export APP_NAME=flightplot-pr-{{ .PR_NUMBER | required }}
+            export APP_NAME=flightplot-pr-{{ .DEPLOYMENT_NAME | required }}
             flyctl apps destroy $APP_NAME -y

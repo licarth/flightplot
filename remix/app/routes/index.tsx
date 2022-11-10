@@ -1,4 +1,3 @@
-import type { MetaFunction } from '@remix-run/node';
 import andtStyles from 'antd/dist/antd.css';
 import leafletStyles from 'leaflet/dist/leaflet.css';
 
@@ -60,14 +59,6 @@ export default () => {
             </HelpPageProvider>
         </>
     );
-};
-
-export const meta: MetaFunction = () => {
-    return {
-        title: 'FlightPlot',
-        description: 'Outil de plannification de vols VFR',
-        viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0',
-    };
 };
 
 export type DisplayedLayers = {

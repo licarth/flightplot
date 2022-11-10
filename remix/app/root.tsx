@@ -30,17 +30,20 @@ export const loader: LoaderFunction = async (p) => {
 };
 
 export const meta: MetaFunction = () => {
-    const description = `Remix startup example`;
-    const keywords = `Remix, startup, example`;
+    const viewport = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0';
+    const description = `Outil de planification de vols VFR`;
+    const keywords = `vfr, journal de navigation, navlog, sia, ign, 1/500000, sia oaci`;
+    const imageUrl = 'https://flightplot.fr/images/twitter_cover.png';
     const twitter = {
-        'twitter:image': 'https://www.webstep.no/wp-content/uploads/2019/08/WEBSTEP_logo.png',
+        'twitter:image': imageUrl,
         'twitter:card': 'summary_large_image',
-        'twitter:creator': '@chiangse',
-        'twitter:site': '@chiangse',
-        'twitter:title': 'Remix startup',
+        'twitter:creator': '@thomascarli',
+        'twitter:title': 'Flightplot',
         'twitter:description': description,
+        'og:image': imageUrl,
+        'og:description': description,
     };
-    return { title: 'New Remix App', description, keywords, ...twitter };
+    return { title: 'FlightPlot', description, viewport, keywords, ...twitter };
 };
 
 export const links: LinksFunction = () => {

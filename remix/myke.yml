@@ -11,9 +11,9 @@ tasks:
             #   --name $APP_NAME \
             #   -r mad
             flyctl secrets set --app $APP_NAME \
-              FIREBASE_SERVICE_ACCOUNT_KEY='{{ .FIREBASE_SERVICE_ACCOUNT_KEY }}'
+              FIREBASE_SERVICE_ACCOUNT_KEY='{{ .FIREBASE_SERVICE_ACCOUNT_KEY }}' \
               SESSION_SECRET={{ .SESSION_SECRET }}
-            flyctl deploy --app $APP_NAME
+            # flyctl deploy --app $APP_NAME
 
     destroy-preview:
         cmd: |-

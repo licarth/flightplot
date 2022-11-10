@@ -10,7 +10,7 @@ tasks:
             # flyctl launch --copy-config --no-deploy --auto-confirm \
             #   --name $APP_NAME \
             #   -r mad
-            flyctl secrets set \
+            flyctl secrets set --app $APP_NAME \
               FIREBASE_SERVICE_ACCOUNT_KEY='{{ .FIREBASE_SERVICE_ACCOUNT_KEY }}'
               SESSION_SECRET={{ .SESSION_SECRET }}
             flyctl deploy --app $APP_NAME

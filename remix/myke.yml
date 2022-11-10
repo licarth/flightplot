@@ -5,12 +5,13 @@ discover: {}
 tasks:
     deploy-preview:
         cmd: |-
+            set +x
             export APP_NAME=flightplot-pr-{{ .DEPLOYMENT_NAME | required }}
             flyctl launch --copy-config --no-deploy --auto-confirm \
               --name $APP_NAME \
               -r mad
             flyctl secrets set \
-              FIREBASE_SERVICE_ACCOUNT_KEY={{ .FIREBASE_SERVICE_ACCOUNT_KEY }}
+              FIREBASE_SERVICE_ACCOUNT_KEY='{{ .FIREBASE_SERVICE_ACCOUNT_KEY }}'
               SESSION_SECRET={{ .SESSION_SECRET }}
             flyctl deploy --app $APP_NAME
 

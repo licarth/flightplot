@@ -25,7 +25,7 @@ jobs:
 
   deploy-preview:
     env:
-      FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLIGHTPLOT_WEB }}
+      FIREBASE_SERVICE_ACCOUNT_KEY: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLIGHTPLOT_WEB }}"
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       DEPLOYMENT_NAME: ${{ github.ref_name }}
     name: Deploy preview environment

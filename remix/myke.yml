@@ -26,4 +26,4 @@ tasks:
     app_exists:
         cmd: |-
             echo "APP_NAME: $APP_NAME"
-            fly apps list -j | jq --arg APP_NAME "$APP_NAME" '.[] | select(.Name == $APP_NAME) | .Name' -e
+            flyctl apps list -j | jq --arg APP_NAME "$APP_NAME" '.[] | select(.Name == $APP_NAME) | .Name' -e

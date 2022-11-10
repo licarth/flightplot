@@ -6,16 +6,24 @@ tasks:
     deploy-preview:
         cmd: |-
             set +x
-            export APP_NAME=flightplot-pr-{{ .DEPLOYMENT_NAME | required }}
-            # flyctl launch --copy-config --no-deploy --auto-confirm \
-            #   --name $APP_NAME \
-            #   -r mad
+            export APP_NAME=flightplot-pr-{{ required .DEPLOYMENT_NAME }}
+
+            $myke -v=0 app_exists && echo "app exists." || echo "app does not exist, creating it"
+            $myke -v=0 app_exists || \
+              flyctl launch --copy-config --no-deploy --auto-confirm \
+              --name $APP_NAME \
+              -r mad
             flyctl secrets set --app $APP_NAME \
               FIREBASE_SERVICE_ACCOUNT_KEY='{{ .FIREBASE_SERVICE_ACCOUNT_KEY }}' \
               SESSION_SECRET={{ .SESSION_SECRET }}
-            # flyctl deploy --app $APP_NAME
+            flyctl deploy --app $APP_NAME
 
     destroy-preview:
         cmd: |-
-            export APP_NAME=flightplot-pr-{{ .DEPLOYMENT_NAME | required }}
+            export APP_NAME=flightplot-pr-{{ required .DEPLOYMENT_NAME }}
             flyctl apps destroy $APP_NAME -y
+
+    app_exists:
+        cmd: |-
+            echo "APP_NAME: $APP_NAME"
+            fly apps list -j | jq --arg APP_NAME "$APP_NAME" '.[] | select(.Name == $APP_NAME) | .Name' -e

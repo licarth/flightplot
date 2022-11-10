@@ -27,6 +27,7 @@ jobs:
     env:
       FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLIGHTPLOT_WEB }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      PR_NUMBER: ${{ github.event.number }}
     name: Deploy preview environment
     runs-on: ubuntu-latest
     steps:
@@ -37,4 +38,4 @@ jobs:
           chmod +x /usr/local/bin/myke
           myke --version
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: myke deploy-preview --PR_NUMBER=${{ github.event.number }}
+      - run: myke deploy-preview

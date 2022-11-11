@@ -10,7 +10,7 @@ jobs:
     if: github.event.ref_type == 'branch'
     env:
       FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      DEPLOYMENT_NAME: ${{ github.event.ref_name }}
+      DEPLOYMENT_NAME: ${{ github.event.ref }}
     name: Delete preview environment
     runs-on: ubuntu-latest
     steps:

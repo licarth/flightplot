@@ -8,8 +8,8 @@ tasks:
             set +x
             export APP_NAME=flightplot-pr-{{ required .DEPLOYMENT_NAME }}
 
-            $myke -v=0 app_exists && echo "app exists." || echo "app does not exist, creating it"
-            $myke -v=0 app_exists || \
+            $myke -v=0 _app_exists && echo "app exists." || echo "app does not exist, creating it"
+            $myke -v=0 _app_exists || \
               flyctl launch --copy-config --no-deploy --auto-confirm \
               --name $APP_NAME \
               -r mad
@@ -23,7 +23,7 @@ tasks:
             export APP_NAME=flightplot-pr-{{ required .DEPLOYMENT_NAME }}
             flyctl apps destroy $APP_NAME -y
 
-    app_exists:
+    _app_exists:
         cmd: |-
             echo "APP_NAME: $APP_NAME"
             flyctl apps list -j | jq --arg APP_NAME "$APP_NAME" '.[] | select(.Name == $APP_NAME) | .Name' -e

@@ -43,12 +43,12 @@ ENV NODE_ENV=production
 
 RUN mkdir /app
 WORKDIR /app
+ADD https://storage.googleapis.com/storage/v1/b/print-maps/o/ign-oaci-2022.tif?alt=media ./ign-oaci-2022.tif
 
 COPY --from=production-deps /app/node_modules /app/node_modules
 
 COPY --from=build /app/build /app/build
 COPY --from=build /app/public /app/public
-ADD . .
-ADD https://storage.googleapis.com/storage/v1/b/print-maps/o/ign-oaci-2022.tif?alt=media ./ign-oaci-2022.tif
+ADD package.json .
 
 CMD ["npm", "run", "start"]

@@ -6,7 +6,7 @@ tasks:
     deploy-preview:
         cmd: |-
             set +x
-            export APP_NAME=flightplot-pr-{{ required .DEPLOYMENT_NAME }}
+            export APP_NAME=flightplot-preview-{{ required .DEPLOYMENT_NAME }}
 
             $myke -v=0 _app_exists && echo "app exists." || echo "app does not exist, creating it"
             $myke -v=0 _app_exists || \
@@ -20,7 +20,7 @@ tasks:
 
     destroy-preview:
         cmd: |-
-            export APP_NAME=flightplot-pr-{{ required .DEPLOYMENT_NAME }}
+            export APP_NAME=flightplot-preview-{{ required .DEPLOYMENT_NAME }}
             flyctl apps destroy $APP_NAME -y
 
     _app_exists:

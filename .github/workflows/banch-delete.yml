@@ -1,6 +1,10 @@
 on:
   - delete
 
+defaults:
+  run:
+    working-directory: remix
+
 jobs:
   delete-preview:
     if: github.event.ref_type == 'branch'

@@ -33,7 +33,7 @@ export type SetWaypointAltitude = ({
     altitude: number | null;
 }) => void;
 
-type Props = {
+export type VerticalProfileChartProps = {
     route: Route;
     elevation: ElevationAtPoint;
     setWaypointAltitude?: SetWaypointAltitude;
@@ -53,7 +53,7 @@ export const VerticalProfileChart = ({
     setWaypointAltitude,
     airspaceOverlaps,
     fitToSpace,
-}: Props) => {
+}: VerticalProfileChartProps) => {
     const { width: availableWidth, ref } = useResizeDetector();
 
     const onDragEnd =

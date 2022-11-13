@@ -11,4 +11,5 @@ export const Colors = {
     sivThinBorder: '#2b8049',
     red: '#940000',
     lightRed: '#FF0000',
+    terrain: '#883d00bc',
 };

@@ -7,7 +7,7 @@ import { AiracData, AirspaceType, DangerZoneType, Height } from 'ts-aerodata-fra
 import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
 import { Route } from '~/domain/Route';
 import type { VerticalProfileChartProps } from '~/fb/components/VerticalProfileChart/VerticalProfileChart';
-import { VerticalProfileChart } from '~/fb/components/VerticalProfileChart/VerticalProfileChart';
+import { VerticalProfileChart } from '~/fb/components/VerticalProfileChart/VerticalProfileChart.new';
 import type { ElevationAtPoint } from '~/fb/elevationOnRoute';
 import { elevationOnRoute } from '~/fb/elevationOnRoute';
 import { openElevationApiElevationService } from '~/services/elevation';
@@ -17,7 +17,7 @@ import shortRouteJSON from './shortRoute.json';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-    title: 'Example/VerticalProfileChart1',
+    title: 'Example/VerticalProfileChartNew',
     component: VerticalProfileChart,
     // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
     argTypes: {},

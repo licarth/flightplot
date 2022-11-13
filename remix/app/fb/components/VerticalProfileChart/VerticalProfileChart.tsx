@@ -492,7 +492,7 @@ const hashCode = (s: string) => {
 
 function spaceBackgroundColor(type: AirspaceType | DangerZoneType) {
     return type === AirspaceType.CTR
-        ? '#99ABD1'
+        ? '#99ABD17d'
         : type === DangerZoneType.P
         ? '#ff00009f'
         : type === DangerZoneType.D
@@ -500,7 +500,7 @@ function spaceBackgroundColor(type: AirspaceType | DangerZoneType) {
         : type === DangerZoneType.R
         ? '#ff6a003d'
         : type === AirspaceType.SIV
-        ? Colors.sivThickBorder
+        ? '#7398807d'
         : '#21003f7d';
 }
 

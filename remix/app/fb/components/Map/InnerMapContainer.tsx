@@ -30,7 +30,8 @@ import { Z_INDEX_AD_LOGO, Z_INDEX_HIGHLIGHTED_SEARCH_ITEM, Z_INDEX_MOUSE_TOOLTIP
 export const InnerMapContainer = () => {
     const routeContext = useRoute();
     const leafletMap = useMap();
-    const { currentBackgroundLayer, bounds: mapBounds } = useMainMap();
+    const { currentBackgroundLayer, bounds: mapBounds, map } = useMainMap();
+    const mapZoom = map?.getZoom();
 
     const shouldRenderAerodromes = leafletMap.getZoom() > 7;
     const shouldRenderVors = leafletMap.getZoom() > 7;
@@ -62,7 +63,7 @@ export const InnerMapContainer = () => {
                     {shouldRenderAerodromes && (
                         <LayerGroup>
                             <Pane name={`aerodromes`} style={{ zIndex: Z_INDEX_AD_LOGO }}>
-                                <Aerodromes mapBounds={mapBounds} />
+                                <Aerodromes mapBounds={mapBounds} mapZoom={mapZoom} />
                             </Pane>
                         </LayerGroup>
                     )}

@@ -1,5 +1,3 @@
-import type { ICloud, Visibility } from 'metar-taf-parser';
-import { CloudQuantity, DistanceUnit, parseMetar } from 'metar-taf-parser';
 import { Fragment, memo, useMemo } from 'react';
 import { Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
@@ -12,9 +10,10 @@ import { useWeather } from '../WeatherContext';
 import { boxAround } from './boxAround';
 import type { MapBounds } from './DisplayedContent';
 import { useFixtureFocus } from './FixtureFocusContext';
+import { getWeatherInfoFromMetar } from './getWeatherInfoFromMetar';
 import { Z_INDEX_AD_NAMES } from './zIndex';
 
-type WeatherInfo = {
+export type WeatherInfo = {
     metar: 'good' | 'medium' | 'bad' | 'unknown';
     taf: 'good' | 'medium' | 'bad' | 'unknown';
     display: 'big' | 'small';
@@ -113,10 +112,7 @@ export const Aerodromes = ({
     mapZoom: number | undefined;
 }) => {
     const { airacData, loading } = useAiracData();
-    const leafletMap = useMap();
-    const displayAerodromesLabels = leafletMap.getZoom() > 8;
     const { highlightedFixture } = useFixtureFocus();
-    const { loading: weatherLoading, metarsByIcaoCode } = useWeather();
 
     const highlightedFixtureName = useMemo(() => highlightedFixture?.name, [highlightedFixture]);
 
@@ -129,10 +125,28 @@ export const Aerodromes = ({
         return null;
     }
 
+    const props = { mapBounds, mapZoom, highlightedFixtureName, aerodromesInBbox };
+
+    return <>{loading || <AerodromesC {...props} />}</>;
+};
+
+const AerodromesC = memo(function AerodromesC({
+    mapBounds,
+    mapZoom,
+    highlightedFixtureName,
+    aerodromesInBbox,
+}: {
+    mapBounds: MapBounds;
+    mapZoom: number | undefined;
+    highlightedFixtureName?: string;
+    aerodromesInBbox?: Aerodrome[];
+}) {
+    const leafletMap = useMap();
+    const displayAllAerodromesLabels = leafletMap.getZoom() >= 9;
+    const { loading: weatherLoading, metarsByIcaoCode } = useWeather();
     return (
         <>
             {mapBounds &&
-                !loading &&
                 aerodromesInBbox?.map((aerodrome) => {
                     const { icaoCode } = aerodrome;
 
@@ -141,7 +155,17 @@ export const Aerodromes = ({
                         <Fragment key={`ad-${icaoCode}`}>
                             <AdPolygon
                                 aerodrome={aerodrome}
-                                displayAerodromesLabels={displayAerodromesLabels}
+                                displayAerodromesLabels={
+                                    displayAllAerodromesLabels ||
+                                    (aerodrome.status === 'CAP' &&
+                                        (aerodrome.runways.mainRunway?.lengthInMeters > 2500 ||
+                                            (leafletMap.getZoom() >= 7 &&
+                                                aerodrome.runways.mainRunway?.lengthInMeters >
+                                                    2000) ||
+                                            (leafletMap.getZoom() >= 8 &&
+                                                aerodrome.runways.mainRunway?.lengthInMeters >
+                                                    1000)))
+                                }
                                 shouldBeHighlighted={shouldBeHighlighted}
                                 weatherInfo={
                                     !weatherLoading && metarsByIcaoCode[`${icaoCode}`]
@@ -159,7 +183,7 @@ export const Aerodromes = ({
                 })}
         </>
     );
-};
+});
 
 const AdDescription = styled.div`
     display: flex;
@@ -219,85 +243,3 @@ const StyledTooltip = styled(Tooltip)`
         display: none;
     }
 `;
-
-const getWeatherInfoFromMetar = (metarString: string): Omit<WeatherInfo, 'display'> => {
-    const metar = parseMetar(metarString);
-    const { visibility, clouds, verticalVisibility } = metar;
-    const flightCategory = getFlightCategory(visibility, clouds, verticalVisibility);
-    return {
-        metar: flightCategory === 'VFR' ? 'good' : flightCategory === 'MVFR' ? 'medium' : 'bad',
-        taf: 'unknown',
-    };
-};
-
-export function getFlightCategory(
-    visibility: Visibility | undefined,
-    clouds: ICloud[],
-    verticalVisibility?: number,
-): FlightCategory {
-    const convertedVisibility = convertToMiles(visibility);
-    const distance = convertedVisibility != null ? convertedVisibility : Infinity;
-    const height = determineCeilingFromClouds(clouds)?.height ?? verticalVisibility ?? Infinity;
-
-    let flightCategory = FlightCategory.VFR;
-
-    if (height <= 3000 || distance <= 5) flightCategory = FlightCategory.MVFR;
-    if (height <= 1000 || distance <= 3) flightCategory = FlightCategory.IFR;
-    if (height <= 500 || distance <= 1) flightCategory = FlightCategory.LIFR;
-
-    return flightCategory;
-}
-
-/**
- * Finds the ceiling. If no ceiling exists, returns the lowest cloud layer.
- */
-export function determineCeilingFromClouds(clouds: ICloud[]): ICloud | undefined {
-    let ceiling: ICloud | undefined;
-
-    clouds.forEach((cloud) => {
-        if (
-            cloud.height != null &&
-            cloud.height < (ceiling?.height || Infinity) &&
-            (cloud.quantity === CloudQuantity.OVC || cloud.quantity === CloudQuantity.BKN)
-        )
-            ceiling = cloud;
-    });
-
-    return ceiling;
-}
-
-function convertToMiles(visibility?: Visibility): number | undefined {
-    if (!visibility) return;
-
-    switch (visibility.unit) {
-        case DistanceUnit.StatuteMiles:
-            return visibility.value;
-        case DistanceUnit.Meters:
-            const distance = visibility.value * 0.000621371;
-
-            if (visibility.value % 1000 === 0 || visibility.value === 9999)
-                return Math.round(distance);
-
-            return +distance.toFixed(2);
-    }
-}
-
-export enum FlightCategory {
-    VFR = 'VFR',
-    MVFR = 'MVFR',
-    IFR = 'IFR',
-    LIFR = 'LIFR',
-}
-
-export function getFlightCategoryCssColor(category: FlightCategory): string {
-    switch (category) {
-        case FlightCategory.LIFR:
-            return `rgb(255, 0, 255)`;
-        case FlightCategory.IFR:
-            return `rgb(255, 0, 0)`;
-        case FlightCategory.MVFR:
-            return `rgb(0, 150, 255)`;
-        case FlightCategory.VFR:
-            return `rgb(0, 150, 0)`;
-    }
-}

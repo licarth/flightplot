@@ -30,12 +30,12 @@ import { Z_INDEX_AD_LOGO, Z_INDEX_HIGHLIGHTED_SEARCH_ITEM, Z_INDEX_MOUSE_TOOLTIP
 export const InnerMapContainer = () => {
     const routeContext = useRoute();
     const leafletMap = useMap();
-    const { currentBackgroundLayer, bounds: mapBounds, map } = useMainMap();
-    const mapZoom = map?.getZoom();
+    const { currentBackgroundLayer, bounds: mapBounds } = useMainMap();
+    const mapZoom = leafletMap.getZoom();
 
-    const shouldRenderAerodromes = leafletMap.getZoom() > 7;
-    const shouldRenderVors = leafletMap.getZoom() > 7;
-    const shouldRenderVfrPoints = leafletMap.getZoom() > 9;
+    const shouldRenderAerodromes = mapZoom > 7;
+    const shouldRenderVors = mapZoom > 7;
+    const shouldRenderVfrPoints = mapZoom > 9;
 
     useEffect(() => {
         leafletMap && leafletMap.boxZoom.disable();
@@ -60,13 +60,11 @@ export const InnerMapContainer = () => {
                     </LayerGroup>
                     <Airspaces mapBounds={mapBounds} />
                     <DangerZones mapBounds={mapBounds} />
-                    {shouldRenderAerodromes && (
-                        <LayerGroup>
-                            <Pane name={`aerodromes`} style={{ zIndex: Z_INDEX_AD_LOGO }}>
-                                <Aerodromes mapBounds={mapBounds} mapZoom={mapZoom} />
-                            </Pane>
-                        </LayerGroup>
-                    )}
+                    <LayerGroup>
+                        <Pane name={`aerodromes`} style={{ zIndex: Z_INDEX_AD_LOGO }}>
+                            <Aerodromes mapBounds={mapBounds} mapZoom={mapZoom} />
+                        </Pane>
+                    </LayerGroup>
                     {shouldRenderVors && (
                         <LayerGroup>
                             <Vors mapBounds={mapBounds} />

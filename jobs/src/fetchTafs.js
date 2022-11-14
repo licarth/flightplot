@@ -1,5 +1,4 @@
 import * as dotenv from "dotenv";
-import { cert, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import fetch from "node-fetch";
 import { getAllFrenchAirports } from "./getAllFrenchAirports.js";
@@ -24,19 +23,7 @@ export const fetchTafs = async () => {
   const tafs = (await response.json()).data;
   console.log(`found ${tafs.length} tafs`);
 
-  let initializationOptions = {};
-
-  initializationOptions = {
-    ...initializationOptions,
-    credential: cert(
-      JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY || "")
-    ),
-  };
-
-  initializeApp(initializationOptions);
   const db = getFirestore();
   await db.collection("tafs").add({ queriedAt: new Date(), tafs });
   console.log(`wrote ${tafs.length} tafs to firestore`);
 };
-
-await fetchTafs();

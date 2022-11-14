@@ -3,17 +3,27 @@ on:
   push:
     branches:
       - master
-      - remix-stashed
-
-defaults:
-  run:
-    working-directory: remix
+      - metars
 
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 jobs:
   deploy:
-    name: Deploy fly.io
+    defaults:
+      run:
+        working-directory: remix
+    name: Deploy flightplot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: npm run deploy
+
+  deploy-jobs:
+    name: Deploy flightplot-jobs
+    defaults:
+      run:
+        working-directory: jobs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

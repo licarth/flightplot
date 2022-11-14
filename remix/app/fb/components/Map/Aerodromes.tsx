@@ -1,13 +1,15 @@
+import { destination, point } from '@turf/turf';
+import { pipe } from 'fp-ts/lib/function';
 import { Fragment, memo, useMemo } from 'react';
 import { Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Aerodrome } from 'ts-aerodata-france';
-import { toCheapRulerPoint, toLatLng } from '~/domain';
+import { fromtTurfPoint, toCheapRulerPoint, toLatLng } from '~/domain';
 import { MetarTaf } from '~/generated/icons';
 import { StyledAerodromeLogo } from '../StyledAerodromeLogo';
 import { useAiracData } from '../useAiracData';
 import { useWeather } from '../WeatherContext';
-import { boxAround } from './boxAround';
+import { boxAround, boxAroundP } from './boxAround';
 import type { MapBounds } from './DisplayedContent';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { getWeatherInfoFromMetar } from './getWeatherInfoFromMetar';
@@ -55,11 +57,18 @@ export const AdPolygon: React.FC<{
         <>
             {weatherInfo && (
                 <SVGOverlay
-                    key={`aerodrome-metartaf-${aerodrome.icaoCode}`}
+                    key={`aerodrome-metartaf-${aerodrome.icaoCode}-${weatherInfo.display}`}
                     bounds={
                         weatherInfo.display === 'big'
                             ? boxAround(toCheapRulerPoint(l), 10000)
-                            : boxAround(toCheapRulerPoint(l), 1000)
+                            : pipe(
+                                  destination(point([l.lng, l.lat]), 3000, 340, {
+                                      units: 'meters',
+                                  }).geometry.coordinates,
+                                  fromtTurfPoint,
+                                  toCheapRulerPoint,
+                                  boxAroundP(3000),
+                              )
                     }
                     attributes={{ class: 'overflow-visible' }}
                 >
@@ -177,7 +186,7 @@ const AerodromesC = memo(function AerodromesC({
                                               ...getWeatherInfoFromMetar(
                                                   metarsByIcaoCode[`${icaoCode}`],
                                               ),
-                                              display: !mapZoom || mapZoom < 9 ? 'big' : 'big',
+                                              display: !mapZoom || mapZoom <= 9 ? 'big' : 'small',
                                           }
                                         : undefined
                                 }

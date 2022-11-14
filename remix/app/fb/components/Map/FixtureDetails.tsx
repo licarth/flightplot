@@ -10,6 +10,7 @@ import { useHelpPage } from '../HelpPageContext';
 import { StyledAerodromeLogo } from '../StyledAerodromeLogo';
 import { StyledVor } from '../StyledVor';
 import { useRoute } from '../useRoute';
+import { useWeather } from '../WeatherContext';
 import { addFixtureToRoute } from './addFixtureToRoute';
 import { Colors } from './Colors';
 import type { FocusableFixture } from './FixtureFocusContext';
@@ -117,17 +118,24 @@ const VorCard = ({ vor }: { vor: Vor }) => {
 const AerodromeCard = ({ aerodrome }: { aerodrome: Aerodrome }) => {
     const routeContext = useRoute();
 
+    const { metarsByIcaoCode } = useWeather();
+
+    const aerodromeMetar = metarsByIcaoCode[`${aerodrome.icaoCode}`];
+
     const { aerodromeAltitude, icaoCode, name } = aerodrome;
     return (
         <>
-            <Description>
-                <LogoContainer>
-                    <StyledAerodromeLogo aerodrome={aerodrome} />
-                </LogoContainer>
-                <div>
-                    {icaoCode} - {name} ({aerodromeAltitude} ft)
-                </div>
-            </Description>
+            <AerodromeDescription>
+                <FirstLine>
+                    <LogoContainer>
+                        <StyledAerodromeLogo aerodrome={aerodrome} />
+                    </LogoContainer>
+                    <div>
+                        {icaoCode} - {name} ({aerodromeAltitude} ft)
+                    </div>
+                </FirstLine>
+                {aerodromeMetar && <Metar>{aerodromeMetar}</Metar>}
+            </AerodromeDescription>
             <Buttons>
                 <Button
                     size="small"
@@ -196,6 +204,22 @@ const Row = styled.div`
     justify-content: space-between;
     border-radius: 5px;
 `;
+
+const FirstLine = styled.div`
+    display: flex;
+`;
+
+const Metar = styled.div`
+    display: flex;
+    font-weight: 100;
+    font-family: 'Courier New', Courier, monospace;
+`;
+
+const AerodromeDescription = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
 const Description = styled.div`
     display: flex;
 `;

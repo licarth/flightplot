@@ -1,4 +1,4 @@
-import { collection, getDocs, getFirestore, limit, orderBy, query } from '@firebase/firestore';
+import { collection, getFirestore, limit, onSnapshot, orderBy, query } from '@firebase/firestore';
 import _ from 'lodash';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useEffect, useState } from 'react';
@@ -20,11 +20,13 @@ export const WeatherProvider: React.FC<PropsWithChildren> = ({ children }) => {
         const metarsRef = collection(db, 'metars');
 
         const q = query(metarsRef, orderBy('queriedAt', 'desc'), limit(1));
-        getDocs(q).then((querySnapshot) => {
+
+        const unsub = onSnapshot(q, { includeMetadataChanges: false }, (querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 setMetarsByIcaoCode(_.keyBy(doc.get('metars'), (m: string) => m.split(' ')[0]));
             });
         });
+        return unsub;
     }, []);
 
     return (

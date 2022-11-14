@@ -35,6 +35,7 @@ const MetarTafIcon = styled(MetarTaf)<{ $weatherInfo: WeatherInfo }>`
             if (taf === 'bad') return '#ff0000';
             return '#ff0000';
         }} !important;
+        ${({ $weatherInfo: { taf } }) => taf === 'unknown' && 'display: none'}
     }
 `;
 
@@ -87,13 +88,16 @@ export const AdPolygon: React.FC<{
                             style={{ zIndex: Z_INDEX_AD_NAMES }}
                         >
                             <StyledTooltip
-                                key={`tooltip-wpt-${aerodrome.icaoCode}-${aerodrome.mapShortName}`}
+                                key={`tooltip-wpt-${aerodrome.icaoCode}-${
+                                    aerodrome.mapShortName
+                                }-${!!weatherInfo}`}
                                 permanent
                                 direction={'bottom'}
+                                $makeSpaceForWeatherInfo={!!weatherInfo}
                             >
                                 <AdDescription style={{ color: getColor(aerodrome.status) }}>
                                     <AdIcaoCode>{`${aerodrome.icaoCode}`}</AdIcaoCode>
-                                    <div>{aerodrome.mapShortName}</div>
+                                    <AdShortName>{aerodrome.mapShortName}</AdShortName>
                                 </AdDescription>
                             </StyledTooltip>
                         </Pane>
@@ -189,11 +193,17 @@ const AdDescription = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    border-radius: 3px;
 `;
+
 const AdIcaoCode = styled.div`
     font-family: 'Univers Next 630';
     font-weight: bold;
     font-size: 0.8em;
+`;
+
+const AdShortName = styled.div`
+    border-radius: 3px;
 `;
 
 const getColor = (status: Aerodrome['status']) => {
@@ -223,7 +233,7 @@ const Logo = styled(StyledAerodromeLogo)<{ $highlighted: boolean }>`
     `}
 `;
 
-const StyledTooltip = styled(Tooltip)`
+const StyledTooltip = styled(Tooltip)<{ $makeSpaceForWeatherInfo: boolean }>`
     line-height: 90%;
     background-color: transparent;
     box-shadow: unset;
@@ -236,6 +246,7 @@ const StyledTooltip = styled(Tooltip)`
     font-size: 1.2em;
     text-align: left;
     margin: 0px;
+    ${({ $makeSpaceForWeatherInfo }) => $makeSpaceForWeatherInfo && 'margin-top: 13px;'}
     padding-top: 0px;
     font-family: 'Univers';
 

@@ -1,7 +1,9 @@
 import { destination, point } from '@turf/turf';
+import { differenceInMinutes } from 'date-fns';
 import { pipe } from 'fp-ts/lib/function';
-import { Fragment, memo, useMemo } from 'react';
-import { Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
+import { divIcon } from 'leaflet';
+import { Fragment, memo, useEffect, useMemo, useState } from 'react';
+import { Marker, Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Aerodrome } from 'ts-aerodata-france';
 import { fromtTurfPoint, toCheapRulerPoint, toLatLng } from '~/domain';
@@ -13,9 +15,11 @@ import { boxAround, boxAroundP } from './boxAround';
 import type { MapBounds } from './DisplayedContent';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { getWeatherInfoFromMetar } from './getWeatherInfoFromMetar';
-import { Z_INDEX_AD_NAMES } from './zIndex';
+import { Z_INDEX_AD_NAMES, Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
 
 export type WeatherInfo = {
+    metarDate: Date;
+    tafDate: Date;
     metar: 'good' | 'medium' | 'bad' | 'unknown';
     taf: 'good' | 'medium' | 'bad' | 'unknown';
     display: 'big' | 'small';
@@ -55,26 +59,7 @@ export const AdPolygon: React.FC<{
     const l = toLatLng(aerodrome.latLng);
     return (
         <>
-            {weatherInfo && (
-                <SVGOverlay
-                    key={`aerodrome-metartaf-${aerodrome.icaoCode}-${weatherInfo.display}`}
-                    bounds={
-                        weatherInfo.display === 'big'
-                            ? boxAround(toCheapRulerPoint(l), 10000)
-                            : pipe(
-                                  destination(point([l.lng, l.lat]), 3000, 340, {
-                                      units: 'meters',
-                                  }).geometry.coordinates,
-                                  fromtTurfPoint,
-                                  toCheapRulerPoint,
-                                  boxAroundP(3000),
-                              )
-                    }
-                    attributes={{ class: 'overflow-visible' }}
-                >
-                    {<MetarTafIcon $weatherInfo={weatherInfo} />}
-                </SVGOverlay>
-            )}
+            {weatherInfo && <MetarTafC aerodrome={aerodrome} weatherInfo={weatherInfo} />}
             <SVGOverlay
                 key={`aerodrome-${aerodrome.icaoCode}`}
                 bounds={[
@@ -164,6 +149,8 @@ const AerodromesC = memo(function AerodromesC({
                     const { icaoCode } = aerodrome;
 
                     const shouldBeHighlighted = highlightedFixtureName === aerodrome.name;
+                    const metar = metarsByIcaoCode[`${icaoCode}`];
+
                     return (
                         <Fragment key={`ad-${icaoCode}`}>
                             <AdPolygon
@@ -181,11 +168,9 @@ const AerodromesC = memo(function AerodromesC({
                                 }
                                 shouldBeHighlighted={shouldBeHighlighted}
                                 weatherInfo={
-                                    !weatherLoading && metarsByIcaoCode[`${icaoCode}`]
+                                    !weatherLoading && metar
                                         ? {
-                                              ...getWeatherInfoFromMetar(
-                                                  metarsByIcaoCode[`${icaoCode}`],
-                                              ),
+                                              ...getWeatherInfoFromMetar(metar),
                                               display: !mapZoom || mapZoom <= 9 ? 'big' : 'small',
                                           }
                                         : undefined
@@ -259,6 +244,100 @@ const StyledTooltip = styled(Tooltip)<{ $makeSpaceForWeatherInfo: boolean }>`
     padding-top: 0px;
     font-family: 'Univers';
 
+    ::before {
+        display: none;
+    }
+`;
+
+const MetarTafC = ({
+    weatherInfo,
+    aerodrome: { icaoCode, latLng },
+}: {
+    weatherInfo: WeatherInfo;
+    aerodrome: Aerodrome;
+}) => {
+    const l = toLatLng(latLng);
+
+    const UPDATE_INTERVAL_MS = 5000; // 5 seconds
+
+    const [elapsedMinutes, setElapsedMinutes] = useState<number>();
+
+    useEffect(() => {
+        const updateLabels = () => {
+            console.log('Logs every minute');
+            setElapsedMinutes(differenceInMinutes(new Date(), weatherInfo.metarDate));
+        };
+        updateLabels();
+        const interval = setInterval(updateLabels, UPDATE_INTERVAL_MS);
+
+        return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+    }, []);
+
+    const metarInfoCenter = pipe(
+        destination(point([l.lng, l.lat]), 3000, 340, {
+            units: 'meters',
+        }).geometry.coordinates,
+        fromtTurfPoint,
+    );
+
+    const metarInfoLabelCenter = pipe(
+        destination(point([l.lng, l.lat]), 4000, 310, {
+            units: 'meters',
+        }).geometry.coordinates,
+        fromtTurfPoint,
+    );
+
+    return (
+        <>
+            <SVGOverlay
+                key={`aerodrome-metartaf-${icaoCode}-${weatherInfo.display}`}
+                bounds={
+                    weatherInfo.display === 'big'
+                        ? boxAround(toCheapRulerPoint(l), 10000)
+                        : pipe(metarInfoCenter, toCheapRulerPoint, boxAroundP(3000))
+                }
+                attributes={{ class: 'overflow-visible' }}
+            >
+                <MetarTafIcon $weatherInfo={weatherInfo} />
+            </SVGOverlay>
+            {elapsedMinutes && (
+                <Pane name={`metar-info-${icaoCode}`} style={{ zIndex: Z_INDEX_MOUSE_TOOLTIP }}>
+                    <Marker position={metarInfoLabelCenter} icon={divIcon({})} opacity={0}>
+                        <MetarTooltip
+                            $old={elapsedMinutes > 30}
+                            direction="left"
+                            offset={[0, 0]}
+                            opacity={1}
+                            permanent
+                            className="overflow-visible"
+                        >
+                            {/* {elapsedMinutes <= 15 ? `• ${elapsedMinutes}m` : 'Old data'} */}
+                            {elapsedMinutes > 30 ? `⚠️ ${elapsedMinutes}m` : `• ${elapsedMinutes}m`}
+                        </MetarTooltip>
+                    </Marker>
+                </Pane>
+            )}
+        </>
+    );
+};
+
+const MetarTooltip = styled(Tooltip)<{ $old?: boolean }>`
+    display: flex;
+    gap: 0.5rem;
+    background-color: #ececec;
+    border: none;
+    box-shadow: none;
+    border-radius: 30px;
+    border: 1px solid #000000;
+    ${({ $old }) =>
+        $old &&
+        `
+        background-color: #000000;
+        border: 1px dashed #f7f300;
+        color: #f7f300;
+        
+        `}
+    line-height: 0.5em;
     ::before {
         display: none;
     }

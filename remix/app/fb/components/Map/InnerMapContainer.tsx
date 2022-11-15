@@ -33,7 +33,6 @@ export const InnerMapContainer = () => {
     const { currentBackgroundLayer, bounds: mapBounds } = useMainMap();
     const mapZoom = leafletMap.getZoom();
 
-    const shouldRenderAerodromes = mapZoom > 7;
     const shouldRenderVors = mapZoom > 7;
     const shouldRenderVfrPoints = mapZoom > 9;
 

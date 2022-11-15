@@ -134,7 +134,7 @@ const AerodromeCard = ({ aerodrome }: { aerodrome: Aerodrome }) => {
                         {icaoCode} - {name} ({aerodromeAltitude} ft)
                     </div>
                 </FirstLine>
-                {aerodromeMetar && <Metar>{aerodromeMetar}</Metar>}
+                {aerodromeMetar && <Metar>{aerodromeMetar.metarString}</Metar>}
             </AerodromeDescription>
             <Buttons>
                 <Button

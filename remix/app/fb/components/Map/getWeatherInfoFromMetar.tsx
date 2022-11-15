@@ -1,14 +1,22 @@
 import type { ICloud, Visibility } from 'metar-taf-parser';
 import { CloudQuantity, DistanceUnit, parseMetar } from 'metar-taf-parser';
+import type { Metar } from '../WeatherContext';
 import type { WeatherInfo } from './Aerodromes';
 
-export const getWeatherInfoFromMetar = (metarString: string): Omit<WeatherInfo, 'display'> => {
+export const getWeatherInfoFromMetar = ({
+    metarString,
+    queriedAt,
+}: Metar): Omit<WeatherInfo, 'display'> => {
     const metar = parseMetar(metarString);
     const { visibility, clouds, verticalVisibility } = metar;
     const flightCategory = getFlightCategory(visibility, clouds, verticalVisibility);
     return {
         metar: flightCategory === 'VFR' ? 'good' : flightCategory === 'MVFR' ? 'medium' : 'bad',
         taf: 'unknown',
+        metarDate: new Date(
+            Date.UTC(queriedAt.getFullYear(), queriedAt.getMonth(), metar.day, metar.hour, 0),
+        ),
+        tafDate: new Date(),
     };
 };
 

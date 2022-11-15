@@ -1,11 +1,11 @@
 import { fetchMetars } from "./fetchMetars";
 import { fetchTafs } from "./fetchTafs";
-import { initializaApp } from "./initializeApp";
+import { initializeApp } from "./initializeApp";
 import cron from "node-cron";
 
-initializaApp();
+initializeApp();
 
-cron.schedule("15,29,45,59 * * * *", async () => {
+cron.schedule("*/5 * * * *", async () => {
   await fetchMetars();
   await fetchTafs();
 });

@@ -1,9 +1,10 @@
 import { collection, getFirestore, limit, onSnapshot, orderBy, query } from '@firebase/firestore';
+import type { Dictionary } from 'lodash';
 import _ from 'lodash';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useEffect, useState } from 'react';
 
-type Metar = string;
+export type Metar = { metarString: string; queriedAt: Date };
 
 export const WeatherContext = createContext<{
     loading: boolean;
@@ -23,11 +24,23 @@ export const WeatherProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
         const unsub = onSnapshot(q, { includeMetadataChanges: false }, (querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                setMetarsByIcaoCode(_.keyBy(doc.get('metars'), (m: string) => m.split(' ')[0]));
+                const queriedAt = doc.get('queriedAt').toDate();
+                const metarsByIcaoCode = _.keyBy(
+                    doc.get('metars'),
+                    (m: string) => m.split(' ')[0],
+                ) as Dictionary<string>;
+                setMetarsByIcaoCode(
+                    _.mapValues(metarsByIcaoCode, (metarString: string) => ({
+                        metarString,
+                        queriedAt,
+                    })),
+                );
             });
         });
         return unsub;
     }, []);
+
+    console.log(metarsByIcaoCode);
 
     return (
         <WeatherContext.Provider

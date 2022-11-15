@@ -7,4 +7,4 @@ initializationOptions = {
   credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY || "")),
 };
 
-export const initializaApp = () => firebaseInit(initializationOptions);
+export const initializeApp = () => firebaseInit(initializationOptions);

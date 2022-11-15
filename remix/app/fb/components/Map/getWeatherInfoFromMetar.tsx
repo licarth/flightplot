@@ -14,7 +14,13 @@ export const getWeatherInfoFromMetar = ({
         metar: flightCategory === 'VFR' ? 'good' : flightCategory === 'MVFR' ? 'medium' : 'bad',
         taf: 'unknown',
         metarDate: new Date(
-            Date.UTC(queriedAt.getFullYear(), queriedAt.getMonth(), metar.day, metar.hour, 0),
+            Date.UTC(
+                queriedAt.getFullYear(),
+                queriedAt.getMonth(),
+                metar.day,
+                metar.hour,
+                metar.minute,
+            ),
         ),
         tafDate: new Date(),
     };

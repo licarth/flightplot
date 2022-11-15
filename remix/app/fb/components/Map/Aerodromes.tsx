@@ -287,6 +287,12 @@ const MetarTafC = ({
         fromtTurfPoint,
     );
 
+    if (!elapsedMinutes || elapsedMinutes > 120) {
+        return null;
+    }
+
+    const isOld = elapsedMinutes > 35;
+
     return (
         <>
             <SVGOverlay
@@ -304,15 +310,16 @@ const MetarTafC = ({
                 <Pane name={`metar-info-${icaoCode}`} style={{ zIndex: Z_INDEX_MOUSE_TOOLTIP }}>
                     <Marker position={metarInfoLabelCenter} icon={divIcon({})} opacity={0}>
                         <MetarTooltip
-                            $old={elapsedMinutes > 30}
+                            $old={isOld}
                             direction="left"
                             offset={[0, 0]}
                             opacity={1}
                             permanent
                             className="overflow-visible"
+                            key={`metar-info-${icaoCode}-${elapsedMinutes}`}
                         >
                             {/* {elapsedMinutes <= 15 ? `• ${elapsedMinutes}m` : 'Old data'} */}
-                            {elapsedMinutes > 30 ? `⚠️ ${elapsedMinutes}m` : `• ${elapsedMinutes}m`}
+                            {isOld ? `⚠️ ${elapsedMinutes}'` : `${elapsedMinutes}'`}
                         </MetarTooltip>
                     </Marker>
                 </Pane>
@@ -328,6 +335,7 @@ const MetarTooltip = styled(Tooltip)<{ $old?: boolean }>`
     border: none;
     box-shadow: none;
     border-radius: 30px;
+    color: #000000;
     border: 1px solid #000000;
     ${({ $old }) =>
         $old &&

@@ -28,24 +28,25 @@ export const WeatherProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
         const q = query(metarsRef, orderBy('queriedAt', 'desc'), limit(1));
 
-        const unsub = weatherEnabled
-            ? onSnapshot(q, { includeMetadataChanges: false }, (querySnapshot) => {
-                  querySnapshot.forEach((doc) => {
-                      const queriedAt = doc.get('queriedAt').toDate();
-                      const metarsByIcaoCode = _.keyBy(
-                          doc.get('metars'),
-                          (m: string) => m.split(' ')[0],
-                      ) as Dictionary<string>;
-                      setMetarsByIcaoCode(
-                          _.mapValues(metarsByIcaoCode, (metarString: string) => ({
-                              metarString,
-                              queriedAt,
-                          })),
-                      );
-                  });
-              })
-            : () => {};
-        return unsub;
+        if (weatherEnabled) {
+            return onSnapshot(q, { includeMetadataChanges: false }, (querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const queriedAt = doc.get('queriedAt').toDate();
+                    const metarsByIcaoCode = _.keyBy(
+                        doc.get('metars'),
+                        (m: string) => m.split(' ')[0],
+                    ) as Dictionary<string>;
+                    setMetarsByIcaoCode(
+                        _.mapValues(metarsByIcaoCode, (metarString: string) => ({
+                            metarString,
+                            queriedAt,
+                        })),
+                    );
+                });
+            });
+        } else {
+            setMetarsByIcaoCode({});
+        }
     }, [weatherEnabled]);
 
     return (

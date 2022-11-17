@@ -1,9 +1,12 @@
-import { Slider, Switch } from 'antd';
+import { Button, Slider, Switch } from 'antd';
 import type { SliderMarks } from 'antd/lib/slider';
 import _ from 'lodash';
+import type { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { Colors } from '../Map/Colors';
+import type { DisplayedLayerProps } from '../Map/InnerMapContainer';
 import { useMainMap } from '../Map/MainMapContext';
+import { useWeather } from '../WeatherContext';
 
 const style = {
     fontSize: 12,
@@ -50,10 +53,26 @@ export const AirspacesFilters = () => {
         },
     } = useMainMap();
 
+    const { weatherEnabled, setWeatherEnabled } = useWeather();
+
     return (
         <Container>
             <Vertical>
-                Espaces
+                <SectionTitle>🗺</SectionTitle>
+                <MapBackgroundPickButton layer="osm">OSM</MapBackgroundPickButton>
+                <MapBackgroundPickButton layer="oaci">IGN OACI</MapBackgroundPickButton>
+                <MapBackgroundPickButton layer="sat">Satellite</MapBackgroundPickButton>
+                <SectionTitle>🌦</SectionTitle>
+                <LabelledSwitch>
+                    METAR
+                    <Switch
+                        checked={weatherEnabled}
+                        size={'small'}
+                        onChange={(v) => setWeatherEnabled(v)}
+                    />
+                </LabelledSwitch>
+                <br />
+                <SectionTitle>Espaces</SectionTitle>
                 <LabelledSwitch $color={Colors.sivThinBorder}>
                     SIV
                     <GreenSwitch
@@ -90,6 +109,7 @@ export const AirspacesFilters = () => {
                     />
                 </LabelledSwitch>
             </Vertical>
+            <SectionTitle>FL Max</SectionTitle>
             <StyledSlider
                 vertical
                 marks={marks}
@@ -137,20 +157,21 @@ const Container = styled.div`
     align-items: right;
     gap: 1rem;
     position: absolute;
-    top: 125px;
+    top: 20px;
     right: 10px;
     z-index: 700;
-    width: 70px;
     background-color: white;
     border-radius: 5px;
-    padding: 3px;
+    padding: 5px;
+    border: 2px solid ${Colors.flightplotLogoBlue};
 `;
 
-const LabelledSwitch = styled.div<{ $color: string }>`
+const LabelledSwitch = styled.div<{ $color?: string }>`
     display: flex;
+    justify-content: space-between;
     gap: 0.25rem;
     align-items: center;
-    color: ${({ $color }) => $color};
+    ${({ $color }) => $color && `color: ${$color}`};
 `;
 
 const RedSwitch = styled(Switch)`
@@ -160,3 +181,29 @@ const RedSwitch = styled(Switch)`
 const GreenSwitch = styled(Switch)`
     background-color: ${({ checked }) => checked && Colors.sivThinBorder};
 `;
+
+const SectionTitle = styled.span`
+    /* font-size: 1.5rem; */
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    background-color: #002e94;
+    border-radius: 5px;
+    text-align: center;
+    color: white;
+`;
+
+const MapBackgroundPickButton: React.FC<
+    PropsWithChildren<{ layer: DisplayedLayerProps['layer'] }>
+> = ({ layer, children }) => {
+    const { currentBackgroundLayer, setCurrentBackgroundLayer } = useMainMap();
+
+    return (
+        <Button
+            type={currentBackgroundLayer === layer ? 'default' : 'dashed'}
+            disabled={currentBackgroundLayer === layer}
+            onClick={() => setCurrentBackgroundLayer(layer)}
+        >
+            {children}
+        </Button>
+    );
+};

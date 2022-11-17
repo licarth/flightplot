@@ -1,6 +1,6 @@
 import type { LatLngTuple } from 'leaflet';
 import { useEffect, useRef, useState } from 'react';
-import { MapContainer, ZoomControl } from 'react-leaflet';
+import { MapContainer } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
 import { useMouseMode } from '../MouseModeContext';
@@ -48,7 +48,6 @@ export const LeafletMapContainer = () => {
                 <Outer $cursor={cursor}>
                     <StyledMapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
                         <InnerMapContainer />
-                        <ZoomControl position="topright" />
                     </StyledMapContainer>
                 </Outer>
             )}

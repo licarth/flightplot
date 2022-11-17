@@ -11,7 +11,7 @@ export const getWeatherInfoFromMetar = ({
     const { visibility, clouds, verticalVisibility } = metar;
     const flightCategory = getFlightCategory(visibility, clouds, verticalVisibility);
     return {
-        metar: flightCategory === 'VFR' ? 'good' : flightCategory === 'MVFR' ? 'medium' : 'bad',
+        metar: flightCategory,
         taf: 'unknown',
         metarDate: new Date(
             Date.UTC(

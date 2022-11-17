@@ -19,7 +19,6 @@ import { isAerodrome, isVfrPoint, isVor } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
-import { LayerSwitchButton } from './LayerSwitchButton';
 import { useMainMap } from './MainMapContext';
 import { MouseEvents } from './MouseEvents';
 import { useTemporaryMapBounds } from './TemporaryMapCenterContext';
@@ -77,7 +76,7 @@ export const InnerMapContainer = () => {
                 </>
             )}
             <NmScale />
-            <LayerSwitchButton />
+            {/* <LayerSwitchButton /> */}
         </>
     );
 };
@@ -88,8 +87,8 @@ const DisplayedLayer = ({ layer }: DisplayedLayerProps) => {
     return (
         <>
             {layer === 'osm' && <OpenStreetMapLayer />}
-            {layer === 'oaci' && <SatelliteLayer />}
-            {layer === 'sat' && <OaciLayer />}
+            {layer === 'sat' && <SatelliteLayer />}
+            {layer === 'oaci' && <OaciLayer />}
         </>
     );
 };

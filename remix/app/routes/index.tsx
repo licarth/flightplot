@@ -1,4 +1,4 @@
-import andtStyles from 'antd/dist/antd.css';
+import andtStyles from 'antd/dist/antd.variable.css';
 import leafletStyles from 'leaflet/dist/leaflet.css';
 
 import FullStory from 'react-fullstory';

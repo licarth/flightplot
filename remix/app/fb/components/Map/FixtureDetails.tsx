@@ -258,7 +258,7 @@ const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
     padding: 1rem;
     padding-top: 2rem;
     padding-right: 0.5rem;
-    right: ${({ isHelpOpen }) => (isHelpOpen ? 620 : 90)}px;
+    right: ${({ isHelpOpen }) => 120 + (isHelpOpen ? 530 : 0)}px;
     top: 10px;
     width: 350px;
     max-width: 500px;
@@ -272,6 +272,7 @@ const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
     border-radius: 5px;
     font-family: 'Futura';
     color: ${Colors.ctrBorderBlue};
+    border: 2px solid ${Colors.flightplotLogoBlue};
 
     @media (hover: none) {
         max-width: 80vw;

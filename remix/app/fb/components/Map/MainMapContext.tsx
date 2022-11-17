@@ -24,31 +24,25 @@ export const MainMapContext = createContext<{
     setMap: (map: Map) => void;
     bounds?: MapBounds;
     currentBackgroundLayer: DisplayedLayerProps['layer'];
-    nextBackgroundLayer: () => void;
     filters: Filters;
     setFilters: React.Dispatch<SetStateAction<Filters>>;
     airspaceTypesToDisplay: AirspaceType[];
+    setCurrentBackgroundLayer: (layer: DisplayedLayerProps['layer']) => void;
 }>({
     setMap: () => {},
     currentBackgroundLayer: 'osm',
-    nextBackgroundLayer: () => {},
     filters: DEFAULT_FILTERS,
     setFilters: () => {},
     airspaceTypesToDisplay: [],
+    setCurrentBackgroundLayer: () => {},
 });
-
-const availableLayers: DisplayedLayerProps['layer'][] = ['osm', 'oaci', 'sat'];
 
 export const MainMapProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const [map, setMap] = useState<Map>();
     const [bounds, setBounds] = useState<MapBounds>();
     const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
-    const [currentBackgroundLayerIndex, setCurrentBackgroundLayerIndex] = useState<number>(0);
-
-    const currentBackgroundLayer = availableLayers[currentBackgroundLayerIndex];
-
-    const nextBackgroundLayer = () =>
-        setCurrentBackgroundLayerIndex((currentBackgroundLayerIndex + 1) % availableLayers.length);
+    const [currentBackgroundLayer, setCurrentBackgroundLayer] =
+        useState<DisplayedLayerProps['layer']>('osm');
 
     useEffect(() => {
         const refreshMapBounds = () => map && setBounds(() => getMapBounds(map));
@@ -74,10 +68,10 @@ export const MainMapProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 setMap,
                 bounds,
                 currentBackgroundLayer,
-                nextBackgroundLayer,
                 filters,
                 setFilters,
                 airspaceTypesToDisplay,
+                setCurrentBackgroundLayer,
             }}
         >
             {children}

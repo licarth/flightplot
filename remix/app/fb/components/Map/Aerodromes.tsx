@@ -20,7 +20,7 @@ import { Z_INDEX_AD_NAMES, Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
 export type WeatherInfo = {
     metarDate: Date;
     tafDate: Date;
-    metar: 'good' | 'medium' | 'bad' | 'unknown';
+    metar: 'VFR' | 'MVFR' | 'IFR' | 'LIFR';
     taf: 'good' | 'medium' | 'bad' | 'unknown';
     display: 'big' | 'small';
 };
@@ -28,10 +28,9 @@ export type WeatherInfo = {
 const MetarTafIcon = styled(MetarTaf)<{ $weatherInfo: WeatherInfo }>`
     #metar {
         fill: ${({ $weatherInfo }) => {
-            if ($weatherInfo.metar === 'good') return '#00ff00';
-            if ($weatherInfo.metar === 'medium') return '#ffff00';
-            if ($weatherInfo.metar === 'bad') return '#ff0000';
-            return 'none';
+            if ($weatherInfo.metar === 'VFR') return '#00e100';
+            if ($weatherInfo.metar === 'MVFR') return '#3421ff';
+            return '#ff0000';
         }} !important;
     }
     #taf {

@@ -13,6 +13,7 @@
   },
   "scripts": {
     "start": "node --es-module-specifier-resolution=node .",
-    "deploy": "flyctl deploy --remote-only"
+    "deploy": "flyctl deploy --remote-only",
+    "now": "node --es-module-specifier-resolution=node ./src/now.js"
   }
 }

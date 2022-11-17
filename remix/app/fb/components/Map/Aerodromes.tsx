@@ -264,14 +264,13 @@ const MetarTafC = ({
 
     useEffect(() => {
         const updateLabels = () => {
-            console.log('Logs every minute');
             setElapsedMinutes(differenceInMinutes(new Date(), weatherInfo.metarDate));
         };
         updateLabels();
         const interval = setInterval(updateLabels, UPDATE_INTERVAL_MS);
 
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-    }, []);
+    }, [weatherInfo.metarDate]);
 
     const metarInfoCenter = pipe(
         destination(point([l.lng, l.lat]), 3000, 340, {
@@ -293,10 +292,12 @@ const MetarTafC = ({
 
     const isOld = elapsedMinutes > 35;
 
+    `${icaoCode}` === 'LFMT' && console.log('Render metar info for' + icaoCode);
+
     return (
         <>
             <SVGOverlay
-                key={`aerodrome-metartaf-${icaoCode}-${weatherInfo.display}`}
+                key={`aerodrome-metartaf-${icaoCode}-${weatherInfo.display}-${weatherInfo.metarDate}-${elapsedMinutes}`}
                 bounds={
                     weatherInfo.display === 'big'
                         ? boxAround(toCheapRulerPoint(l), 10000)
@@ -316,7 +317,7 @@ const MetarTafC = ({
                             opacity={1}
                             permanent
                             className="overflow-visible"
-                            key={`metar-info-${icaoCode}-${elapsedMinutes}`}
+                            key={`metar-info-${icaoCode}-${weatherInfo.metarDate}-${elapsedMinutes}`}
                         >
                             {/* {elapsedMinutes <= 15 ? `• ${elapsedMinutes}m` : 'Old data'} */}
                             {isOld ? `⚠️ ${elapsedMinutes}'` : `${elapsedMinutes}'`}

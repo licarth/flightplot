@@ -1,9 +1,9 @@
 import type Leaflet from 'leaflet';
 import type { LatLngExpression } from 'leaflet';
+import { divIcon } from 'leaflet';
 import { useRef } from 'react';
 import { Circle, Marker, Tooltip, useMap } from 'react-leaflet';
 import { preventDefault } from '../preventDefault';
-import { circle, planeArrival, planeDeparture } from './Icons';
 
 export type WaypointType = 'departure' | 'arrival' | 'intermediate';
 
@@ -47,7 +47,9 @@ export const FixtureWaypointMarker = ({
             position={position}
             ref={markerRef}
             title={label}
-            icon={getIcon(type)}
+            opacity={0}
+            interactive={false}
+            icon={divIcon({ iconSize: [0, 0] })}
         >
             <Circle
                 key={`circle-${waypointNumber}`}
@@ -71,15 +73,4 @@ export const FixtureWaypointMarker = ({
             </Tooltip>
         </Marker>
     );
-};
-
-const getIcon = (waypointType: WaypointType) => {
-    switch (waypointType) {
-        case 'arrival':
-            return planeArrival;
-        case 'departure':
-            return planeDeparture;
-        case 'intermediate':
-            return circle;
-    }
 };

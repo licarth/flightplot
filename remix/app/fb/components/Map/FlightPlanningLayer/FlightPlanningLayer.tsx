@@ -8,7 +8,7 @@ import { VorPointWaypoint } from '~/domain/Waypoint/VorPointWaypoint';
 import { Target as TargetIcon } from '~/generated/icons';
 import type { Route, Waypoint } from '../../../../domain';
 import type { LatLng } from '../../../../domain/LatLng';
-import { toLatLng } from '../../../../domain/LatLng';
+import { fromtTurfPoint, toLatLng } from '../../../../domain/LatLng';
 import type { LatLngWaypoint } from '../../../../domain/Waypoint';
 import { AerodromeWaypoint, AerodromeWaypointType } from '../../../../domain/Waypoint';
 import type { useRoute } from '../../useRoute';
@@ -120,7 +120,7 @@ export const FlightPlanningLayer = ({
                                     click: (e) => {
                                         preventDefault(e);
                                         return addLatLngWaypoint({
-                                            latLng: pointToLeafletLatLng(
+                                            latLng: fromtTurfPoint(
                                                 ruler.pointOnLine(
                                                     toLine([
                                                         route.waypoints[i].latLng,
@@ -199,11 +199,6 @@ const lineBetweenWaypoints = (waypoint1: Waypoint, waypoint2: Waypoint) => {
         ];
     } else return [];
 };
-
-export const pointToLeafletLatLng = ([x, y]: [number, number]) => ({
-    lat: y,
-    lng: x,
-});
 
 export const toLine = (latLngs: Array<LatLng>): Line =>
     latLngs.map((latLng) => [latLng.lng, latLng.lat]);

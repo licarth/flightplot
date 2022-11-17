@@ -4,14 +4,13 @@ import { Pane, Polygon, SVGOverlay, Tooltip } from 'react-leaflet';
 import styled from 'styled-components';
 import type { VfrPoint } from 'ts-aerodata-france';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
-import { toLeafletLatLng } from '../../../domain';
+import { fromtTurfPoint, toLeafletLatLng } from '../../../domain';
 import { useAiracData } from '../useAiracData';
 import { boxAround } from './boxAround';
 import type { MapBounds } from './DisplayedContent';
 import { isVfrPoint } from './FixtureDetails';
 import type { FocusableFixture } from './FixtureFocusContext';
 import { useFixtureFocus } from './FixtureFocusContext';
-import { pointToLeafletLatLng } from './FlightPlanningLayer';
 import { Z_INDEX_VFR_NAMES } from './zIndex';
 
 export const VfrPoints = ({ mapBounds }: { mapBounds: MapBounds }) => {
@@ -72,10 +71,10 @@ export const VfrPointC = memo(function VfrPoint({
     const { name, latLng, icaoCode } = vfrPoint;
     const ruler = new CheapRuler(Number(latLng.lat), 'nauticalmiles');
     const center = toCheapRulerPoint(toLeafletLatLng(latLng));
-    const bottomRight = pointToLeafletLatLng(ruler.offset(center, 0.5, -0.5));
-    const top = pointToLeafletLatLng(ruler.offset(center, 0, 0.4));
-    const left = pointToLeafletLatLng(ruler.offset(center, -0.35, -0.2));
-    const right = pointToLeafletLatLng(ruler.offset(center, 0.35, -0.2));
+    const bottomRight = fromtTurfPoint(ruler.offset(center, 0.5, -0.5));
+    const top = fromtTurfPoint(ruler.offset(center, 0, 0.4));
+    const left = fromtTurfPoint(ruler.offset(center, -0.35, -0.2));
+    const right = fromtTurfPoint(ruler.offset(center, 0.35, -0.2));
 
     const bounds = boxAround(toCheapRulerPoint(bottomRight), 10);
 

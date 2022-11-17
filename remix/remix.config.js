@@ -13,5 +13,6 @@ module.exports = {
         '@react-leaflet/core',
         '@marfle/react-leaflet-nmscale',
         'react-merge-refs',
+        'metar-taf-parser',
     ],
 };

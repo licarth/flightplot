@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="51"
+   height="51"
+   viewBox="0 0 13.493749 13.49375"
+   version="1.1"
+   id="svg33389"
+   sodipodi:docname="metar-taf.svg"
+   inkscape:version="1.2.1 (9c6d41e, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview33391"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="4.7401665"
+     inkscape:cx="33.648607"
+     inkscape:cy="40.821351"
+     inkscape:window-width="1680"
+     inkscape:window-height="997"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1109" />
+  <defs
+     id="defs33386" />
+  <g
+     id="g1109"
+     transform="translate(0.05209941,0.01736647)">
+    <path
+       id="metar"
+       style="fill:#008c13;fill-opacity:1;stroke:#000000;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       d="M 6.6146771 0.39707852 A 6.3499999 6.3499999 0 0 0 0.26467712 6.7470785 A 6.3499999 6.3499999 0 0 0 2.0836875 11.193319 L 3.5807538 9.6962525 A 4.2333331 4.2333331 0 0 1 2.3813438 6.7470785 A 4.2333331 4.2333331 0 0 1 6.6146771 2.5137452 A 4.2333331 4.2333331 0 0 1 9.6046755 3.7570801 L 11.101742 2.2605307 A 6.3499999 6.3499999 0 0 0 6.6146771 0.39707852 z " />
+    <path
+       id="taf"
+       style="fill:#008c13;fill-opacity:1;stroke:#000000;stroke-width:0.529167;stroke-linecap:butt;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       d="m 11.134063,1.8856752 -1.8675855,1.86758 a 4.2333331,4.2333331 0 0 1 1.2397165,2.99362 4.2333331,4.2333331 0 0 1 -1.2397165,2.99361 l 1.8675855,1.8675898 a 6.8791666,6.8791666 0 0 0 2.017965,-4.8611998 6.8791666,6.8791666 0 0 0 -2.017965,-4.8612 z" />
+  </g>
+</svg>

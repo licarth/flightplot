@@ -1,63 +1,114 @@
-import { Fragment, memo, useMemo } from 'react';
-import { Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
+import { destination, point } from '@turf/turf';
+import { differenceInMinutes } from 'date-fns';
+import { pipe } from 'fp-ts/lib/function';
+import { divIcon } from 'leaflet';
+import { Fragment, memo, useEffect, useMemo, useState } from 'react';
+import { Marker, Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Aerodrome } from 'ts-aerodata-france';
-import { toLatLng } from '~/domain';
+import { fromtTurfPoint, toCheapRulerPoint, toLatLng } from '~/domain';
+import { MetarTaf } from '~/generated/icons';
 import { StyledAerodromeLogo } from '../StyledAerodromeLogo';
 import { useAiracData } from '../useAiracData';
+import { useWeather } from '../WeatherContext';
+import { boxAround, boxAroundP } from './boxAround';
 import type { MapBounds } from './DisplayedContent';
 import { useFixtureFocus } from './FixtureFocusContext';
-import { Z_INDEX_AD_NAMES } from './zIndex';
+import { getWeatherInfoFromMetar } from './getWeatherInfoFromMetar';
+import { Z_INDEX_AD_NAMES, Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
+
+export type WeatherInfo = {
+    metarDate: Date;
+    tafDate: Date;
+    metar: 'VFR' | 'MVFR' | 'IFR' | 'LIFR';
+    taf: 'good' | 'medium' | 'bad' | 'unknown';
+    display: 'big' | 'small';
+};
+
+const MetarTafIcon = styled(MetarTaf)<{ $weatherInfo: WeatherInfo }>`
+    #metar {
+        fill: ${({ $weatherInfo }) => {
+            if ($weatherInfo.metar === 'VFR') return '#00e100';
+            if ($weatherInfo.metar === 'MVFR') return '#3421ff';
+            return '#ff0000';
+        }} !important;
+    }
+    #taf {
+        fill: ${({ $weatherInfo: { taf } }) => {
+            if (taf === 'good') return '#00ff00';
+            if (taf === 'medium') return '#ffff00';
+            if (taf === 'bad') return '#ff0000';
+            return '#ff0000';
+        }} !important;
+        ${({ $weatherInfo: { taf } }) => taf === 'unknown' && 'display: none'}
+    }
+`;
 
 export const AdPolygon: React.FC<{
     aerodrome: Aerodrome;
     displayAerodromesLabels: boolean;
     shouldBeHighlighted: boolean;
-}> = memo(function AdPolygon({ aerodrome, displayAerodromesLabels, shouldBeHighlighted }) {
+    weatherInfo?: WeatherInfo;
+}> = memo(function AdPolygon({
+    aerodrome,
+    displayAerodromesLabels,
+    shouldBeHighlighted,
+    weatherInfo,
+}) {
     const l = toLatLng(aerodrome.latLng);
     return (
-        <SVGOverlay
-            key={`aerodrome-${aerodrome.icaoCode}`}
-            bounds={[
-                // Note: this is pure guess.
-                [l.lat + 0.02, l.lng - 0.02],
-                [l.lat - 0.02, l.lng + 0.02],
-            ]}
-            attributes={{ class: 'overflow-visible' }}
-        >
-            {<Logo aerodrome={aerodrome} $highlighted={shouldBeHighlighted} />}
-            {displayAerodromesLabels && (
-                <Polygon
-                    fill={false}
-                    fillOpacity={0}
-                    opacity={0}
-                    positions={[[l.lat - 0.015, l.lng]]}
-                >
-                    <Pane
-                        name={`aerodrome-tooltip-${aerodrome.icaoCode}-${aerodrome.mapShortName}`}
-                        style={{ zIndex: Z_INDEX_AD_NAMES }}
+        <>
+            {weatherInfo && <MetarTafC aerodrome={aerodrome} weatherInfo={weatherInfo} />}
+            <SVGOverlay
+                key={`aerodrome-${aerodrome.icaoCode}`}
+                bounds={[
+                    // Note: this is pure guess.
+                    [l.lat + 0.02, l.lng - 0.02],
+                    [l.lat - 0.02, l.lng + 0.02],
+                ]}
+                attributes={{ class: 'overflow-visible' }}
+            >
+                {<Logo aerodrome={aerodrome} $highlighted={shouldBeHighlighted} />}
+                {displayAerodromesLabels && (
+                    <Polygon
+                        fill={false}
+                        fillOpacity={0}
+                        opacity={0}
+                        positions={[[l.lat - 0.015, l.lng]]}
                     >
-                        <StyledTooltip
-                            key={`tooltip-wpt-${aerodrome.icaoCode}-${aerodrome.mapShortName}`}
-                            permanent
-                            direction={'bottom'}
+                        <Pane
+                            name={`aerodrome-tooltip-${aerodrome.icaoCode}-${aerodrome.mapShortName}`}
+                            style={{ zIndex: Z_INDEX_AD_NAMES }}
                         >
-                            <AdDescription style={{ color: getColor(aerodrome.status) }}>
-                                <AdIcaoCode>{`${aerodrome.icaoCode}`}</AdIcaoCode>
-                                <div>{aerodrome.mapShortName}</div>
-                            </AdDescription>
-                        </StyledTooltip>
-                    </Pane>
-                </Polygon>
-            )}
-        </SVGOverlay>
+                            <StyledTooltip
+                                key={`tooltip-wpt-${aerodrome.icaoCode}-${
+                                    aerodrome.mapShortName
+                                }-${!!weatherInfo}`}
+                                permanent
+                                direction={'bottom'}
+                                $makeSpaceForWeatherInfo={!!weatherInfo}
+                            >
+                                <AdDescription style={{ color: getColor(aerodrome.status) }}>
+                                    <AdIcaoCode>{`${aerodrome.icaoCode}`}</AdIcaoCode>
+                                    <AdShortName>{aerodrome.mapShortName}</AdShortName>
+                                </AdDescription>
+                            </StyledTooltip>
+                        </Pane>
+                    </Polygon>
+                )}
+            </SVGOverlay>
+        </>
     );
 });
 
-export const Aerodromes = ({ mapBounds }: { mapBounds: MapBounds }) => {
+export const Aerodromes = ({
+    mapBounds,
+    mapZoom,
+}: {
+    mapBounds: MapBounds;
+    mapZoom: number | undefined;
+}) => {
     const { airacData, loading } = useAiracData();
-    const leafletMap = useMap();
-    const displayAerodromesLabels = leafletMap.getZoom() > 8;
     const { highlightedFixture } = useFixtureFocus();
 
     const highlightedFixtureName = useMemo(() => highlightedFixture?.name, [highlightedFixture]);
@@ -71,37 +122,81 @@ export const Aerodromes = ({ mapBounds }: { mapBounds: MapBounds }) => {
         return null;
     }
 
+    const props = { mapBounds, mapZoom, highlightedFixtureName, aerodromesInBbox };
+
+    return <>{loading || <AerodromesC {...props} />}</>;
+};
+
+const AerodromesC = memo(function AerodromesC({
+    mapBounds,
+    mapZoom,
+    highlightedFixtureName,
+    aerodromesInBbox,
+}: {
+    mapBounds: MapBounds;
+    mapZoom: number | undefined;
+    highlightedFixtureName?: string;
+    aerodromesInBbox?: Aerodrome[];
+}) {
+    const leafletMap = useMap();
+    const displayAllAerodromesLabels = leafletMap.getZoom() >= 9;
+    const { loading: weatherLoading, metarsByIcaoCode } = useWeather();
     return (
         <>
             {mapBounds &&
-                !loading &&
                 aerodromesInBbox?.map((aerodrome) => {
                     const { icaoCode } = aerodrome;
 
                     const shouldBeHighlighted = highlightedFixtureName === aerodrome.name;
+                    const metar = metarsByIcaoCode[`${icaoCode}`];
+
                     return (
                         <Fragment key={`ad-${icaoCode}`}>
                             <AdPolygon
                                 aerodrome={aerodrome}
-                                displayAerodromesLabels={displayAerodromesLabels}
+                                displayAerodromesLabels={
+                                    displayAllAerodromesLabels ||
+                                    (aerodrome.status === 'CAP' &&
+                                        (aerodrome.runways.mainRunway?.lengthInMeters > 2500 ||
+                                            (leafletMap.getZoom() >= 7 &&
+                                                aerodrome.runways.mainRunway?.lengthInMeters >
+                                                    2000) ||
+                                            (leafletMap.getZoom() >= 8 &&
+                                                aerodrome.runways.mainRunway?.lengthInMeters >
+                                                    1000)))
+                                }
                                 shouldBeHighlighted={shouldBeHighlighted}
+                                weatherInfo={
+                                    !weatherLoading && metar
+                                        ? {
+                                              ...getWeatherInfoFromMetar(metar),
+                                              display: !mapZoom || mapZoom <= 9 ? 'big' : 'small',
+                                          }
+                                        : undefined
+                                }
                             />
                         </Fragment>
                     );
                 })}
         </>
     );
-};
+});
 
 const AdDescription = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    border-radius: 3px;
 `;
+
 const AdIcaoCode = styled.div`
     font-family: 'Univers Next 630';
     font-weight: bold;
     font-size: 0.8em;
+`;
+
+const AdShortName = styled.div`
+    border-radius: 3px;
 `;
 
 const getColor = (status: Aerodrome['status']) => {
@@ -131,7 +226,7 @@ const Logo = styled(StyledAerodromeLogo)<{ $highlighted: boolean }>`
     `}
 `;
 
-const StyledTooltip = styled(Tooltip)`
+const StyledTooltip = styled(Tooltip)<{ $makeSpaceForWeatherInfo: boolean }>`
     line-height: 90%;
     background-color: transparent;
     box-shadow: unset;
@@ -144,9 +239,112 @@ const StyledTooltip = styled(Tooltip)`
     font-size: 1.2em;
     text-align: left;
     margin: 0px;
+    ${({ $makeSpaceForWeatherInfo }) => $makeSpaceForWeatherInfo && 'margin-top: 13px;'}
     padding-top: 0px;
     font-family: 'Univers';
 
+    ::before {
+        display: none;
+    }
+`;
+
+const MetarTafC = ({
+    weatherInfo,
+    aerodrome: { icaoCode, latLng },
+}: {
+    weatherInfo: WeatherInfo;
+    aerodrome: Aerodrome;
+}) => {
+    const l = toLatLng(latLng);
+
+    const UPDATE_INTERVAL_MS = 5000; // 5 seconds
+
+    const [elapsedMinutes, setElapsedMinutes] = useState<number>();
+
+    useEffect(() => {
+        const updateLabels = () => {
+            setElapsedMinutes(differenceInMinutes(new Date(), weatherInfo.metarDate));
+        };
+        updateLabels();
+        const interval = setInterval(updateLabels, UPDATE_INTERVAL_MS);
+
+        return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+    }, [weatherInfo.metarDate]);
+
+    const metarInfoCenter = pipe(
+        destination(point([l.lng, l.lat]), 3000, 340, {
+            units: 'meters',
+        }).geometry.coordinates,
+        fromtTurfPoint,
+    );
+
+    const metarInfoLabelCenter = pipe(
+        destination(point([l.lng, l.lat]), 4000, 310, {
+            units: 'meters',
+        }).geometry.coordinates,
+        fromtTurfPoint,
+    );
+
+    if (!elapsedMinutes || elapsedMinutes > 120) {
+        return null;
+    }
+
+    const isOld = elapsedMinutes > 40;
+
+    `${icaoCode}` === 'LFMT' && console.log('Render metar info for' + icaoCode);
+
+    return (
+        <>
+            <SVGOverlay
+                key={`aerodrome-metartaf-${icaoCode}-${weatherInfo.display}-${weatherInfo.metarDate}-${elapsedMinutes}`}
+                bounds={
+                    weatherInfo.display === 'big'
+                        ? boxAround(toCheapRulerPoint(l), 10000)
+                        : pipe(metarInfoCenter, toCheapRulerPoint, boxAroundP(3000))
+                }
+                attributes={{ class: 'overflow-visible' }}
+            >
+                <MetarTafIcon $weatherInfo={weatherInfo} />
+            </SVGOverlay>
+            {elapsedMinutes && (
+                <Pane name={`metar-info-${icaoCode}`} style={{ zIndex: Z_INDEX_MOUSE_TOOLTIP }}>
+                    <Marker position={metarInfoLabelCenter} icon={divIcon({})} opacity={0}>
+                        <MetarTooltip
+                            $old={isOld}
+                            direction="left"
+                            offset={[0, 0]}
+                            opacity={1}
+                            permanent
+                            className="overflow-visible"
+                            key={`metar-info-${icaoCode}-${weatherInfo.metarDate}-${elapsedMinutes}`}
+                        >
+                            {isOld ? `⚠️ ${elapsedMinutes}'` : `${elapsedMinutes}'`}
+                        </MetarTooltip>
+                    </Marker>
+                </Pane>
+            )}
+        </>
+    );
+};
+
+const MetarTooltip = styled(Tooltip)<{ $old?: boolean }>`
+    display: flex;
+    gap: 0.5rem;
+    background-color: #ececec;
+    border: none;
+    box-shadow: none;
+    border-radius: 30px;
+    color: #000000;
+    border: 1px solid #000000;
+    ${({ $old }) =>
+        $old &&
+        `
+        background-color: #000000;
+        border: 1px dashed #f7f300;
+        color: #f7f300;
+        
+        `}
+    line-height: 0.5em;
     ::before {
         display: none;
     }

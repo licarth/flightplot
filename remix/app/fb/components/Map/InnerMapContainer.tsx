@@ -19,7 +19,6 @@ import { isAerodrome, isVfrPoint, isVor } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
-import { LayerSwitchButton } from './LayerSwitchButton';
 import { useMainMap } from './MainMapContext';
 import { MouseEvents } from './MouseEvents';
 import { useTemporaryMapBounds } from './TemporaryMapCenterContext';
@@ -31,10 +30,10 @@ export const InnerMapContainer = () => {
     const routeContext = useRoute();
     const leafletMap = useMap();
     const { currentBackgroundLayer, bounds: mapBounds } = useMainMap();
+    const mapZoom = leafletMap.getZoom();
 
-    const shouldRenderAerodromes = leafletMap.getZoom() > 7;
-    const shouldRenderVors = leafletMap.getZoom() > 7;
-    const shouldRenderVfrPoints = leafletMap.getZoom() > 9;
+    const shouldRenderVors = mapZoom > 7;
+    const shouldRenderVfrPoints = mapZoom > 9;
 
     useEffect(() => {
         leafletMap && leafletMap.boxZoom.disable();
@@ -59,13 +58,11 @@ export const InnerMapContainer = () => {
                     </LayerGroup>
                     <Airspaces mapBounds={mapBounds} />
                     <DangerZones mapBounds={mapBounds} />
-                    {shouldRenderAerodromes && (
-                        <LayerGroup>
-                            <Pane name={`aerodromes`} style={{ zIndex: Z_INDEX_AD_LOGO }}>
-                                <Aerodromes mapBounds={mapBounds} />
-                            </Pane>
-                        </LayerGroup>
-                    )}
+                    <LayerGroup>
+                        <Pane name={`aerodromes`} style={{ zIndex: Z_INDEX_AD_LOGO }}>
+                            <Aerodromes mapBounds={mapBounds} mapZoom={mapZoom} />
+                        </Pane>
+                    </LayerGroup>
                     {shouldRenderVors && (
                         <LayerGroup>
                             <Vors mapBounds={mapBounds} />
@@ -79,7 +76,7 @@ export const InnerMapContainer = () => {
                 </>
             )}
             <NmScale />
-            <LayerSwitchButton />
+            {/* <LayerSwitchButton /> */}
         </>
     );
 };
@@ -90,8 +87,8 @@ const DisplayedLayer = ({ layer }: DisplayedLayerProps) => {
     return (
         <>
             {layer === 'osm' && <OpenStreetMapLayer />}
-            {layer === 'oaci' && <SatelliteLayer />}
-            {layer === 'sat' && <OaciLayer />}
+            {layer === 'sat' && <SatelliteLayer />}
+            {layer === 'oaci' && <OaciLayer />}
         </>
     );
 };

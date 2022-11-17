@@ -290,7 +290,7 @@ const MetarTafC = ({
         return null;
     }
 
-    const isOld = elapsedMinutes > 35;
+    const isOld = elapsedMinutes > 40;
 
     `${icaoCode}` === 'LFMT' && console.log('Render metar info for' + icaoCode);
 
@@ -319,7 +319,6 @@ const MetarTafC = ({
                             className="overflow-visible"
                             key={`metar-info-${icaoCode}-${weatherInfo.metarDate}-${elapsedMinutes}`}
                         >
-                            {/* {elapsedMinutes <= 15 ? `• ${elapsedMinutes}m` : 'Old data'} */}
                             {isOld ? `⚠️ ${elapsedMinutes}'` : `${elapsedMinutes}'`}
                         </MetarTooltip>
                     </Marker>

@@ -29,7 +29,7 @@ const MetarTafIcon = styled(MetarTaf)<{ $weatherInfo: WeatherInfo }>`
     #metar {
         fill: ${({ $weatherInfo }) => {
             if ($weatherInfo.metar === 'VFR') return '#00e100';
-            if ($weatherInfo.metar === 'MVFR') return '#3421ff';
+            if ($weatherInfo.metar === 'MVFR') return '#ff0000';
             return '#ff0000';
         }} !important;
     }

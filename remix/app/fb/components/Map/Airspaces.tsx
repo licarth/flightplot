@@ -20,6 +20,7 @@ export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
     const {
         filters: { showAirspacesStartingBelowFL },
         airspaceTypesToDisplay,
+        map,
     } = useMainMap();
 
     const highlightedAirspaces = airspaces.map((a) => a.name);
@@ -40,6 +41,7 @@ export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
                             ctr={airspace}
                             i={i}
                             highlighted={highlightedAirspaces.includes(airspace.name)}
+                            displayLabels={map!.getZoom() >= 10}
                         />
                     ))}
         </LayerGroup>

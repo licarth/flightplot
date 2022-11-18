@@ -15,7 +15,7 @@
         "start": "remix-serve build",
         "test": "jest",
         "test-pr": "jest",
-        "storybook": "start-storybook -p 6006",
+        "storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
         "build-storybook": "build-storybook",
         "emulators": "firebase emulators:start --only database,firestore,auth"
     },

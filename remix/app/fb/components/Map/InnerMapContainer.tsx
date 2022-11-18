@@ -160,6 +160,7 @@ export const AirspaceContainer = styled.div`
     position: relative;
     text-align: center;
     font-family: 'Futura';
+    font-weight: 900;
     border-radius: 2px;
 `;
 

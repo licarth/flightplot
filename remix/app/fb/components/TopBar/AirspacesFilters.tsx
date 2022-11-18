@@ -4,14 +4,18 @@ import _ from 'lodash';
 import type { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { Colors } from '../Map/Colors';
+import { useFixtureFocus } from '../Map/FixtureFocusContext';
 import type { DisplayedLayerProps } from '../Map/InnerMapContainer';
 import { useMainMap } from '../Map/MainMapContext';
+import { useSearchElement } from '../SearchItemContext';
 import { useWeather } from '../WeatherContext';
 
 const style = {
     fontSize: 12,
     fontFamily: 'Univers',
 };
+
+const MAX_CEILING = 120;
 
 const marks: SliderMarks = {
     0: {
@@ -38,7 +42,7 @@ const marks: SliderMarks = {
         style,
         label: 'FL115',
     },
-    120: {
+    [MAX_CEILING]: {
         style,
         label: 'TOUS',
     },
@@ -53,91 +57,119 @@ export const AirspacesFilters = () => {
         },
     } = useMainMap();
 
+    const { clickedLocation } = useFixtureFocus();
+    const { item } = useSearchElement();
+
     const { weatherEnabled, setWeatherEnabled } = useWeather();
 
+    const formatter = (v: number): string =>
+        v < MAX_CEILING
+            ? marks[v]
+                ? //@ts-ignore can't be bothered to fix this
+                  `${marks[v]?.label}`
+                : v <= 50
+                ? `${v * 100} ft.`
+                : v == 0
+                ? 'SFC'
+                : `FL${v}`
+            : v === 0
+            ? 'SFC'
+            : 'TOUS';
+
+    const marks2 = {
+        ...marks,
+        [showAirspacesStartingBelowFL >= MAX_CEILING ? MAX_CEILING : showAirspacesStartingBelowFL]:
+            {
+                style: { ...style, color: Colors.flightplotLogoBlue, textDecoration: 'underline' },
+                label: formatter(showAirspacesStartingBelowFL),
+            },
+    };
     return (
-        <Container>
-            <Vertical>
-                <SectionTitle>🗺</SectionTitle>
-                <MapBackgroundPickButton layer="osm">OSM</MapBackgroundPickButton>
-                <MapBackgroundPickButton layer="oaci">IGN OACI</MapBackgroundPickButton>
-                <MapBackgroundPickButton layer="sat">Satellite</MapBackgroundPickButton>
-                <SectionTitle>🌦</SectionTitle>
-                <LabelledSwitch>
-                    METAR
-                    <Switch
-                        checked={weatherEnabled}
-                        size={'small'}
-                        onChange={(v) => setWeatherEnabled(v)}
-                    />
-                </LabelledSwitch>
-                <br />
-                <SectionTitle>Espaces</SectionTitle>
-                <LabelledSwitch $color={Colors.sivThinBorder}>
-                    SIV
-                    <GreenSwitch
-                        checked={SIV}
-                        size={'small'}
-                        title="SIV"
-                        onChange={(v) =>
-                            setFilters((f) => ({
-                                ..._.set(f, 'displayModePerAirspaceType.SIV', v),
-                            }))
-                        }
-                    />
-                </LabelledSwitch>
-                <LabelledSwitch $color={Colors.pThinBorder}>
-                    R
-                    <RedSwitch
-                        checked={R}
-                        size={'small'}
-                        title="R"
-                        onChange={(v) =>
-                            setFilters((f) => ({ ..._.set(f, 'displayModePerAirspaceType.R', v) }))
-                        }
-                    />
-                </LabelledSwitch>
-                <LabelledSwitch $color={Colors.pThinBorder}>
-                    D
-                    <RedSwitch
-                        checked={D}
-                        size={'small'}
-                        title="D"
-                        onChange={(v) =>
-                            setFilters((f) => ({ ..._.set(f, 'displayModePerAirspaceType.D', v) }))
-                        }
-                    />
-                </LabelledSwitch>
-            </Vertical>
-            <SectionTitle>Plafond</SectionTitle>
-            <StyledSlider
-                vertical
-                marks={marks}
-                defaultValue={showAirspacesStartingBelowFL}
-                min={0}
-                max={120}
-                step={5}
-                tooltip={{
-                    formatter: (v) =>
-                        v
-                            ? marks[v]
-                                ? //@ts-ignore can't be bothered to fix this
-                                  `${marks[v]?.label}`
-                                : v <= 50
-                                ? `${v * 100} ft.`
-                                : `FL${v}`
-                            : '',
-                }}
-                onChange={(v) =>
-                    setFilters((f) => ({ ...f, showAirspacesStartingBelowFL: v === 120 ? 400 : v }))
-                }
-            />
-        </Container>
+        <OuterContainer>
+            <Container $isHidden={window.innerWidth < 600 && (!!clickedLocation || !!item)}>
+                <Vertical>
+                    <SectionTitle>🗺</SectionTitle>
+                    <MapBackgroundPickButton layer="osm">OSM</MapBackgroundPickButton>
+                    <MapBackgroundPickButton layer="oaci">IGN OACI</MapBackgroundPickButton>
+                    <MapBackgroundPickButton layer="sat">Satellite</MapBackgroundPickButton>
+                    <SectionTitle>🌦</SectionTitle>
+                    <LabelledSwitch>
+                        METAR
+                        <Switch
+                            checked={weatherEnabled}
+                            size={'small'}
+                            onChange={(v) => setWeatherEnabled(v)}
+                        />
+                    </LabelledSwitch>
+                    <br />
+                    <SectionTitle>Espaces</SectionTitle>
+                    <LabelledSwitch $color={Colors.sivThinBorder}>
+                        SIV
+                        <GreenSwitch
+                            checked={SIV}
+                            size={'small'}
+                            title="SIV"
+                            onChange={(v) =>
+                                setFilters((f) => ({
+                                    ..._.set(f, 'displayModePerAirspaceType.SIV', v),
+                                }))
+                            }
+                        />
+                    </LabelledSwitch>
+                    <LabelledSwitch $color={Colors.pThinBorder}>
+                        R
+                        <RedSwitch
+                            checked={R}
+                            size={'small'}
+                            title="R"
+                            onChange={(v) =>
+                                setFilters((f) => ({
+                                    ..._.set(f, 'displayModePerAirspaceType.R', v),
+                                }))
+                            }
+                        />
+                    </LabelledSwitch>
+                    <LabelledSwitch $color={Colors.pThinBorder}>
+                        D
+                        <RedSwitch
+                            checked={D}
+                            size={'small'}
+                            title="D"
+                            onChange={(v) =>
+                                setFilters((f) => ({
+                                    ..._.set(f, 'displayModePerAirspaceType.D', v),
+                                }))
+                            }
+                        />
+                    </LabelledSwitch>
+                </Vertical>
+                <SectionTitle>Plafond</SectionTitle>
+                <StyledSlider
+                    vertical
+                    marks={marks2}
+                    defaultValue={showAirspacesStartingBelowFL}
+                    min={0}
+                    max={MAX_CEILING}
+                    step={5}
+                    tooltip={{
+                        formatter,
+                    }}
+                    onChange={(v) =>
+                        setFilters((f) => ({
+                            ...f,
+                            showAirspacesStartingBelowFL: v === MAX_CEILING ? 400 : v,
+                        }))
+                    }
+                />
+            </Container>
+        </OuterContainer>
     );
 };
 
 const StyledSlider = styled(Slider)`
     height: 300px;
+    flex-shrink: 1;
+    min-height: 200px;
 `;
 
 const Vertical = styled.div`
@@ -148,22 +180,34 @@ const Vertical = styled.div`
     align-self: center;
     font-size: 5;
     overflow: hidden;
+    flex-shrink: 0;
 `;
 
-const Container = styled.div`
+const Container = styled.div<{ $isHidden: boolean }>`
     display: flex;
     flex-direction: column;
     align-items: right;
+    position: relative;
     gap: 1rem;
-    position: absolute;
-    top: 20px;
-    right: 10px;
     z-index: 700;
     background-color: white;
     border-radius: 5px;
     padding: 5px;
     border: 2px solid ${Colors.flightplotLogoBlue};
     font-family: Univers;
+    height: 100%;
+    overflow: hidden;
+    ${({ $isHidden }) => $isHidden && 'display: none;'}
+`;
+
+const OuterContainer = styled.div`
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    padding: 10px;
 `;
 
 const LabelledSwitch = styled.div<{ $color?: string }>`

@@ -156,6 +156,16 @@ export const SearchBar = ({ airacData }: { airacData?: AiracData }) => {
                     setSelectedIndex(undefined);
                 }}
             />
+            <MobileStyledInput
+                allowClear
+                placeholder="Rechercher un aérodrome, un point VFR, une zone..."
+                autoFocus
+                value={searchTerm}
+                onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setSelectedIndex(undefined);
+                }}
+            />
             <ResultsContainer $itemSelected={!!selectedIndex}>
                 <FixtureSearchResults
                     results={fixturesResults}
@@ -179,8 +189,8 @@ const Container = styled.div`
     max-width: 90vw;
     font-family: 'Futura';
     color: ${Colors.ctrBorderBlue};
-    /* line-height: 1rem; */
     position: relative;
+    margin-right: 0.4rem;
 `;
 
 const AirspaceSearchResults = ({
@@ -335,7 +345,7 @@ const ResultsContainer = styled.div<{ $itemSelected?: boolean }>`
     background-color: #fff;
     /* border: 1px solid #000; */
     max-height: 80vh;
-    z-index: 700;
+    z-index: 1100;
     overflow-y: scroll;
     width: 100%;
 
@@ -357,11 +367,19 @@ const ResultsContainer = styled.div<{ $itemSelected?: boolean }>`
     }
 `;
 
-const StyledInput = styled(Input.Search)`
+const StyledInput = styled(Input)`
     width: 500px;
     max-width: 35vw;
-    @media (max-width: 500px) {
-        width: 100px;
+    @media (max-width: 550px) {
+        display: none;
+    }
+    align-self: center;
+    margin-right: 0.5rem;
+`;
+
+const MobileStyledInput = styled(Input)`
+    @media (min-width: 551px) {
+        display: none;
     }
     align-self: center;
     margin-right: 0.5rem;

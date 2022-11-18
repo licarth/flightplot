@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import type { Aerodrome, VhfFrequencyWithRemarks } from 'ts-aerodata-france';
 import type { Route } from '../../../domain';
 import { AerodromeWaypoint } from '../../../domain';
+import { useWeather } from '../WeatherContext';
 
 export const NavigationLog = ({
     route,
@@ -81,42 +82,48 @@ export const NavigationLog = ({
     </NavlogContainer>
 );
 
-const AirportDetails = ({ aerodrome }: { aerodrome: Aerodrome }) => (
-    <AirportTable>
-        <AirportRow>
-            <AerodromeNameCell>
-                <div>{aerodrome.name}</div>
-                <div>{aerodrome.icaoCode}</div>
-                <div>{aerodrome.aerodromeAltitude} ft.</div>
-                <div>
-                    {aerodrome.runways.runways
-                        .map(
-                            ({ name, lengthInMeters, surface }) =>
-                                `${name}(${lengthInMeters}m - ${surface})`,
-                        )
-                        .join(', ')}
-                </div>
-            </AerodromeNameCell>
-            <FrequenciesCell>
-                <div>
-                    <b>TWR</b> {formatFrequencyTable(aerodrome.frequencies.tower)}
-                </div>
-                <div>
-                    <b>GND</b> {formatFrequencyTable(aerodrome.frequencies.ground)}
-                </div>
-                <div>
-                    <b>AFIS</b> {formatFrequencyTable(aerodrome.frequencies.afis)}
-                </div>
-                <div>
-                    <b>ATIS</b> {formatFrequencyTable(aerodrome.frequencies.atis)}
-                </div>
-                <div>
-                    <b>A/A</b> {formatFrequencyTable(aerodrome.frequencies.autoinfo)}
-                </div>
-            </FrequenciesCell>
-        </AirportRow>
-    </AirportTable>
-);
+const AirportDetails = function ({ aerodrome }: { aerodrome: Aerodrome }) {
+    const { metarsByIcaoCode } = useWeather();
+    const metarString = metarsByIcaoCode[`${aerodrome.icaoCode}`]?.metarString;
+
+    return (
+        <AirportTable>
+            <AirportRow>
+                <AerodromeNameCell>
+                    <div>{aerodrome.name}</div>
+                    <div>{`${aerodrome.icaoCode}`}</div>
+                    <div>{`${aerodrome.aerodromeAltitude}`} ft.</div>
+                    <div>
+                        {aerodrome.runways.runways
+                            .map(
+                                ({ name, lengthInMeters, surface }) =>
+                                    `${name}(${lengthInMeters}m - ${surface})`,
+                            )
+                            .join(', ')}
+                    </div>
+                </AerodromeNameCell>
+                <FrequenciesCell>
+                    <div>
+                        <b>TWR</b> {formatFrequencyTable(aerodrome.frequencies.tower)}
+                    </div>
+                    <div>
+                        <b>GND</b> {formatFrequencyTable(aerodrome.frequencies.ground)}
+                    </div>
+                    <div>
+                        <b>AFIS</b> {formatFrequencyTable(aerodrome.frequencies.afis)}
+                    </div>
+                    <div>
+                        <b>ATIS</b> {formatFrequencyTable(aerodrome.frequencies.atis)}
+                    </div>
+                    <div>
+                        <b>A/A</b> {formatFrequencyTable(aerodrome.frequencies.autoinfo)}
+                    </div>
+                    <MetarLine>{metarString || null}</MetarLine>
+                </FrequenciesCell>
+            </AirportRow>
+        </AirportTable>
+    );
+};
 
 const altitudeInfo = (from: number, to: number) => {
     if (from < to) {
@@ -287,3 +294,5 @@ const NavlogContainer = styled.div<{
         }
     }
 `;
+
+const MetarLine = styled.div``;

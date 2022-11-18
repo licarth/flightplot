@@ -109,7 +109,7 @@ export const AirspacesFilters = () => {
                     />
                 </LabelledSwitch>
             </Vertical>
-            <SectionTitle>FL Max</SectionTitle>
+            <SectionTitle>Plafond</SectionTitle>
             <StyledSlider
                 vertical
                 marks={marks}
@@ -146,7 +146,6 @@ const Vertical = styled.div`
     gap: 0.25rem;
     /* width: 30px; */
     align-self: center;
-    font-family: Univers;
     font-size: 5;
     overflow: hidden;
 `;
@@ -164,6 +163,7 @@ const Container = styled.div`
     border-radius: 5px;
     padding: 5px;
     border: 2px solid ${Colors.flightplotLogoBlue};
+    font-family: Univers;
 `;
 
 const LabelledSwitch = styled.div<{ $color?: string }>`

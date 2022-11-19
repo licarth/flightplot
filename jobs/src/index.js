@@ -1,4 +1,4 @@
-import { fetchMetars } from "./fetchMetars";
+import { fetchMetars } from "./fetchMetarsNoaa.js";
 import { fetchTafs } from "./fetchTafs";
 import { initializeApp } from "./initializeApp";
 import cron from "node-cron";

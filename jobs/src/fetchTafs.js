@@ -3,6 +3,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import fetch from "node-fetch";
 import { AiracData } from "ts-aerodata-france";
 import dataJson from "ts-aerodata-france/build/jsonData/2022-11-03.json" assert { type: "json" };
+import { initializeApp } from "./initializeApp";
 
 dotenv.config();
 const TAF_API_URL = "https://api.checkwx.com/taf";
@@ -16,6 +17,8 @@ async function getAllFrenchAirports() {
 }
 
 export const fetchTafs = async () => {
+  const { firestore } = initializeApp();
+
   const icaoCodes = await getAllFrenchAirports();
 
   const response = await fetch(`${TAF_API_URL}/${icaoCodes}`, {
@@ -30,7 +33,6 @@ export const fetchTafs = async () => {
   const tafs = (await response.json()).data;
   console.log(`found ${tafs.length} tafs`);
 
-  const db = getFirestore();
-  await db.collection("tafs").add({ queriedAt: new Date(), tafs });
+  await firestore.collection("tafs").add({ queriedAt: new Date(), tafs });
   console.log(`wrote ${tafs.length} tafs to firestore`);
 };

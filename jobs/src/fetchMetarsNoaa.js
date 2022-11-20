@@ -1,9 +1,9 @@
 import * as dotenv from "dotenv";
 import { AiracData } from "ts-aerodata-france";
 import dataJson from "ts-aerodata-france/build/jsonData/2022-11-03.json" assert { type: "json" };
-import { getFirestore } from "firebase-admin/firestore";
 import fetch from "node-fetch";
 import _ from "lodash";
+import { initializeApp } from "./initializeApp";
 
 dotenv.config();
 const URL_PREFIX = "https://tgftp.nws.noaa.gov/data/observations/metar/cycles";
@@ -12,10 +12,105 @@ const padTo2Digits = (number) => {
   return number.toString().padStart(2, "0");
 };
 
+function getWaitingDelayInSecondsForSecond(second) {
+  const delays = [
+    [10, 2],
+    [60, 5],
+    [90, 2],
+    [2 * 60, 5],
+    [5 * 60, 20],
+    [10 * 60, 60],
+    [30 * 60, 5 * 60],
+  ];
+  for (const [threshold, delay] of _.sortBy(
+    delays,
+    ([threshold]) => threshold
+  )) {
+    if (second <= threshold) {
+      return delay;
+    }
+  }
+  return -1;
+}
+
 export const fetchMetars = async () => {
+  const searchStart = new Date();
   const frenchAirports = await getAllFrenchAirports();
 
   const url = `${URL_PREFIX}/${padTo2Digits(new Date().getUTCHours())}Z.TXT`;
+  const search = async () => fetchData(url, frenchAirports);
+
+  let lastModified = await getLastModifiedDate(url);
+
+  let metars = await search();
+  while (true) {
+    const newLastModified = await getLastModifiedDate(url);
+    if (isAfter(newLastModified, lastModified)) {
+      console.log("newLastModified", newLastModified);
+      console.log("lastModified", lastModified);
+      console.log("new metars found in HEAD request, fetching them");
+      lastModified = newLastModified;
+      metars = compare(metars, await search());
+    } else {
+      console.log("no new metars found in HEAD request, waiting...");
+    }
+    const secondsSinceSearchStart = differenceInSeconds(
+      new Date(),
+      searchStart
+    );
+    console.log("secondsSinceSearchStart", secondsSinceSearchStart);
+    const waitingDelayInSeconds = getWaitingDelayInSecondsForSecond(
+      secondsSinceSearchStart
+    );
+
+    if (waitingDelayInSeconds === -1) {
+      break;
+    }
+
+    console.log(
+      `waiting ${waitingDelayInSeconds} seconds before next search for metars`
+    );
+    await waitForSeconds(waitingDelayInSeconds);
+  }
+};
+
+const compare = (existingMetarSet, newMetarSet) => {
+  const newMetars = _.difference(
+    Object.keys(newMetarSet || {}),
+    Object.keys(existingMetarSet || {})
+  );
+
+  console.log(
+    `newMetars: ${newMetars.length > 0 ? newMetars.join(", ") : " -- "}`
+  );
+
+  return newMetarSet;
+};
+
+const isAfter = (date1, date2) => {
+  return date1.getTime() > date2.getTime();
+};
+
+const differenceInSeconds = (date1, date2) => {
+  return (date1.getTime() - date2.getTime()) / 1000;
+};
+
+const waitForSeconds = (delayInSeconds) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, delayInSeconds * 1000);
+  });
+};
+
+const getLastModifiedDate = async (url) => {
+  const lastUpdatedHeader = await fetch(url, { method: "HEAD" });
+  const lastModifiedHeader = lastUpdatedHeader.headers.get("last-modified");
+  return new Date(lastModifiedHeader);
+};
+
+async function fetchData(url, frenchAirports) {
+  const { firestore } = initializeApp();
   console.log(`fetching metars from ${url}`);
   const response = await fetch(url);
 
@@ -29,16 +124,8 @@ export const fetchMetars = async () => {
 
   console.log(`found ${metars.length} metars`);
 
-  const frenchMetars = metars.filter((metar) =>
-    frenchAirports.includes(metar.substring(0, 4))
-  );
-
-  console.log(
-    `found ${frenchMetars.length} french metars out of ${metars.length} metars`
-  );
-
   // There are many metars for the same airport, we only want the latest one, and the shortest one
-  const frenchMetarsByIcaoCode = frenchMetars.reduce((acc, metar) => {
+  const metarsByIcaoCode = metars.reduce((acc, metar) => {
     const airport = metar.substring(0, 4);
     if (acc[airport] === undefined) {
       acc[airport] = metar;
@@ -55,34 +142,46 @@ export const fetchMetars = async () => {
     return acc;
   }, {});
 
+  const frenchMetarsByIcaoCode = _.pickBy(metarsByIcaoCode, (metar) => {
+    return frenchAirports.includes(metar.substring(0, 4));
+  });
+
   console.log(
-    `found ${Object.keys(frenchMetarsByIcaoCode).length} unique french metars`
+    `found ${Object.keys(frenchMetarsByIcaoCode).length} french metars out of ${
+      Object.keys(metarsByIcaoCode).length
+    } metars`
   );
-  const db = getFirestore();
 
   // merge old and new metars per airport
-
   // fetch current metars
-  const metarsRef = db
+  const metarsRef = firestore
     .collection("metars")
     .orderBy("queriedAt", "desc")
     .limit(1);
 
   const metarsSnapshot = (await metarsRef.get()).docs[0];
-  const currentMetars = metarsSnapshot.data().metars; // string[]
+  const currentMetars = metarsSnapshot?.data().metars || []; // string[]
 
-  const currentMetarsByIcaoCode = _.keyBy(currentMetars, (metar) =>
-    icaoCode(metar)
+  const currentMetarsByIcaoCode = _.keyBy(
+    currentMetars,
+    (metar) => `${icaoCode(metar)}`
   );
 
   const newMetars = { ...currentMetarsByIcaoCode, ...frenchMetarsByIcaoCode };
 
-  await db.collection("metars").add({
+  if (_.isEqual(currentMetarsByIcaoCode, newMetars)) {
+    console.log("no new metars, skipping update");
+    return;
+  }
+
+  await firestore.collection("metars").add({
     queriedAt: new Date(),
     metars: Object.values(newMetars),
   });
   console.log("wrote metars to firestore");
-};
+
+  return metarsByIcaoCode;
+}
 
 async function getAllFrenchAirports() {
   return (await AiracData.loadCycle(dataJson)).aerodromes

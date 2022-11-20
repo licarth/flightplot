@@ -182,7 +182,7 @@ async function fetchData(url, frenchAirports, log) {
   });
   log("wrote metars to firestore");
 
-  return metarsByIcaoCode;
+  return frenchMetarsByIcaoCode;
 }
 
 async function getAllFrenchAirports() {

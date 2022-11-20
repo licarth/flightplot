@@ -68,7 +68,7 @@ export const fetchMetars = async () => {
     );
 
     if (waitingDelayInSeconds === -1) {
-      log(searchLogPrefix);
+      log("waitingDelayInSeconds === -1, exiting");
       break;
     }
 

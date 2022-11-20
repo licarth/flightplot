@@ -15,7 +15,7 @@ import { boxAround, boxAroundP } from './boxAround';
 import type { MapBounds } from './DisplayedContent';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { getWeatherInfoFromMetar } from './getWeatherInfoFromMetar';
-import { Z_INDEX_AD_NAMES, Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
+import { Z_INDEX_AD_NAMES, Z_INDEX_MOUSE_AIRSPACE_TOOLTIP } from './zIndex';
 
 export type WeatherInfo = {
     metarDate: Date;
@@ -307,7 +307,10 @@ const MetarTafC = ({
                 <MetarTafIcon $weatherInfo={weatherInfo} />
             </SVGOverlay>
             {elapsedMinutes && (
-                <Pane name={`metar-info-${icaoCode}`} style={{ zIndex: Z_INDEX_MOUSE_TOOLTIP }}>
+                <Pane
+                    name={`metar-info-${icaoCode}`}
+                    style={{ zIndex: Z_INDEX_MOUSE_AIRSPACE_TOOLTIP }}
+                >
                     <Marker position={metarInfoLabelCenter} icon={divIcon({})} opacity={0}>
                         <MetarTooltip
                             $old={isOld}

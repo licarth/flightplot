@@ -6,6 +6,6 @@ cron.schedule("*/5 * * * *", async () => {
   await fetchTafs();
 });
 
-cron.schedule("0,30 * * * *", async () => {
+cron.schedule("*/5 * * * *", async () => {
   await fetchMetars();
 });

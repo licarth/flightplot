@@ -10,6 +10,7 @@ import dragData from 'chartjs-plugin-dragdata';
 import * as _ from 'lodash';
 import { Chart } from 'react-chartjs-2';
 
+import { primaryInput } from 'detect-it';
 import { max, min } from 'lodash';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
@@ -42,9 +43,7 @@ type Props = {
 };
 
 function isTouchDevice() {
-    return (
-        'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0
-    );
+    return primaryInput === 'touch';
 }
 
 export const VerticalProfileChart = ({

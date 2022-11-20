@@ -12,7 +12,6 @@ export const AiracDataProvider: React.FC<PropsWithChildren> = ({ children }) => 
 
     useEffect(() => {
         AiracData.loadCycle(currentCycle).then((data) => {
-            console.log(data.aerodromes.length);
             setAiracData(data);
         });
     }, []);

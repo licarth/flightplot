@@ -12,6 +12,7 @@ import { StyledAerodromeLogo } from '../StyledAerodromeLogo';
 import { useAiracData } from '../useAiracData';
 import { useWeather } from '../WeatherContext';
 import { boxAround, boxAroundP } from './boxAround';
+import { Colors } from './Colors';
 import type { MapBounds } from './DisplayedContent';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { getWeatherInfoFromMetar } from './getWeatherInfoFromMetar';
@@ -216,12 +217,11 @@ const Logo = styled(StyledAerodromeLogo)<{ $highlighted: boolean }>`
         `
     filter: drop-shadow(3px 5px 1px rgb(0 0 0 / 0.4));
     path {
-        // fill in red
-        fill: red !important;
-        stroke: red !important;
+        fill: ${Colors.highlitFixture} !important;
+        stroke: ${Colors.highlitFixture} !important;
     }
     circle {
-        stroke: red !important;
+        stroke: ${Colors.highlitFixture} !important;
     }
     `}
 `;

@@ -5,10 +5,11 @@ import styled from 'styled-components';
 import type { VfrPoint } from 'ts-aerodata-france';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
 import { fromtTurfPoint, toLeafletLatLng } from '../../../domain';
+import { isVfrPoint } from '../FixtureDetails/FixtureDetails';
 import { useAiracData } from '../useAiracData';
 import { boxAround } from './boxAround';
+import { Colors } from './Colors';
 import type { MapBounds } from './DisplayedContent';
-import { isVfrPoint } from './FixtureDetails';
 import type { FocusableFixture } from './FixtureFocusContext';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { Z_INDEX_VFR_NAMES } from './zIndex';
@@ -47,7 +48,7 @@ const StyledTooltip = styled(Tooltip)<{ $highlighted: boolean }>`
     background-color: none;
     border: none;
     border-radius: none;
-    color: ${({ $highlighted }) => ($highlighted ? 'red' : '#002e94')};
+    color: ${({ $highlighted }) => ($highlighted ? Colors.highlitFixture : '#002e94')};
     /* -webkit-text-stroke: 0.5px white; */
     white-space: nowrap;
     text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
@@ -90,7 +91,6 @@ export const VfrPointC = memo(function VfrPoint({
                 <div title={`${icaoCode}`}>
                     <SVGOverlay
                         attributes={{
-                            stroke: 'red',
                             class: 'overflow-visible',
                         }}
                         bounds={bounds}
@@ -99,7 +99,7 @@ export const VfrPointC = memo(function VfrPoint({
                         <StyledPolygon
                             key={name + shouldBeHighlighted}
                             $highlighted={shouldBeHighlighted}
-                            color={shouldBeHighlighted ? 'red' : '#002e94'}
+                            color={shouldBeHighlighted ? Colors.highlitFixture : '#002e94'}
                             positions={[top, left, right]}
                         />
                         <Polygon color="#002e94" positions={[right]}>

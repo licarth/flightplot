@@ -1,5 +1,6 @@
 import type { Line } from 'cheap-ruler';
 import CheapRuler from 'cheap-ruler';
+import { primaryInput } from 'detect-it';
 import { Fragment, useState } from 'react';
 import { Circle, Pane, Polyline, SVGOverlay, Tooltip } from 'react-leaflet';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
@@ -143,9 +144,16 @@ export const FlightPlanningLayer = ({
                                     name={`tooltip-add-point-${i}`}
                                     style={{ zIndex: Z_INDEX_MOUSE_ADD_POINT_TOOLTIP }}
                                 >
-                                    <Tooltip direction={'right'} offset={[0, 0]} opacity={1} sticky>
-                                        Cliquez pour ajouter un point
-                                    </Tooltip>
+                                    {primaryInput === 'mouse' && (
+                                        <Tooltip
+                                            direction={'right'}
+                                            offset={[0, 0]}
+                                            opacity={1}
+                                            sticky
+                                        >
+                                            Cliquez pour ajouter un point
+                                        </Tooltip>
+                                    )}
                                 </Pane>
                             </Polyline>
                         )}

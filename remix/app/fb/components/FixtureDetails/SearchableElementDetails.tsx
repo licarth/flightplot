@@ -1,4 +1,5 @@
 import type { SearcheableElement } from '../SearchBar';
+import { FixtureRow } from './FixtureDetails';
 
 type SearchableElementDetailsProps = {
     searchableElement: SearcheableElement;
@@ -9,5 +10,5 @@ export const SearchElementDetails = ({
     searchableElement,
     onClose,
 }: SearchableElementDetailsProps) => {
-    return <>{searchableElement?.name}</>;
+    return <FixtureRow fixture={searchableElement}></FixtureRow>;
 };

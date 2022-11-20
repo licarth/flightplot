@@ -29,7 +29,7 @@ if (environmentVariable('PUBLIC_USE_EMULATORS') === 'true' || isStorybook()) {
     console.log('🔸 Using Emulators in the Frontend');
     connectDatabaseEmulator(db, 'localhost', 9000);
     connectFirestoreEmulator(firestoreDb, 'localhost', 8080);
-    connectAuthEmulator(auth, 'http://localhost:8082');
+    connectAuthEmulator(auth, 'http://localhost:8082', { disableWarnings: true });
 }
 
 export { db, app, firestoreDb, auth };

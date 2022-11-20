@@ -3,16 +3,12 @@ import { useEffect, useRef, useState } from 'react';
 import { MapContainer } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
-import { useHelpPage } from '../HelpPageContext';
+import { FixtureDetailsWindow } from '../FixtureDetails/FixtureDetailsWindow';
 import { useMouseMode } from '../MouseModeContext';
-import { useSearchElement } from '../SearchItemContext';
-import { AirspacesFilters } from '../TopBar/AirspacesFilters';
+import { MapOverlayMenu } from '../TopBar/MapOverlayMenu';
 import { Colors } from './Colors';
-import { FixtureDetails } from './FixtureDetails';
-import { useFixtureFocus } from './FixtureFocusContext';
 import { InnerMapContainer } from './InnerMapContainer';
 import { useMainMap } from './MainMapContext';
-import { SearchElementDetails } from './SearchableElementDetails';
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 8;
@@ -45,7 +41,7 @@ export const LeafletMapContainer = () => {
     return (
         <MapSizeDetector ref={ref}>
             <FixtureDetailsWindow />
-            <AirspacesFilters />
+            <MapOverlayMenu />
             {MapContainer && (
                 <Outer $cursor={cursor}>
                     <StyledMapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
@@ -54,32 +50,6 @@ export const LeafletMapContainer = () => {
                 </Outer>
             )}
         </MapSizeDetector>
-    );
-};
-
-const FixtureDetailsWindow = () => {
-    const { item } = useSearchElement();
-
-    const { isOpen: isHelpOpen } = useHelpPage();
-
-    const { clickedLocation, fixtures, clear: clearFixture } = useFixtureFocus();
-
-    const onClose = () => {
-        clearFixture();
-    };
-
-    const isOpen = clickedLocation || item;
-
-    return (
-        isOpen && (
-            <FixtureDetailsContainer isHelpOpen={isHelpOpen}>
-                <CloseButton onClick={onClose} />
-                {clickedLocation && !item ? (
-                    <FixtureDetails fixtures={fixtures} clickedLocation={clickedLocation} />
-                ) : null}
-                {item && <SearchElementDetails searchableElement={item} onClose={() => {}} />}
-            </FixtureDetailsContainer>
-        )
     );
 };
 
@@ -105,11 +75,8 @@ const Outer = styled.div<{ $cursor: string }>`
     display: flex;
 `;
 
-const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
+export const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
     transition: all 0.3s;
-    padding: 1rem;
-    padding-top: 2rem;
-    padding-right: 0.5rem;
     right: ${({ isHelpOpen }) => (window.innerWidth > 600 ? 120 : 0) + (isHelpOpen ? 500 : 0)}px;
     top: 10px;
     width: ${() => (window.innerWidth > 600 ? '350px' : '100%')};
@@ -126,7 +93,7 @@ const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
     border: 2px solid ${Colors.flightplotLogoBlue};
 `;
 
-const CloseButton = styled.div`
+export const CloseButton = styled.div`
     position: absolute;
     :after {
         content: '×';

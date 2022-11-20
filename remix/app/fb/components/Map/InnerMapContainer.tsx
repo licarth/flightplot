@@ -1,10 +1,12 @@
 import { NmScale } from '@marfle/react-leaflet-nmscale';
+import { primaryInput } from 'detect-it';
 import _ from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { LayerGroup, Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Airspace, DangerZone } from 'ts-aerodata-france';
 import { toCheapRulerPoint, toLatLng } from '~/domain';
+import { isAerodrome, isVfrPoint, isVor } from '../FixtureDetails/FixtureDetails';
 import { OaciLayer, OpenStreetMapLayer } from '../layer';
 import { SatelliteLayer } from '../layer/SatelliteLayer';
 import { useMouseMode } from '../MouseModeContext';
@@ -16,7 +18,6 @@ import { boxAround } from './boxAround';
 import { Colors } from './Colors';
 import { AirspaceSVGPolygon } from './CtrSVGPolygon/AirspaceSVGPolygon';
 import { DangerZones } from './DangerZones';
-import { isAerodrome, isVfrPoint, isVor } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
@@ -56,7 +57,7 @@ export const InnerMapContainer = () => {
             <PrintAreaPreview />
             {mapBounds && (
                 <>
-                    <MouseTooltip hidden={mouseMode !== 'none'} />
+                    {primaryInput === 'mouse' && <MouseTooltip hidden={mouseMode !== 'none'} />}
                     <LayerGroup>
                         <Pane
                             name={`highlighted-item`}
@@ -205,8 +206,8 @@ const HighlightedSearchItem = () => {
                 highlighted
                 geometry={highlightedItem.geometry}
                 name={highlightedItem.name}
-                thinBorderColor={Colors.red}
-                thickBorderColor={Colors.lightRed}
+                thinBorderColor={Colors.highlitFixtureBorder}
+                thickBorderColor={Colors.highlitFixture}
                 thinDashArray="5, 5"
                 prefix="highlighted-search-airspace-"
             />

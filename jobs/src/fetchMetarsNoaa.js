@@ -15,12 +15,11 @@ const padTo2Digits = (number) => {
 
 function getWaitingDelayInSecondsForSecond(second) {
   const delays = [
-    [60, 2], // In the first 60 seconds, wait 2 seconds between checks
-    // [90, 2],
-    // [2 * 60, 5],
-    // [5 * 60, 20],
-    // [10 * 60, 60],
-    // [24 * 60, 5 * 60],
+    [90, 2], // In the first 60 seconds, wait 2 seconds between checks
+    [2 * 60, 5],
+    [5 * 60, 20],
+    [10 * 60, 60],
+    [24 * 60, 5 * 60],
   ];
   for (const [threshold, delay] of _.sortBy(
     delays,

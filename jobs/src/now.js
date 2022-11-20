@@ -1,4 +1,4 @@
-import { fetchMetars } from "./fetchMetarsNoaa.js";
+import { fetchMetars } from "./fetchMetarsNoaa";
 import { fetchTafs } from "./fetchTafs";
 
 await fetchMetars();

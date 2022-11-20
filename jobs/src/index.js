@@ -6,6 +6,6 @@ import cron from "node-cron";
 //   await fetchTafs();
 // });
 
-cron.schedule("* * * * * *", async () => {
+cron.schedule("* * * * *", async () => {
   await fetchMetars();
 });

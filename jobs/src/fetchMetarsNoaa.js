@@ -32,10 +32,25 @@ function getWaitingDelayInSecondsForSecond(second) {
   return -1;
 }
 
+const getBeginningOfCurrentHalfHour = () => {
+  const now = new Date();
+  const minutes = now.getMinutes();
+  const halfHour = minutes < 30 ? 0 : 30;
+  return new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    now.getHours(),
+    halfHour,
+    0,
+    0
+  );
+};
+
 export const fetchMetars = async () => {
   console.log(`starting metar search`);
-  const searchStart = new Date();
-  const searchLogPrefix = `[${format(searchStart, "HH:mm")}] `;
+  const searchStart = getBeginningOfCurrentHalfHour();
+  const searchLogPrefix = `[METAR ${format(searchStart, "HH:mm")}] `;
 
   const frenchAirports = await getAllFrenchAirports();
 

@@ -1,7 +1,9 @@
 import andtStyles from 'antd/dist/antd.variable.css';
 import leafletStyles from 'leaflet/dist/leaflet.css';
+import maplibreStyles from 'maplibre-gl/dist/maplibre-gl.css';
 
 import FullStory from 'react-fullstory';
+import { MapProvider as MapGlProvider } from 'react-map-gl';
 import styled from 'styled-components';
 import { HelpPageProvider } from '~/fb/components/HelpPageContext';
 import { DisplayedContent, PrintContent } from '~/fb/components/Map';
@@ -23,6 +25,7 @@ import { FirebaseAuthProvider } from '../fb/firebase/auth/FirebaseAuthContext';
 export const links = () => [
     { rel: 'stylesheet', href: andtStyles },
     { rel: 'stylesheet', href: leafletStyles },
+    { rel: 'stylesheet', href: maplibreStyles },
 ];
 
 export default () => {
@@ -35,29 +38,31 @@ export default () => {
                     <AiracDataProvider>
                         <WeatherProvider>
                             <UserRoutesProvider>
-                                <MainMapProvider>
-                                    <RouteProvider>
-                                        <FixtureFocusProvider>
-                                            <SearcheableElementProvider>
-                                                <PrintProvider>
-                                                    <div
-                                                        id="modal-root"
-                                                        data-testid="modal-root"
-                                                    ></div>
-                                                    <AppContainer id="app">
-                                                        <MouseModeProvider>
-                                                            <TemporaryMapBoundsProvider>
-                                                                <DisplayedContent />
-                                                            </TemporaryMapBoundsProvider>
-                                                        </MouseModeProvider>
-                                                    </AppContainer>
-                                                    <PrintContent>{''}</PrintContent>
-                                                    <PrintPreview />
-                                                </PrintProvider>
-                                            </SearcheableElementProvider>
-                                        </FixtureFocusProvider>
-                                    </RouteProvider>
-                                </MainMapProvider>
+                                <MapGlProvider>
+                                    <MainMapProvider>
+                                        <RouteProvider>
+                                            <FixtureFocusProvider>
+                                                <SearcheableElementProvider>
+                                                    <PrintProvider>
+                                                        <div
+                                                            id="modal-root"
+                                                            data-testid="modal-root"
+                                                        ></div>
+                                                        <AppContainer id="app">
+                                                            <MouseModeProvider>
+                                                                <TemporaryMapBoundsProvider>
+                                                                    <DisplayedContent />
+                                                                </TemporaryMapBoundsProvider>
+                                                            </MouseModeProvider>
+                                                        </AppContainer>
+                                                        <PrintContent>{''}</PrintContent>
+                                                        <PrintPreview />
+                                                    </PrintProvider>
+                                                </SearcheableElementProvider>
+                                            </FixtureFocusProvider>
+                                        </RouteProvider>
+                                    </MainMapProvider>
+                                </MapGlProvider>
                             </UserRoutesProvider>
                         </WeatherProvider>
                     </AiracDataProvider>

@@ -9,6 +9,7 @@ import { MapOverlayMenu } from '../TopBar/MapOverlayMenu';
 import { Colors } from './Colors';
 import { InnerMapContainer } from './InnerMapContainer';
 import { useMainMap } from './MainMapContext';
+import { MapLibreContainer } from './Maplibre/MapLibreContainer';
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 8;
@@ -42,13 +43,15 @@ export const LeafletMapContainer = () => {
         <MapSizeDetector ref={ref}>
             <FixtureDetailsWindow />
             <MapOverlayMenu />
-            {MapContainer && (
-                <Outer $cursor={cursor}>
+            <Outer $cursor={cursor}>
+                {false ? (
                     <StyledMapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
                         <InnerMapContainer />
                     </StyledMapContainer>
-                </Outer>
-            )}
+                ) : (
+                    <MapLibreContainer />
+                )}
+            </Outer>
         </MapSizeDetector>
     );
 };

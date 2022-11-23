@@ -6,6 +6,15 @@ import type { Route } from '../../../domain';
 import { AerodromeWaypoint } from '../../../domain';
 import { useWeather } from '../WeatherContext';
 
+const REF_RELATIVE_WIDTH = 1;
+
+// Middle lines
+const WAYPOINT_COLUMN_RELATIVE_WIDTH = 3;
+const USER_COLUMNS_RELATIVE_WIDTH = 0.5;
+
+// Header and footer
+const TOP_BOTTOM_FREQUENCIES_COLUMN_RELATIVE_WIDTH = 3;
+
 export const NavigationLog = ({
     route,
     paperVersion = false,
@@ -25,22 +34,22 @@ export const NavigationLog = ({
                 <LegHeader>TSV</LegHeader>
                 {paperVersion && (
                     <>
-                        <LegHeader>Heure Réelle</LegHeader>
-                        <LegHeader>Heure Estimée</LegHeader>
+                        <UserHeader>Act.</UserHeader>
+                        <UserHeader>Est.</UserHeader>
                     </>
                 )}
-                <LegHeader>Report</LegHeader>
+                <WaypointHeader>Report</WaypointHeader>
             </HeaderRow>
             {route.legs.length > 0 && (
                 <NavRow>
-                    <BlackCell></BlackCell>
-                    <BlackCell></BlackCell>
-                    <BlackCell></BlackCell>
-                    <BlackCell></BlackCell>
+                    <BlackCell />
+                    <BlackCell />
+                    <BlackCell />
+                    <BlackCell />
                     {paperVersion && (
                         <>
-                            <WaypointCell></WaypointCell>
-                            <BlackCell></BlackCell>{' '}
+                            <EmptyUserCell />
+                            <BlackUserCell />
                         </>
                     )}
                     <WaypointCell>{route.legs[0].departureWaypoint.name}</WaypointCell>
@@ -60,8 +69,8 @@ export const NavigationLog = ({
                         <LegCell>{Math.round(durationInMinutes)} min</LegCell>
                         {paperVersion && (
                             <>
-                                <WaypointCell></WaypointCell>
-                                <EmptyCell></EmptyCell>
+                                <EmptyUserCell />
+                                <EmptyUserCell />
                             </>
                         )}
                         <WaypointCell>{name}</WaypointCell>
@@ -69,11 +78,13 @@ export const NavigationLog = ({
                 ),
             )}
             <TotalNavRow>
-                <TotalBlackCell></TotalBlackCell>
-                <TotalBlackCell></TotalBlackCell>
+                <TotalBlackCell />
+                <TotalBlackCell />
                 <TotalLegCell>{Math.round(route.totalDistance)} NM</TotalLegCell>
                 <TotalLegCell>{Math.round(route.totalDurationInMinutes)} min</TotalLegCell>
-                <TotalBlackCell></TotalBlackCell>
+                <TotalUserBlackCell />
+                <TotalUserBlackCell />
+                <TotalWaypointBlackCell />
             </TotalNavRow>
         </LegTable>
         {route.arrival && AerodromeWaypoint.isAerodromeWaypoint(route.arrival) && (
@@ -177,6 +188,8 @@ const LegTable = styled.div<{
 
 const Row = styled.div`
     display: flex;
+    justify-content: stretch;
+    width: 100%;
 
     > :last-child {
         border-right: solid;
@@ -184,6 +197,7 @@ const Row = styled.div`
 `;
 
 const NavRow = styled(Row)`
+    display: flex;
     height: 2cm;
 `;
 
@@ -218,6 +232,7 @@ const Cell = styled.span`
     height: 100%;
     white-space: no-wrap;
     overflow: hidden;
+    flex: ${() => REF_RELATIVE_WIDTH} 0;
 
     @media print {
         border-width: 0.05cm;
@@ -231,16 +246,15 @@ const CenteredContentCell = styled(Cell)`
     text-align: center;
 `;
 
-const LegTableCell = styled(CenteredContentCell)`
-    /* width: ${100 / 7}%; */
-`;
+const LegTableCell = styled(CenteredContentCell)``;
 
 const AerodromeNameCell = styled(Cell)`
-    width: ${100 / 4}%;
+    /* width: ${100 / 4}%; */
 `;
 
 const FrequenciesCell = styled(Cell)`
-    width: ${(3 * 100) / 4}%;
+    /* width: ${(3 / 4) * 100}%; */
+    /* flex-grow: 3; */
 `;
 
 const LegCell = styled(LegTableCell)`
@@ -252,10 +266,11 @@ const TotalLegCell = styled(LegTableCell)`
     border-bottom: solid;
 `;
 
-const WaypointCell = styled(LegTableCell)`
-    /* @media print {
-    border-width: 0.05cm;
-  } */
+const WaypointLegTableCell = styled(LegTableCell)`
+    flex-grow: ${() => WAYPOINT_COLUMN_RELATIVE_WIDTH};
+`;
+
+const WaypointCell = styled(WaypointLegTableCell)`
     z-index: 1;
     page-break-inside: avoid;
 `;
@@ -269,9 +284,41 @@ const TotalBlackCell = styled(BlackCell)`
     height: 1cm;
 `;
 
-const EmptyCell = styled(LegTableCell)``;
+const UserCell = styled(LegTableCell)`
+    flex-grow: ${() => USER_COLUMNS_RELATIVE_WIDTH};
+`;
+
+const TotalUserBlackCell = styled(UserCell)`
+    background-color: black;
+    z-index: -10;
+    height: 1cm;
+`;
+
+const TotalWaypointBlackCell = styled(WaypointLegTableCell)`
+    background-color: black;
+    z-index: -10;
+    height: 1cm;
+`;
+
+const BlackUserCell = styled(UserCell)`
+    background-color: black;
+`;
+
+const EmptyUserCell = styled(UserCell)`
+    z-index: 1;
+`;
 
 const LegHeader = styled(LegTableCell)`
+    transform: none;
+    background-color: grey;
+`;
+
+const WaypointHeader = styled(WaypointLegTableCell)`
+    transform: none;
+    background-color: grey;
+`;
+
+const UserHeader = styled(UserCell)`
     transform: none;
     background-color: grey;
 `;
@@ -282,10 +329,11 @@ const NavlogContainer = styled.div<{
     paperVersion: boolean;
 }>`
     ${CenteredContentCell} {
-        width: ${({ paperVersion }) => (paperVersion ? 100 / 7 : 100 / 5)}%;
+        /* width: ${({ paperVersion }) => (paperVersion ? 100 / 7 : 100 / 5)}%; */
     }
     ${FrequenciesCell} {
-        width: ${(3 * 100) / 4}%;
+        /* width: ${(3 * 100) / 4}%; */
+        flex-grow: ${() => TOP_BOTTOM_FREQUENCIES_COLUMN_RELATIVE_WIDTH};
     }
     @media print {
         page-break-inside: avoid;

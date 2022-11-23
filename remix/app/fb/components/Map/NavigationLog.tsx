@@ -1,19 +1,19 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as Option from 'fp-ts/lib/Option';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import type { Aerodrome, VhfFrequencyWithRemarks } from 'ts-aerodata-france';
 import type { Route } from '../../../domain';
 import { AerodromeWaypoint } from '../../../domain';
 import { useWeather } from '../WeatherContext';
 
-const REF_RELATIVE_WIDTH = 1;
+const REF_RELATIVE_WIDTH = 10;
 
 // Middle lines
-const WAYPOINT_COLUMN_RELATIVE_WIDTH = 3;
-const USER_COLUMNS_RELATIVE_WIDTH = 0.5;
+const WAYPOINT_COLUMN_RELATIVE_WIDTH = 50;
+const USER_COLUMNS_RELATIVE_WIDTH = 15;
 
 // Header and footer
-const TOP_BOTTOM_FREQUENCIES_COLUMN_RELATIVE_WIDTH = 3;
+const TOP_BOTTOM_FREQUENCIES_COLUMN_RELATIVE_WIDTH = 30;
 
 export const NavigationLog = ({
     route,
@@ -100,7 +100,7 @@ const AirportDetails = function ({ aerodrome }: { aerodrome: Aerodrome }) {
     return (
         <AirportTable>
             <AirportRow>
-                <AerodromeNameCell>
+                <AerodromeInfoCell>
                     <div>{aerodrome.name}</div>
                     <div>{`${aerodrome.icaoCode}`}</div>
                     <div>{`${aerodrome.aerodromeAltitude}`} ft.</div>
@@ -112,7 +112,7 @@ const AirportDetails = function ({ aerodrome }: { aerodrome: Aerodrome }) {
                             )
                             .join(', ')}
                     </div>
-                </AerodromeNameCell>
+                </AerodromeInfoCell>
                 <FrequenciesCell>
                     <div>
                         <b>TWR</b> {formatFrequencyTable(aerodrome.frequencies.tower)}
@@ -239,6 +239,23 @@ const Cell = styled.span`
     }
 `;
 
+const waypointColumnCss = css`
+    flex-grow: ${() => WAYPOINT_COLUMN_RELATIVE_WIDTH};
+`;
+
+const userColumnCss = css`
+    flex-grow: ${() => USER_COLUMNS_RELATIVE_WIDTH};
+`;
+
+const blackCellCss = css`
+    background-color: black;
+`;
+
+const headerCss = css`
+    transform: none;
+    background-color: grey;
+`;
+
 const CenteredContentCell = styled(Cell)`
     display: flex;
     justify-content: center;
@@ -246,36 +263,26 @@ const CenteredContentCell = styled(Cell)`
     text-align: center;
 `;
 
-const LegTableCell = styled(CenteredContentCell)``;
+const AerodromeInfoCell = styled(Cell)``;
 
-const AerodromeNameCell = styled(Cell)`
-    /* width: ${100 / 4}%; */
-`;
+const FrequenciesCell = styled(Cell)``;
 
-const FrequenciesCell = styled(Cell)`
-    /* width: ${(3 / 4) * 100}%; */
-    /* flex-grow: 3; */
-`;
-
-const LegCell = styled(LegTableCell)`
+const LegCell = styled(CenteredContentCell)`
     transform: translateY(-1cm);
 `;
 
-const TotalLegCell = styled(LegTableCell)`
+const TotalLegCell = styled(CenteredContentCell)`
     height: 1cm;
     border-bottom: solid;
 `;
 
-const WaypointLegTableCell = styled(LegTableCell)`
-    flex-grow: ${() => WAYPOINT_COLUMN_RELATIVE_WIDTH};
-`;
-
-const WaypointCell = styled(WaypointLegTableCell)`
+const WaypointCell = styled(CenteredContentCell)`
+    ${waypointColumnCss}
     z-index: 1;
     page-break-inside: avoid;
 `;
 
-const BlackCell = styled(LegTableCell)`
+const BlackCell = styled(CenteredContentCell)`
     background-color: black;
     z-index: -10;
 `;
@@ -284,43 +291,43 @@ const TotalBlackCell = styled(BlackCell)`
     height: 1cm;
 `;
 
-const UserCell = styled(LegTableCell)`
-    flex-grow: ${() => USER_COLUMNS_RELATIVE_WIDTH};
-`;
-
-const TotalUserBlackCell = styled(UserCell)`
+const TotalUserBlackCell = styled(CenteredContentCell)`
+    ${userColumnCss}
+    ${blackCellCss}
     background-color: black;
     z-index: -10;
     height: 1cm;
 `;
 
-const TotalWaypointBlackCell = styled(WaypointLegTableCell)`
-    background-color: black;
+const TotalWaypointBlackCell = styled(CenteredContentCell)`
+    ${waypointColumnCss}
+    ${blackCellCss}
     z-index: -10;
     height: 1cm;
 `;
 
-const BlackUserCell = styled(UserCell)`
-    background-color: black;
+const BlackUserCell = styled(CenteredContentCell)`
+    ${userColumnCss}
+    ${blackCellCss}
 `;
 
-const EmptyUserCell = styled(UserCell)`
+const EmptyUserCell = styled(CenteredContentCell)`
+    ${userColumnCss}
     z-index: 1;
 `;
 
-const LegHeader = styled(LegTableCell)`
-    transform: none;
-    background-color: grey;
+const LegHeader = styled(CenteredContentCell)`
+    ${headerCss}
 `;
 
-const WaypointHeader = styled(WaypointLegTableCell)`
-    transform: none;
-    background-color: grey;
+const WaypointHeader = styled(CenteredContentCell)`
+    ${waypointColumnCss}
+    ${headerCss}
 `;
 
-const UserHeader = styled(UserCell)`
-    transform: none;
-    background-color: grey;
+const UserHeader = styled(CenteredContentCell)`
+    ${userColumnCss}
+    ${headerCss}
 `;
 
 const formatHeading = (trueHdg: number) => String(Math.round(trueHdg)).padStart(3, '0');
@@ -329,10 +336,8 @@ const NavlogContainer = styled.div<{
     paperVersion: boolean;
 }>`
     ${CenteredContentCell} {
-        /* width: ${({ paperVersion }) => (paperVersion ? 100 / 7 : 100 / 5)}%; */
     }
     ${FrequenciesCell} {
-        /* width: ${(3 * 100) / 4}%; */
         flex-grow: ${() => TOP_BOTTOM_FREQUENCIES_COLUMN_RELATIVE_WIDTH};
     }
     @media print {

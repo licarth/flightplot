@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import type { Aerodrome } from 'ts-aerodata-france';
 import { IcaoCode } from 'ts-aerodata-france';
 import { toCheapRulerPoint, toLeafletLatLng } from '~/domain';
-import { StyledAerodromeLogo } from '../../StyledAerodromeLogo';
 import { useAiracData } from '../../useAiracData';
 import { boxAround } from '../boxAround';
 import CustomOverlay from './CustomOverlay';
@@ -42,20 +41,33 @@ export const MapLibreContainer = () => {
 const Overlay = ({ map }: { map: MapRef }) => {
     const { airacData } = useAiracData();
 
-    const ads = airacData && airacData.aerodromes.filter(({ status }) => status === 'PRV');
+    const ads =
+        airacData &&
+        airacData.aerodromes.filter(
+            ({ status, latLng: { lat, lng } }) =>
+                status === 'CAP' && lat > 40 && lat < 55.5 && lng > -5 && lng < 10,
+        );
 
     return <Aerodromes aerodromes={ads || []} map={map} />;
 };
 
-const Aerodromes = ({ aerodromes, map }: { aerodromes: Aerodrome[]; map: MapRef }) => {
+const Aerodromes = (props: { aerodromes: Aerodrome[]; map: MapRef }) => {
     return (
         <CustomOverlay>
-            <>
-                {aerodromes.map((ad) => (
-                    <AerodromeSvg key={'ad-' + IcaoCode.getValue(ad.icaoCode)} ad={ad} map={map} />
-                ))}
-            </>
+            <Ads {...props} />
         </CustomOverlay>
+    );
+};
+
+const Ads = ({ aerodromes, map }: { aerodromes: Aerodrome[]; map: MapRef }) => {
+    const width = map.getContainer().clientWidth;
+    const height = map.getContainer().clientHeight;
+    return (
+        <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height}>
+            {aerodromes.map((ad) => (
+                <AerodromeSvg key={'ad-' + IcaoCode.getValue(ad.icaoCode)} ad={ad} map={map} />
+            ))}
+        </svg>
     );
 };
 
@@ -66,9 +78,6 @@ const AerodromeSvg = ({ ad, map }: { ad: Aerodrome; map: MapRef }) => {
     const adPosition = ad.latLng && map.project(coords);
 
     console.log('origin', origin);
-
-    const width = map.getContainer().clientWidth;
-    const height = map.getContainer().clientHeight;
 
     const bounds = boxAround(toCheapRulerPoint(toLeafletLatLng(ad.latLng)), 10_000);
 
@@ -98,20 +107,18 @@ const AerodromeSvg = ({ ad, map }: { ad: Aerodrome; map: MapRef }) => {
                     fill="black"
                 />
             </svg> */}
-            <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height}>
-                <rect
-                    x={adPosition.x}
-                    y={adPosition.y}
-                    width={dx}
-                    height={-dy}
-                    stroke="black"
-                    fill="black"
-                />
-            </svg>
+            <rect
+                x={adPosition.x}
+                y={adPosition.y}
+                width={dx}
+                height={-dy}
+                stroke="black"
+                fill="black"
+            />
             {/* <AbsDiv>OKOK</AbsDiv> */}
-            <TranslatedDiv x={adPosition.x} y={adPosition.y} dx={dx} dy={-dy}>
+            {/* <TranslatedDiv x={adPosition.x} y={adPosition.y} dx={dx} dy={-dy}>
                 <StyledAerodromeLogo aerodrome={ad} />
-            </TranslatedDiv>
+            </TranslatedDiv> */}
         </>
     );
 };

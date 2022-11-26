@@ -5,6 +5,7 @@ import type { Aerodrome, VhfFrequencyWithRemarks } from 'ts-aerodata-france';
 import type { Route } from '../../../domain';
 import { AerodromeWaypoint } from '../../../domain';
 import { useWeather } from '../WeatherContext';
+import { Colors } from './Colors';
 import { joinReactElements } from './joinReactElements';
 
 const REF_RELATIVE_WIDTH = 10;
@@ -12,9 +13,12 @@ const REF_RELATIVE_WIDTH = 10;
 // Middle lines
 const WAYPOINT_COLUMN_RELATIVE_WIDTH = 50;
 const USER_COLUMNS_RELATIVE_WIDTH = 15;
+const FREQUENCIES_COLUMN_RELATIVE_WIDTH = 20;
 
 // Header and footer
 const TOP_BOTTOM_FREQUENCIES_COLUMN_RELATIVE_WIDTH = 30;
+
+const STRIP_COLOR = Colors.sivThinBorder;
 
 export const NavigationLog = ({
     route,
@@ -40,6 +44,7 @@ export const NavigationLog = ({
                     </>
                 )}
                 <WaypointHeader>Report</WaypointHeader>
+                <FreqColHeader>Freq.</FreqColHeader>
             </HeaderRow>
             {route.legs.length > 0 && (
                 <NavRow>
@@ -54,6 +59,9 @@ export const NavigationLog = ({
                         </>
                     )}
                     <WaypointCell>{route.legs[0].departureWaypoint.name}</WaypointCell>
+                    <FreqColCell>
+                        <FrequencyStrip name={'127.250'} starts />
+                    </FreqColCell>
                 </NavRow>
             )}
             {route.legs.map(
@@ -93,6 +101,9 @@ export const NavigationLog = ({
                                 <WaypointFrequencies aerodrome={waypoint.aerodrome} />
                             )}
                         </WaypointCell>
+                        <FreqColCell>
+                            <FrequencyStrip name={'127.250'} ends={i === route.length - 1} />
+                        </FreqColCell>
                     </NavRow>
                 ),
             )}
@@ -114,12 +125,79 @@ export const NavigationLog = ({
                 <TotalUserBlackCell />
                 <TotalUserBlackCell />
                 <TotalWaypointBlackCell />
+                <FreqColCell></FreqColCell>
             </TotalNavRow>
         </LegTable>
         {route.arrival && AerodromeWaypoint.isAerodromeWaypoint(route.arrival) && (
             <AirportDetails aerodrome={route.arrival.aerodrome} />
         )}
     </NavlogContainer>
+);
+
+type FrequencyStripProps = {
+    name: string;
+    starts?: boolean;
+    ends?: boolean;
+};
+
+const RectangleFromTopToBottom = styled.div`
+    width: 15px;
+    background-color: ${() => STRIP_COLOR};
+`;
+
+const RectangleThatStartsFromTop = styled(RectangleFromTopToBottom)`
+    position: relative;
+    height: 50%;
+    align-self: flex-end;
+    border-radius: 8px 8px 0 0;
+`;
+
+const RectangleThatEndsAtBottom = styled(RectangleFromTopToBottom)`
+    height: 50%;
+    align-self: flex-start;
+    border-radius: 0 0 8px 8px;
+`;
+
+const StripContainer = styled.div`
+    display: flex;
+    margin-left: 15px;
+    overflow: visible;
+`;
+
+const StripLabel = styled.div`
+    position: absolute;
+    top: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: ${() => STRIP_COLOR};
+    border: 2px solid ${() => STRIP_COLOR};
+    border-radius: 8px;
+    font-size: 0.7em;
+    padding: 0px 2px;
+    z-index: 5;
+`;
+
+const StripStart = ({ label }: { label: string }) => {
+    return (
+        <RectangleThatStartsFromTop>
+            <StripLabel>{label}</StripLabel>
+        </RectangleThatStartsFromTop>
+    );
+};
+
+const FrequencyStrip = ({ name, starts = false, ends = false }: FrequencyStripProps) => (
+    <>
+        <StripContainer>
+            {!starts && !ends && <RectangleFromTopToBottom />}
+            {starts && !ends && <StripStart label={name} />}
+            {!starts && ends && <RectangleThatEndsAtBottom />}
+        </StripContainer>
+        {/* <StripContainer>
+            {!starts && !ends && <RectangleFromTopToBottom />}
+            {starts && !ends && <RectangleThatStartsFromTop />}
+            {!starts && ends && <RectangleThatEndsAtBottom />}
+        </StripContainer> */}
+    </>
 );
 
 const WaypointFrequencies = ({ aerodrome }: { aerodrome: Aerodrome }) => {
@@ -231,6 +309,32 @@ const FrequencyAndRemarks = ({
     </>
 );
 
+const waypointColumnCss = css`
+    flex-grow: ${() => WAYPOINT_COLUMN_RELATIVE_WIDTH};
+`;
+
+const userColumnCss = css`
+    flex-grow: ${() => USER_COLUMNS_RELATIVE_WIDTH};
+`;
+
+const frequencyColumnCss = css`
+    flex-grow: ${() => FREQUENCIES_COLUMN_RELATIVE_WIDTH};
+    overflow: visible;
+`;
+
+const blackCellCss = css`
+    background-color: black;
+`;
+
+const headerCss = css`
+    transform: none;
+    background-color: grey;
+`;
+
+const totalCellCss = css`
+    height: 1cm;
+`;
+
 const FrequencyDescription = styled.span`
     font-family: monospace;
     margin-left: 1rem;
@@ -308,6 +412,31 @@ const AirportTable = styled.div`
     }
 `;
 
+const CellWithoutBorders = styled.span`
+    background-color: white;
+    flex: ${() => REF_RELATIVE_WIDTH} 0;
+    padding: 3px;
+    font-family: 'Univers';
+`;
+
+const FreqColCell = styled(CellWithoutBorders)`
+    // first has top border
+    border-left: 1px solid black;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    display: flex;
+    ${frequencyColumnCss}
+`;
+
+const Row = styled.div`
+    display: flex;
+    justify-content: stretch;
+
+    > :last-child {
+        border-right: solid;
+    }
+`;
+
 const LegTable = styled.div<{
     route: Route;
 }>`
@@ -318,20 +447,15 @@ const LegTable = styled.div<{
     }
     background-color: black;
 
+    > :nth-child(2) > * {
+        border-top: solid 1px black;
+    }
+
     :last-child {
-        border-bottom: solid;
+        /* border-bottom: solid; */
     }
 
     /* height: ${({ route }) => (route.length < 1 ? 1 : route.legs.length * 2 + 3)}cm; */
-`;
-
-const Row = styled.div`
-    display: flex;
-    justify-content: stretch;
-
-    > :last-child {
-        border-right: solid;
-    }
 `;
 
 const NavRow = styled(Row)`
@@ -363,44 +487,17 @@ const HeaderRow = styled(NavRow)`
     }
 `;
 
-const Cell = styled.span`
+const Cell = styled(CellWithoutBorders)`
     border-top: solid;
     border-left: solid;
     /* box-sizing: border-box; */
-    background-color: white;
     border-color: black;
     white-space: no-wrap;
     overflow: hidden;
-    flex: ${() => REF_RELATIVE_WIDTH} 0;
-
-    font-family: 'Univers';
-
-    padding: 3px;
 
     @media print {
         border-width: 0.05cm;
     }
-`;
-
-const waypointColumnCss = css`
-    flex-grow: ${() => WAYPOINT_COLUMN_RELATIVE_WIDTH};
-`;
-
-const userColumnCss = css`
-    flex-grow: ${() => USER_COLUMNS_RELATIVE_WIDTH};
-`;
-
-const blackCellCss = css`
-    background-color: black;
-`;
-
-const headerCss = css`
-    transform: none;
-    background-color: grey;
-`;
-
-const totalCellCss = css`
-    height: 1cm;
 `;
 
 const CenteredContentCell = styled(Cell)`
@@ -474,6 +571,11 @@ const LegHeader = styled(CenteredContentCell)`
 
 const WaypointHeader = styled(CenteredContentCell)`
     ${waypointColumnCss}
+    ${headerCss}
+`;
+
+const FreqColHeader = styled(CenteredContentCell)`
+    ${frequencyColumnCss}
     ${headerCss}
 `;
 

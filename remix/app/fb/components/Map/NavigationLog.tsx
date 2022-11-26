@@ -311,6 +311,7 @@ const FrequencyAndRemarks = ({
 
 const waypointColumnCss = css`
     flex-grow: ${() => WAYPOINT_COLUMN_RELATIVE_WIDTH};
+    border-right: 1px solid black;
 `;
 
 const userColumnCss = css`
@@ -320,6 +321,7 @@ const userColumnCss = css`
 const frequencyColumnCss = css`
     flex-grow: ${() => FREQUENCIES_COLUMN_RELATIVE_WIDTH};
     overflow: visible;
+    display: none;
 `;
 
 const blackCellCss = css`

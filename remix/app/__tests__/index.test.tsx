@@ -15,7 +15,7 @@ afterEach(() => {
 });
 
 // Fails because of error "TypeError: Cannot use 'in' operator to search for '_leaflet_id' in null" when a react-leaflet Polygon is rendered
-describe.skip('Home page', () => {
+describe('Home page', () => {
     it('renders a page', () => {
         // Arrange
         render(<Index />, { wrapper: MemoryRouter });

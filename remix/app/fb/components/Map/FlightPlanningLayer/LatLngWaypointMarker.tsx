@@ -3,6 +3,7 @@ import type { LatLng, LatLngExpression } from 'leaflet';
 import { useRef, useState } from 'react';
 import { Circle, Marker, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
+import { Colors } from '../Colors';
 import { preventDefault } from '../preventDefault';
 import { circle, planeArrival, planeDeparture } from './Icons';
 
@@ -73,7 +74,10 @@ export const LatLngWaypointMarker = ({
                 center={position}
                 radius={1000 * 2.5 * 1.852}
                 pathOptions={{
-                    color: circleColor || type === 'intermediate' ? 'black' : 'red',
+                    color:
+                        circleColor || type === 'intermediate'
+                            ? Colors.routeIntermediateWaypoint
+                            : Colors.routeFinalWaypoint,
                     dashArray: '4 1',
                 }}
                 fillOpacity={0}

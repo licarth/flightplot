@@ -3,7 +3,7 @@ import _ from 'lodash';
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import VfrPointLogo from '~/generated/icons/VfrPoint';
-import { isAerodrome, isVfrPoint, isVor } from '../Map/FixtureDetails';
+import { isAerodrome, isVfrPoint, isVor } from '../FixtureDetails/FixtureDetails';
 import { StyledAerodromeLogo } from '../StyledAerodromeLogo';
 import { StyledVor } from '../StyledVor';
 import type { SearchableAirspace, SearchableFixture, SearcheableElement } from './SearchBar';

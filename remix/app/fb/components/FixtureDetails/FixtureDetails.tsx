@@ -1,57 +1,43 @@
 import { Button } from 'antd';
-import formatcoords from 'formatcoords';
 import styled from 'styled-components';
 import type { Aerodrome, VfrPoint, Vor } from 'ts-aerodata-france';
-import type { LatLng } from '~/domain';
-import { latLngWaypointFactory, toLeafletLatLng } from '~/domain';
-import { Target } from '~/generated/icons';
 import VfrPointLogo from '~/generated/icons/VfrPoint';
-import { useHelpPage } from '../HelpPageContext';
+import { addFixtureToRoute } from '../Map/addFixtureToRoute';
+import { useFixtureFocus } from '../Map/FixtureFocusContext';
+import type { SearcheableElement } from '../SearchBar';
 import { StyledAerodromeLogo } from '../StyledAerodromeLogo';
 import { StyledVor } from '../StyledVor';
 import { useRoute } from '../useRoute';
-import { addFixtureToRoute } from './addFixtureToRoute';
-import { Colors } from './Colors';
-import type { FocusableFixture } from './FixtureFocusContext';
-import { useFixtureFocus } from './FixtureFocusContext';
+import { useWeather } from '../WeatherContext';
 
 type UseFixtureContextProps = ReturnType<typeof useFixtureFocus>;
 
 type FixtureDetailsProps = {
     fixtures: UseFixtureContextProps['fixtures'];
     clickedLocation: UseFixtureContextProps['clickedLocation'];
-    onClose: () => void;
 };
 
-export const FixtureDetails = ({ fixtures, clickedLocation, onClose }: FixtureDetailsProps) => {
+export const FixtureDetails = ({ fixtures, clickedLocation }: FixtureDetailsProps) => {
     const { highlightedFixture } = useFixtureFocus();
     // const routeContext = useRoute();
     const content = fixtures.map((fixture, i) => {
         return <FixtureRow key={`fixture-${i}`} fixture={fixture} />;
     });
 
-    const { isOpen: isHelpOpen } = useHelpPage();
-
     return (
-        <FixtureDetailsContainer isHelpOpen={isHelpOpen}>
+        <>
             {highlightedFixture ? (
                 <FixtureRow fixture={highlightedFixture} />
             ) : (
                 <>
-                    <CloseButton onClick={onClose} />
-                    {clickedLocation && (
-                        <Row key={`fixture-selected-point`}>
-                            <TargetCard latLng={toLeafletLatLng(clickedLocation)} />
-                        </Row>
-                    )}
                     <ContentList>{content}</ContentList>
                 </>
             )}
-        </FixtureDetailsContainer>
+        </>
     );
 };
 
-const FixtureRow = ({ fixture }: { fixture: FocusableFixture }) => {
+export const FixtureRow = ({ fixture }: { fixture: SearcheableElement }) => {
     return (
         <Row>
             {isVfrPoint(fixture) && <VfrPointCard vfrPoint={fixture} />}
@@ -117,17 +103,24 @@ const VorCard = ({ vor }: { vor: Vor }) => {
 const AerodromeCard = ({ aerodrome }: { aerodrome: Aerodrome }) => {
     const routeContext = useRoute();
 
+    const { metarsByIcaoCode } = useWeather();
+
+    const aerodromeMetar = metarsByIcaoCode[`${aerodrome.icaoCode}`];
+
     const { aerodromeAltitude, icaoCode, name } = aerodrome;
     return (
         <>
-            <Description>
-                <LogoContainer>
-                    <StyledAerodromeLogo aerodrome={aerodrome} />
-                </LogoContainer>
-                <div>
-                    {icaoCode} - {name} ({aerodromeAltitude} ft)
-                </div>
-            </Description>
+            <AerodromeDescription>
+                <FirstLine>
+                    <LogoContainer>
+                        <StyledAerodromeLogo aerodrome={aerodrome} />
+                    </LogoContainer>
+                    <div>
+                        {`${icaoCode}`} - {name} ({`${aerodromeAltitude}`} ft)
+                    </div>
+                </FirstLine>
+                {aerodromeMetar && <Metar>{aerodromeMetar.metarString}</Metar>}
+            </AerodromeDescription>
             <Buttons>
                 <Button
                     size="small"
@@ -137,41 +130,6 @@ const AerodromeCard = ({ aerodrome }: { aerodrome: Aerodrome }) => {
                     +
                 </Button>
             </Buttons>
-        </>
-    );
-};
-
-const TargetCard = ({ latLng }: { latLng: LatLng }) => {
-    const routeContext = useRoute();
-    return (
-        <>
-            <Description>
-                <LogoContainer>
-                    <Target />
-                </LogoContainer>
-                <div>{formatcoords(latLng.lat, latLng.lng).format({ decimalPlaces: 0 })}</div>
-            </Description>
-            <Buttons>
-                <Button
-                    size="small"
-                    type="primary"
-                    onClick={() => {
-                        addFixtureToRoute({
-                            fixture: latLngWaypointFactory({ latLng }),
-                            routeContext,
-                        });
-                    }}
-                >
-                    +
-                </Button>
-            </Buttons>
-            {/* <span>
-                {aerodrome.status === 'RST' && 'Usage restreint'}
-                {aerodrome.status === 'CAP' && 'Ouvert à la CAP'}
-                {aerodrome.status === 'MIL' && 'Terrain Militaire'}
-                {aerodrome.status === 'OFF' && 'Terrain Fermé'}
-                {aerodrome.status === 'PRV' && 'Terrain Privé'}
-            </span> */}
         </>
     );
 };
@@ -196,14 +154,30 @@ const Row = styled.div`
     justify-content: space-between;
     border-radius: 5px;
 `;
-const Description = styled.div`
+
+const FirstLine = styled.div`
+    display: flex;
+`;
+
+const Metar = styled.div`
+    display: flex;
+    font-weight: 100;
+    font-family: 'Courier New', Courier, monospace;
+`;
+
+const AerodromeDescription = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+export const Description = styled.div`
     display: flex;
 `;
 const ContentList = styled.div`
     overflow-y: scroll;
 `;
 
-const Buttons = styled.div`
+export const Buttons = styled.div`
     align-self: center;
     display: flex;
     justify-self: flex-end;
@@ -212,51 +186,11 @@ const Buttons = styled.div`
     /* justify-items: stretch; */
 `;
 
-const LogoContainer = styled.div`
+export const LogoContainer = styled.div`
     align-self: center;
-    width: 0.75rem;
+    min-width: 0.75rem;
     margin-right: 0.5rem;
-`;
-
-const CloseButton = styled.div`
-    position: absolute;
-    :after {
-        content: '×';
-    }
-    top: 2px;
-    right: 8px;
-    font-size: 1.5rem;
-    cursor: pointer;
-`;
-
-const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
-    transition: all 0.3s;
-    padding: 1rem;
-    padding-top: 2rem;
-    padding-right: 0.5rem;
-    right: ${({ isHelpOpen }) => (isHelpOpen ? 620 : 90)}px;
-    top: 10px;
-    width: 350px;
-    max-width: 500px;
-    max-height: 40vh;
-    position: absolute;
-    z-index: 600;
-    background-color: white;
-    filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
-    display: flex;
-    flex-direction: column;
-    border-radius: 5px;
-    font-family: 'Futura';
-    color: ${Colors.ctrBorderBlue};
-
-    @media (hover: none) {
-        max-width: 80vw;
-    }
-`;
-
-const Frequency = styled.span`
-    font-family: 'Folio XBd BT';
-    font-weight: bold;
+    margin-left: 0.5rem;
 `;
 
 const replaceHashWithLineBreak = (txt: string) => txt.replace(/#/g, '\n');

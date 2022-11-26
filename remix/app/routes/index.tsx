@@ -1,5 +1,4 @@
-import type { MetaFunction } from '@remix-run/node';
-import andtStyles from 'antd/dist/antd.css';
+import andtStyles from 'antd/dist/antd.variable.css';
 import leafletStyles from 'leaflet/dist/leaflet.css';
 
 import FullStory from 'react-fullstory';
@@ -12,6 +11,7 @@ import { PrintPreview } from '~/fb/components/Map/PrintPreview';
 import { TemporaryMapBoundsProvider } from '~/fb/components/Map/TemporaryMapCenterContext';
 import { MouseModeProvider } from '~/fb/components/MouseModeContext';
 import { SearcheableElementProvider } from '~/fb/components/SearchItemContext';
+import { WeatherProvider } from '~/fb/components/WeatherContext';
 import { environmentVariable } from '~/fb/environmentVariable';
 import { AiracDataProvider } from '../fb/components/AiracDataContext';
 import type { LayerEnum } from '../fb/components/layer/Layer';
@@ -33,41 +33,38 @@ export default () => {
                 {fullstoryOrgId && <FullStory org={fullstoryOrgId} />}
                 <FirebaseAuthProvider>
                     <AiracDataProvider>
-                        <UserRoutesProvider>
-                            <MainMapProvider>
-                                <RouteProvider>
-                                    <FixtureFocusProvider>
-                                        <SearcheableElementProvider>
-                                            <PrintProvider>
-                                                <div id="modal-root" data-testid="modal-root"></div>
-                                                <AppContainer id="app">
-                                                    <MouseModeProvider>
-                                                        <TemporaryMapBoundsProvider>
-                                                            <DisplayedContent />
-                                                        </TemporaryMapBoundsProvider>
-                                                    </MouseModeProvider>
-                                                </AppContainer>
-                                                <PrintContent>{''}</PrintContent>
-                                                <PrintPreview />
-                                            </PrintProvider>
-                                        </SearcheableElementProvider>
-                                    </FixtureFocusProvider>
-                                </RouteProvider>
-                            </MainMapProvider>
-                        </UserRoutesProvider>
+                        <WeatherProvider>
+                            <UserRoutesProvider>
+                                <MainMapProvider>
+                                    <RouteProvider>
+                                        <FixtureFocusProvider>
+                                            <SearcheableElementProvider>
+                                                <PrintProvider>
+                                                    <div
+                                                        id="modal-root"
+                                                        data-testid="modal-root"
+                                                    ></div>
+                                                    <AppContainer id="app">
+                                                        <MouseModeProvider>
+                                                            <TemporaryMapBoundsProvider>
+                                                                <DisplayedContent />
+                                                            </TemporaryMapBoundsProvider>
+                                                        </MouseModeProvider>
+                                                    </AppContainer>
+                                                    <PrintContent>{''}</PrintContent>
+                                                    <PrintPreview />
+                                                </PrintProvider>
+                                            </SearcheableElementProvider>
+                                        </FixtureFocusProvider>
+                                    </RouteProvider>
+                                </MainMapProvider>
+                            </UserRoutesProvider>
+                        </WeatherProvider>
                     </AiracDataProvider>
                 </FirebaseAuthProvider>
             </HelpPageProvider>
         </>
     );
-};
-
-export const meta: MetaFunction = () => {
-    return {
-        title: 'FlightPlot',
-        description: 'Outil de plannification de vols VFR',
-        viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0',
-    };
 };
 
 export type DisplayedLayers = {

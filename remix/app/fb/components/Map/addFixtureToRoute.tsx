@@ -1,5 +1,5 @@
+import { isAerodrome, isVfrPoint, isVor } from '../FixtureDetails/FixtureDetails';
 import type { UseRouteProps } from '../useRoute';
-import { isAerodrome, isVfrPoint, isVor } from './FixtureDetails';
 import type { FocusableFixture } from './FixtureFocusContext';
 import { isLatLngWaypoint } from './FlightPlanningLayer';
 

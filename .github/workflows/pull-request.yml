@@ -12,7 +12,6 @@ env:
 
 jobs:
   deploy-preview:
-    if: github.ref != 'refs/heads/master'
     env:
       FIREBASE_SERVICE_ACCOUNT_KEY: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLIGHTPLOT_WEB }}"
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}

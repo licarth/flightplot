@@ -1,3 +1,5 @@
+import { ConfigProvider } from 'antd';
+
 export const Colors = {
     ctrBorderBlue: '#002e94',
     ctrBorderLightBlue: '#99ABD1',
@@ -11,5 +13,24 @@ export const Colors = {
     sivThinBorder: '#2b8049',
     red: '#940000',
     lightRed: '#FF0000',
+
+    flightplotLogoBlue: '#002e94',
+    // Yellow
+    highlitFixtureBorder: '#b65800',
+    highlitFixture: '#ff7b00',
+
+    // Route
+    routeIntermediateWaypoint: '#000000',
+    routeFinalWaypoint: '#940000',
+
+    mainThemeColor: '#002e94',
+    white: '#ffffff',
+
     terrain: '#883d00bc',
 };
+
+ConfigProvider.config({
+    theme: {
+        primaryColor: Colors.flightplotLogoBlue,
+    },
+});

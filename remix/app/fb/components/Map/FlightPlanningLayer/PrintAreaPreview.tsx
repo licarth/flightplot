@@ -201,7 +201,6 @@ const SinglePrintAreaPreview = ({
                 pathOptions={{ color: 'black', weight: 3, dashArray: '5' }}
                 positions={positions}
                 fill={false}
-                color={'red'}
             />
         </>
     );

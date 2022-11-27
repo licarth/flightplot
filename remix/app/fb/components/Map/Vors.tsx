@@ -1,6 +1,6 @@
+import { isVor } from '../FixtureDetails/FixtureDetails';
 import { useAiracData } from '../useAiracData';
 import type { MapBounds } from './DisplayedContent';
-import { isVor } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { VorMarker } from './VorMarker';
 

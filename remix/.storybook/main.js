@@ -11,11 +11,17 @@ module.exports = {
         const leafletRule = {
             test: /\.js$/,
             // if you're smarter than me, you could also do it via MatchPattern 🤷‍♀️
-            include: [/node_modules\/@react-leaflet/, /node_modules\/react-leaflet/],
+            include: [
+                /node_modules\/@react-leaflet/,
+                /node_modules\/react-leaflet/,
+                /node_modules\/metar-taf-parser/,
+            ],
             use: [
                 {
                     loader: 'babel-loader',
-                    options: { presets: [['@babel/preset-env', { modules: 'commonjs' }]] },
+                    options: {
+                        presets: [['@babel/preset-env', { modules: 'commonjs' }]],
+                    },
                 },
             ],
         };

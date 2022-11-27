@@ -9,10 +9,10 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import styled from 'styled-components';
 import type { AiracData, Airspace, DangerZone } from 'ts-aerodata-france';
 import { boundingBox, toCheapRulerPoint, toLatLng } from '~/domain';
+import { isAerodrome, isVfrPoint, isVor } from '../FixtureDetails/FixtureDetails';
 import { addFixtureToRoute } from '../Map/addFixtureToRoute';
 import { boxAround } from '../Map/boxAround';
 import { Colors } from '../Map/Colors';
-import { isAerodrome, isVfrPoint, isVor } from '../Map/FixtureDetails';
 import type { FocusableFixture } from '../Map/FixtureFocusContext';
 import { isLatLngWaypoint } from '../Map/FlightPlanningLayer';
 import { useTemporaryMapBounds } from '../Map/TemporaryMapCenterContext';
@@ -156,6 +156,16 @@ export const SearchBar = ({ airacData }: { airacData?: AiracData }) => {
                     setSelectedIndex(undefined);
                 }}
             />
+            <MobileStyledInput
+                allowClear
+                placeholder="Rechercher un aérodrome, un point VFR, une zone..."
+                autoFocus
+                value={searchTerm}
+                onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setSelectedIndex(undefined);
+                }}
+            />
             <ResultsContainer $itemSelected={!!selectedIndex}>
                 <FixtureSearchResults
                     results={fixturesResults}
@@ -178,9 +188,10 @@ export const SearchBar = ({ airacData }: { airacData?: AiracData }) => {
 const Container = styled.div`
     max-width: 90vw;
     font-family: 'Futura';
+    font-weight: 900;
     color: ${Colors.ctrBorderBlue};
-    /* line-height: 1rem; */
     position: relative;
+    margin-right: 0.4rem;
 `;
 
 const AirspaceSearchResults = ({
@@ -334,8 +345,16 @@ const ResultsContainer = styled.div<{ $itemSelected?: boolean }>`
         left: 0; */
     background-color: #fff;
     /* border: 1px solid #000; */
-    max-height: 80vh;
-    z-index: 700;
+    max-height: ${() => {
+        if (typeof window !== 'undefined') {
+            console.log(window?.visualViewport?.height);
+        }
+
+        return typeof window !== 'undefined' && window?.visualViewport
+            ? `${window.visualViewport.height - 100}px`
+            : '80vh';
+    }};
+    z-index: 1100;
     overflow-y: scroll;
     width: 100%;
 
@@ -357,11 +376,19 @@ const ResultsContainer = styled.div<{ $itemSelected?: boolean }>`
     }
 `;
 
-const StyledInput = styled(Input.Search)`
+const StyledInput = styled(Input)`
     width: 500px;
     max-width: 35vw;
-    @media (max-width: 500px) {
-        width: 100px;
+    @media (max-width: 550px) {
+        display: none;
+    }
+    align-self: center;
+    margin-right: 0.5rem;
+`;
+
+const MobileStyledInput = styled(Input)`
+    @media (min-width: 551px) {
+        display: none;
     }
     align-self: center;
     margin-right: 0.5rem;

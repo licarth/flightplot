@@ -12,12 +12,15 @@ env:
 
 jobs:
   deploy-preview:
+    if: github.ref != 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     env:
       FIREBASE_SERVICE_ACCOUNT_KEY: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLIGHTPLOT_WEB }}"
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       DEPLOYMENT_NAME: ${{ github.head_ref }}
     name: Deploy preview environment
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: install myke
@@ -27,3 +30,9 @@ jobs:
           myke --version
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: myke deploy-preview
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            ✅ Preview environment deployed at https://flightplot-preview-${{ github.head_ref }}.fly.dev/
+          message-failure: |
+            ❌ Preview environment deployment failed.

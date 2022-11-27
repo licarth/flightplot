@@ -25,6 +25,8 @@ export const Airspaces = ({ mapBounds }: { mapBounds: MapBounds }) => {
 
     const highlightedAirspaces = airspaces.map((a) => a.name);
 
+    console.log('airspacesInView', airspacesInView);
+
     return (
         <LayerGroup>
             {mapBounds &&

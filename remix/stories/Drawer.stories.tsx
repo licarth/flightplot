@@ -1,6 +1,6 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import { Collapse } from 'antd';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.variable.css';
 import styled from 'styled-components';
 import '../app/styles/global.css';
 

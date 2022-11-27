@@ -25,8 +25,7 @@ export const TopBar = () => {
                     <LogoLeft>FLIGHT</LogoLeft>
                     <LogoRight>PLOT</LogoRight>
                 </AppLogo>
-
-                <Button
+                <HelpButton
                     type="text"
                     icon={<QuestionOutlined />}
                     onClick={() => {
@@ -34,7 +33,7 @@ export const TopBar = () => {
                     }}
                 >
                     Aide
-                </Button>
+                </HelpButton>
                 {!user && (
                     //@ts-ignore
                     <LoginButton onClick={() => loginModal.current?.open()}>
@@ -118,7 +117,9 @@ const UserBadge = ({ user, signOut }: { user: User; signOut: () => void }) => {
                             style={{ display: 'none' }}
                         />
                         <Avatar src={user.photoURL} icon={<UserOutlined />} />
-                        {user.isAnonymous ? 'Anonymous User' : user.displayName}
+                        <UserName>
+                            {user.isAnonymous ? 'Anonymous User' : user.displayName}{' '}
+                        </UserName>
                     </>
                 </UserBadgeContainer>
             </a>
@@ -166,5 +167,15 @@ const LoginButton = styled(RightBox)`
     :hover {
         background: #002e94;
         color: white;
+    }
+`;
+
+const HelpButton = styled(Button)`
+    flex-shrink: 0;
+`;
+
+const UserName = styled.div`
+    @media (max-width: 550px) {
+        display: none;
     }
 `;

@@ -1,5 +1,9 @@
+name: Pull Request Closed
+
 on:
-  - delete
+  pull_request_target:
+    types:
+      - closed
 
 defaults:
   run:
@@ -7,10 +11,9 @@ defaults:
 
 jobs:
   delete-preview:
-    if: github.event.ref_type == 'branch'
     env:
       FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      DEPLOYMENT_NAME: ${{ github.event.ref }}
+      DEPLOYMENT_NAME: ${{ github.head_ref }}
     name: Delete preview environment
     runs-on: ubuntu-latest
     steps:

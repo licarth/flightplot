@@ -1,9 +1,14 @@
 import type { ComponentMeta } from '@storybook/react';
+import 'antd/dist/antd.variable.css';
+import { useEffect } from 'react';
 
-import styled from 'styled-components';
 import { AiracData } from 'ts-aerodata-france';
 import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
-import { FixtureDetails as F } from '~/fb/components/Map/FixtureDetails';
+import { AiracDataProvider } from '~/fb/components/AiracDataContext';
+import { FixtureDetailsWindow } from '~/fb/components/FixtureDetails/FixtureDetailsWindow';
+import { HelpPageProvider } from '~/fb/components/HelpPageContext';
+import { FixtureFocusProvider, useFixtureFocus } from '~/fb/components/Map/FixtureFocusContext';
+import { SearcheableElementProvider } from '~/fb/components/SearchItemContext';
 import '../app/styles/global.css';
 
 const FixtureDetails = ({ airacData }: { airacData: AiracData }) => {
@@ -12,26 +17,38 @@ const FixtureDetails = ({ airacData }: { airacData: AiracData }) => {
         ({ icaoCode, name }) => `${icaoCode}` === 'LFMT' && name === 'W',
     )!;
     const FJR = airacData.vors.find(({ ident }) => `${ident}` === 'FJR')!;
+
+    const { setClickedLocation } = useFixtureFocus();
+
+    useEffect(() => {
+        setClickedLocation(LFMT.latLng);
+    }, []);
+
+    //  fixtures={[LFMT, LFMT_W, FJR]} clickedLocation={LFMT.latLng} onClose={() => {}}
     return (
-        <Outer>
-            <F fixtures={[LFMT, LFMT_W, FJR]} clickedLocation={LFMT.latLng} onClose={() => {}} />
-        </Outer>
+        // <Outer>
+        <FixtureDetailsWindow />
     );
 };
 
-const Outer = styled.div`
-    display: flex;
-    flex-direction: column;
-    max-height: 300px;
-    overflow: hidden;
-    border: red solid 1px;
-`;
-
 export default {
     title: 'Example/FixtureDetails',
-    component: FixtureDetails,
+    component: FixtureDetailsWindow,
     argTypes: {},
-} as ComponentMeta<typeof FixtureDetails>;
+    decorators: [
+        (Story) => (
+            <AiracDataProvider>
+                <SearcheableElementProvider>
+                    <HelpPageProvider>
+                        <FixtureFocusProvider>
+                            <Story />
+                        </FixtureFocusProvider>
+                    </HelpPageProvider>
+                </SearcheableElementProvider>
+            </AiracDataProvider>
+        ),
+    ],
+} as ComponentMeta<typeof FixtureDetailsWindow>;
 
 //@ts-ignore
 export const A = (args, { loaded: { airacData } }) => <FixtureDetails airacData={airacData} />;

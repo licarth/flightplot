@@ -15,6 +15,16 @@ export const Colors = {
     lightRed: '#FF0000',
 
     flightplotLogoBlue: '#002e94',
+    // Yellow
+    highlitFixtureBorder: '#b65800',
+    highlitFixture: '#ff7b00',
+
+    // Route
+    routeIntermediateWaypoint: '#000000',
+    routeFinalWaypoint: '#940000',
+
+    mainThemeColor: '#002e94',
+    white: '#ffffff',
 };
 
 ConfigProvider.config({

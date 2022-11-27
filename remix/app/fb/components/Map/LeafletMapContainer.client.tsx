@@ -3,14 +3,12 @@ import { useEffect, useRef, useState } from 'react';
 import { MapContainer } from 'react-leaflet';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
+import { FixtureDetailsWindow } from '../FixtureDetails/FixtureDetailsWindow';
 import { useMouseMode } from '../MouseModeContext';
-import { useSearchElement } from '../SearchItemContext';
-import { AirspacesFilters } from '../TopBar/AirspacesFilters';
-import { FixtureDetails } from './FixtureDetails';
-import { useFixtureFocus } from './FixtureFocusContext';
+import { MapOverlayMenu } from '../TopBar/MapOverlayMenu';
+import { Colors } from './Colors';
 import { InnerMapContainer } from './InnerMapContainer';
 import { useMainMap } from './MainMapContext';
-import { SearchElementDetails } from './SearchableElementDetails';
 
 const defaultLatLng: LatLngTuple = [43.5, 3.95];
 const zoom: number = 8;
@@ -43,7 +41,7 @@ export const LeafletMapContainer = () => {
     return (
         <MapSizeDetector ref={ref}>
             <FixtureDetailsWindow />
-            <AirspacesFilters />
+            <MapOverlayMenu />
             {MapContainer && (
                 <Outer $cursor={cursor}>
                     <StyledMapContainer ref={mapRef} id="mapId" zoomControl={false} {...params}>
@@ -52,24 +50,6 @@ export const LeafletMapContainer = () => {
                 </Outer>
             )}
         </MapSizeDetector>
-    );
-};
-
-const FixtureDetailsWindow = () => {
-    const { item } = useSearchElement();
-
-    const { clickedLocation, fixtures, clear: clearFixture } = useFixtureFocus();
-    return (
-        <>
-            {clickedLocation ? (
-                <FixtureDetails
-                    fixtures={fixtures}
-                    clickedLocation={clickedLocation}
-                    onClose={clearFixture}
-                />
-            ) : null}
-            {item && <SearchElementDetails searchableElement={item} onClose={() => {}} />}
-        </>
     );
 };
 
@@ -83,6 +63,7 @@ const MapSizeDetector = styled.div`
     * {
         color-scheme: only light;
     }
+    overflow: hidden;
 `;
 const Outer = styled.div<{ $cursor: string }>`
     /* ${({ $cursor }) => $cursor && `cursor: ${$cursor}`}; */
@@ -92,4 +73,33 @@ const Outer = styled.div<{ $cursor: string }>`
     /* justify-items: stretch; */
     flex-grow: 1;
     display: flex;
+`;
+
+export const FixtureDetailsContainer = styled.div<{ isHelpOpen: boolean }>`
+    transition: all 0.3s;
+    right: ${({ isHelpOpen }) => (window.innerWidth > 600 ? 120 : 0) + (isHelpOpen ? 500 : 0)}px;
+    top: 10px;
+    width: ${() => (window.innerWidth > 600 ? '350px' : '100%')};
+    max-height: 40vh;
+    position: absolute;
+    z-index: 600;
+    background-color: white;
+    filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    font-family: 'Futura';
+    color: ${Colors.ctrBorderBlue};
+    border: 2px solid ${Colors.flightplotLogoBlue};
+`;
+
+export const CloseButton = styled.div`
+    position: absolute;
+    :after {
+        content: '×';
+    }
+    top: 2px;
+    right: 8px;
+    font-size: 1.5rem;
+    cursor: pointer;
 `;

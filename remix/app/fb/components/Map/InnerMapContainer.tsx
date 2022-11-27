@@ -1,12 +1,15 @@
 import { NmScale } from '@marfle/react-leaflet-nmscale';
+import { primaryInput } from 'detect-it';
 import _ from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { LayerGroup, Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-leaflet';
 import styled from 'styled-components';
 import type { Airspace, DangerZone } from 'ts-aerodata-france';
 import { toCheapRulerPoint, toLatLng } from '~/domain';
+import { isAerodrome, isVfrPoint, isVor } from '../FixtureDetails/FixtureDetails';
 import { OaciLayer, OpenStreetMapLayer } from '../layer';
 import { SatelliteLayer } from '../layer/SatelliteLayer';
+import { useMouseMode } from '../MouseModeContext';
 import { useRoute } from '../useRoute';
 import { AdPolygon, Aerodromes } from './Aerodromes';
 import { AirspaceDescriptionTooltip } from './AirspaceDescriptionTooltip';
@@ -15,7 +18,6 @@ import { boxAround } from './boxAround';
 import { Colors } from './Colors';
 import { AirspaceSVGPolygon } from './CtrSVGPolygon/AirspaceSVGPolygon';
 import { DangerZones } from './DangerZones';
-import { isAerodrome, isVfrPoint, isVor } from './FixtureDetails';
 import { useFixtureFocus } from './FixtureFocusContext';
 import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
@@ -25,11 +27,17 @@ import { useTemporaryMapBounds } from './TemporaryMapCenterContext';
 import { VfrPointC, VfrPoints } from './VfrPoints';
 import { VorMarker } from './VorMarker';
 import { Vors } from './Vors';
-import { Z_INDEX_AD_LOGO, Z_INDEX_HIGHLIGHTED_SEARCH_ITEM, Z_INDEX_MOUSE_TOOLTIP } from './zIndex';
+import {
+    Z_INDEX_AD_LOGO,
+    Z_INDEX_HIGHLIGHTED_SEARCH_ITEM,
+    Z_INDEX_MOUSE_AIRSPACE_TOOLTIP,
+    Z_INDEX_ROUTE,
+} from './zIndex';
 export const InnerMapContainer = () => {
     const routeContext = useRoute();
     const leafletMap = useMap();
     const { currentBackgroundLayer, bounds: mapBounds } = useMainMap();
+    const { mouseMode } = useMouseMode();
     const mapZoom = leafletMap.getZoom();
 
     const shouldRenderVors = mapZoom > 7;
@@ -43,11 +51,13 @@ export const InnerMapContainer = () => {
         <>
             <MouseEvents />
             <DisplayedLayer layer={currentBackgroundLayer} />
-            <FlightPlanningLayer routeContext={routeContext} />
+            <Pane name={`flight-planning-layer-pane`} style={{ zIndex: Z_INDEX_ROUTE }}>
+                <FlightPlanningLayer routeContext={routeContext} />
+            </Pane>
             <PrintAreaPreview />
             {mapBounds && (
                 <>
-                    <MouseTooltip />
+                    {primaryInput === 'mouse' && <MouseTooltip hidden={mouseMode !== 'none'} />}
                     <LayerGroup>
                         <Pane
                             name={`highlighted-item`}
@@ -93,7 +103,7 @@ const DisplayedLayer = ({ layer }: DisplayedLayerProps) => {
     );
 };
 
-const MouseTooltip = () => {
+const MouseTooltip = ({ hidden }: { hidden: boolean }) => {
     const {
         underMouse: { airspaces },
         mouseLocation,
@@ -126,12 +136,12 @@ const MouseTooltip = () => {
                 ]}
                 pathOptions={{ weight: 0, fillOpacity: 0 }}
             >
-                <Pane name="tooltip-pane" style={{ zIndex: Z_INDEX_MOUSE_TOOLTIP }}>
+                <Pane name="tooltip-pane" style={{ zIndex: Z_INDEX_MOUSE_AIRSPACE_TOOLTIP }}>
                     <StyledTooltip
                         permanent
                         sticky
-                        opacity={filteredAirspaces.length > 0 ? 1 : 0}
-                        key={`tooltip-airspace-${airspacesSha}`}
+                        opacity={!hidden && filteredAirspaces.length > 0 ? 1 : 0}
+                        key={`tooltip-airspace-${airspacesSha}-${hidden}`}
                         offset={[10, 0]}
                     >
                         {_.sortBy(filteredAirspaces, ({ lowerLimit }) => lowerLimit.feetValue).map(
@@ -160,6 +170,7 @@ export const AirspaceContainer = styled.div`
     position: relative;
     text-align: center;
     font-family: 'Futura';
+    font-weight: 900;
     border-radius: 2px;
 `;
 
@@ -195,8 +206,8 @@ const HighlightedSearchItem = () => {
                 highlighted
                 geometry={highlightedItem.geometry}
                 name={highlightedItem.name}
-                thinBorderColor={Colors.red}
-                thickBorderColor={Colors.lightRed}
+                thinBorderColor={Colors.highlitFixtureBorder}
+                thickBorderColor={Colors.highlitFixture}
                 thinDashArray="5, 5"
                 prefix="highlighted-search-airspace-"
             />

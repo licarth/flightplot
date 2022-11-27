@@ -5,6 +5,7 @@ import type { PropsWithChildren } from 'react';
 import React, { createContext, useEffect, useState } from 'react';
 
 export type Metar = { metarString: string; queriedAt: Date };
+export type Taf = { tafString: string; queriedAt: Date };
 
 export const WeatherContext = createContext<{
     loading: boolean;
@@ -20,6 +21,7 @@ export const WeatherContext = createContext<{
 
 export const WeatherProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const [metarsByIcaoCode, setMetarsByIcaoCode] = useState<Record<string, Metar> | undefined>();
+    const [tafsByIcaoCode, setTafsByIcaoCode] = useState<Record<string, Taf> | undefined>();
     const [weatherEnabled, setWeatherEnabled] = useState<boolean>(true);
 
     useEffect(() => {
@@ -46,6 +48,33 @@ export const WeatherProvider: React.FC<PropsWithChildren> = ({ children }) => {
             });
         } else {
             setMetarsByIcaoCode({});
+        }
+    }, [weatherEnabled]);
+
+    useEffect(() => {
+        const db = getFirestore();
+        const metarsRef = collection(db, 'tafs');
+
+        const q = query(metarsRef, orderBy('queriedAt', 'desc'), limit(1));
+
+        if (weatherEnabled) {
+            return onSnapshot(q, { includeMetadataChanges: false }, (querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const queriedAt = doc.get('queriedAt').toDate();
+                    const tafsByIcaoCode = _.keyBy(
+                        doc.get('tafs'),
+                        (m: string) => m.split(' ')[0],
+                    ) as Dictionary<string>;
+                    setTafsByIcaoCode(
+                        _.mapValues(tafsByIcaoCode, (tafString: string) => ({
+                            tafString,
+                            queriedAt,
+                        })),
+                    );
+                });
+            });
+        } else {
+            setTafsByIcaoCode({});
         }
     }, [weatherEnabled]);
 

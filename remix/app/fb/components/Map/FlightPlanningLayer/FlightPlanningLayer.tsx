@@ -1,7 +1,8 @@
 import type { Line } from 'cheap-ruler';
 import CheapRuler from 'cheap-ruler';
+import { primaryInput } from 'detect-it';
 import { Fragment, useState } from 'react';
-import { Circle, Polyline, SVGOverlay } from 'react-leaflet';
+import { Circle, Pane, Polyline, SVGOverlay, Tooltip } from 'react-leaflet';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
 import { VfrPointWaypoint } from '~/domain/Waypoint/VfrPointWaypoint';
 import { VorPointWaypoint } from '~/domain/Waypoint/VorPointWaypoint';
@@ -15,11 +16,10 @@ import type { useRoute } from '../../useRoute';
 import { boxAround } from '../boxAround';
 import { useFixtureFocus } from '../FixtureFocusContext';
 import { preventDefault } from '../preventDefault';
+import { Z_INDEX_MOUSE_ADD_POINT_TOOLTIP } from '../zIndex';
 import { FixtureWaypointMarker } from './FixtureWaypointMarker';
 import type { WaypointType } from './LatLngWaypointMarker';
 import { LatLngWaypointMarker } from './LatLngWaypointMarker';
-
-const ruler = new CheapRuler(43, 'nauticalmiles');
 
 export const FlightPlanningLayer = ({
     routeContext,
@@ -115,13 +115,18 @@ export const FlightPlanningLayer = ({
                             <Polyline
                                 color={'#000000a2'}
                                 weight={10}
-                                lineCap={'square'}
+                                lineCap={'butt'}
                                 eventHandlers={{
                                     click: (e) => {
                                         preventDefault(e);
+                                        e.originalEvent.stopPropagation();
+                                        preventDefault(e);
                                         return addLatLngWaypoint({
                                             latLng: fromtTurfPoint(
-                                                ruler.pointOnLine(
+                                                new CheapRuler(
+                                                    route.waypoints[i].latLng.lat,
+                                                    'nauticalmiles',
+                                                ).pointOnLine(
                                                     toLine([
                                                         route.waypoints[i].latLng,
                                                         route.waypoints[i + 1].latLng,
@@ -134,7 +139,23 @@ export const FlightPlanningLayer = ({
                                     },
                                 }}
                                 positions={createLineForRouteSegment(route, i)}
-                            />
+                            >
+                                <Pane
+                                    name={`tooltip-add-point-${i}`}
+                                    style={{ zIndex: Z_INDEX_MOUSE_ADD_POINT_TOOLTIP }}
+                                >
+                                    {primaryInput === 'mouse' && (
+                                        <Tooltip
+                                            direction={'right'}
+                                            offset={[0, 0]}
+                                            opacity={1}
+                                            sticky
+                                        >
+                                            Cliquez pour ajouter un point
+                                        </Tooltip>
+                                    )}
+                                </Pane>
+                            </Polyline>
                         )}
                         {temporaryWaypoint && (
                             <>
@@ -153,7 +174,7 @@ export const FlightPlanningLayer = ({
                                     <Polyline
                                         color={'black'}
                                         dashArray="20"
-                                        lineCap={'square'}
+                                        lineCap={'butt'}
                                         positions={lineBetweenWaypoints(
                                             temporaryWaypoint.waypointBefore,
                                             temporaryWaypoint.waypoint,
@@ -164,7 +185,7 @@ export const FlightPlanningLayer = ({
                                     <Polyline
                                         color={'black'}
                                         dashArray="20"
-                                        lineCap={'square'}
+                                        lineCap={'butt'}
                                         positions={lineBetweenWaypoints(
                                             temporaryWaypoint.waypoint,
                                             temporaryWaypoint.waypointAfter,
@@ -186,13 +207,14 @@ export function createLineForRouteSegment(route: Route, segmentNumber: number) {
 }
 
 const lineBetweenWaypoints = (waypoint1: Waypoint, waypoint2: Waypoint) => {
+    const ruler = new CheapRuler(waypoint1.latLng.lat, 'nauticalmiles');
     const pointA = toCheapRulerPoint(waypoint1.latLng);
     const pointB = toCheapRulerPoint(waypoint2.latLng);
     const aLine = [pointA, pointB];
     const lineDistance = ruler.lineDistance(aLine);
 
     if (lineDistance > 5) {
-        const line = ruler.lineSliceAlong(2.6, lineDistance - 2.6, aLine);
+        const line = ruler.lineSliceAlong(2.5, lineDistance - 2.5, aLine);
         return [
             { lat: line[0][1], lng: line[0][0] },
             { lat: line[1][1], lng: line[1][0] },

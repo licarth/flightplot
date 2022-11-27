@@ -1,8 +1,5 @@
-import { fetchMetars } from "./fetchMetars.js";
-import { fetchTafs } from "./fetchTafs.js";
-import { initializeApp } from "./initializeApp";
-
-initializeApp();
+import { fetchMetars } from "./fetchMetarsNoaa";
+import { fetchTafs } from "./fetchTafs";
 
 await fetchMetars();
 await fetchTafs();

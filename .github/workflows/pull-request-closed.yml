@@ -1,5 +1,7 @@
 on:
-  - delete
+  pull_request:
+    types:
+      - closed
 
 defaults:
   run:
@@ -7,7 +9,6 @@ defaults:
 
 jobs:
   delete-preview:
-    if: github.event.ref_type == 'branch'
     env:
       FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       DEPLOYMENT_NAME: ${{ github.event.ref }}

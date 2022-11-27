@@ -1,5 +1,7 @@
+name: Pull Request Closed
+
 on:
-  pull_request:
+  pull_request_target:
     types:
       - closed
 
@@ -11,7 +13,7 @@ jobs:
   delete-preview:
     env:
       FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      DEPLOYMENT_NAME: ${{ github.event.ref }}
+      DEPLOYMENT_NAME: ${{ github.head_ref }}
     name: Delete preview environment
     runs-on: ubuntu-latest
     steps:

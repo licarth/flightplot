@@ -25,6 +25,8 @@ export const Colors = {
 
     mainThemeColor: '#002e94',
     white: '#ffffff',
+
+    terrain: '#883d00bc',
 };
 
 ConfigProvider.config({

@@ -1,2 +1,2 @@
-export * from './ElevationService';
+export * from './ElevationService.server';
 export * from './requestOpenElevationChunkMemoized';

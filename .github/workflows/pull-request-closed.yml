@@ -11,7 +11,7 @@ jobs:
   delete-preview:
     env:
       FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      DEPLOYMENT_NAME: ${{ github.event.ref }}
+      DEPLOYMENT_NAME: ${{ github.ref_name }}
     name: Delete preview environment
     runs-on: ubuntu-latest
     steps:

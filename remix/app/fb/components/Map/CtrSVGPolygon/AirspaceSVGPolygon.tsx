@@ -13,6 +13,7 @@ type Props = {
     thinBorderColor: string;
     thickBorderColor: string;
     thinDashArray: string;
+    thinWeight?: number;
     prefix: string;
     highlighted?: boolean;
     thickBorderWidth?: number;

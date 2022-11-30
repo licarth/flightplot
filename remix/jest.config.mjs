@@ -1,7 +1,8 @@
 import hq from 'alias-hq';
 
 const config = {
-    moduleDirectories: ['node_modules', '<rootDir>/'],
+    moduleDirectories: ['node_modules'],
+    roots: ['<rootDir>/app'],
     // testEnvironment: './jest-environment-jsdom',
     testEnvironment: './custom-test-env.js',
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
@@ -22,5 +23,6 @@ const config = {
         ],
     },
     moduleNameMapper: { ...hq.get('jest'), '^.+\\.(css|less)$': '<rootDir>/CSSStub.js' },
+    watchPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/build/'],
 };
 export default config;

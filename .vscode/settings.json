@@ -1,9 +1,9 @@
 {
   "[typescriptreact]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": true
-    }
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    // "editor.codeActionsOnSave": {
+    //   "source.organizeImports": true
+    // }
   },
   "files.exclude": {
     "**/._*": true,
@@ -13,10 +13,10 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": true
-    }
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    // "editor.codeActionsOnSave": {
+    //   "source.organizeImports": true
+    // }
   },
   "typescript.updateImportsOnFileMove.enabled": "always",
   "[yaml]": {

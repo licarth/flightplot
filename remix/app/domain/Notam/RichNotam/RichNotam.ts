@@ -3,7 +3,6 @@ import _ from 'lodash';
 import type { AiracData } from 'ts-aerodata-france';
 import type { Notam } from '../Notam';
 
-type RtbaNotam = Decoder.TypeOf<typeof RtbaNotam.decoder>;
 namespace RtbaNotam {
     export const decoder = (airacData: AiracData) => ({
         decode: (n: Notam) => {
@@ -19,7 +18,6 @@ namespace RtbaNotam {
                     const times = matches[2];
                     const zone = dangerZonesByName[zoneId];
                     if (zone) {
-                        // console.log(`${zoneId} => ${times}`);
                         zones.push({ zone, times });
                     } else {
                         console.log(`no zone found for ${zoneId}`);
@@ -76,10 +74,7 @@ export const foldRichNotam =
 export namespace RichNotam {
     export const decoder = (airacData: AiracData) =>
         Decoder.union(PjeNotam.decoder, RtbaNotam.decoder(airacData));
-    // export const decoder = Decoder.fromSum('_tag')({
-    //     RtbaNotam: RtbaNotam.decoder,
-    //     PjeNotam: PjeNotam.decoder,
-    // });
 }
 
+type RtbaNotam = Decoder.TypeOf<ReturnType<typeof RtbaNotam.decoder>>;
 export type RichNotam = Decoder.TypeOf<ReturnType<typeof RichNotam.decoder>>;

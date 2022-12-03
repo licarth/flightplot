@@ -15,6 +15,7 @@ import { useMainMap } from './MainMapContext';
 import icao_notams from '~domain/Notam/notams-icao-fra-en';
 import * as E from 'fp-ts/lib/Either';
 import { useMemo } from 'react';
+import { useRtbaZones } from '~/fb/contexts/RtbaZonesContext';
 
 export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
     const { airacData, loading } = useAiracData();
@@ -29,47 +30,12 @@ export const DangerZones = ({ mapBounds }: { mapBounds: MapBounds }) => {
 
     const highlightedAirspaces = airspaces.map((a) => a.name);
 
-    const rtbaZones = useMemo(
-        () =>
-            (airacData &&
-                _.compact(
-                    _.flatten(
-                        icao_notams.map((s) =>
-                            pipe(
-                                s.all,
-                                Notam.decoder.decode,
-                                E.chain(RichNotam.decoder(airacData).decode),
-                                E.map(
-                                    foldRichNotam({
-                                        pje: ({ zones }) => {
-                                            return [];
-                                        },
-                                        rtba: ({ n, zones }) => {
-                                            const day = format(n.b.date!, 'yyyy-MM-dd');
-                                            console.log(day);
-                                            // if (day === format(new Date(), 'yyyy-MM-dd')) {
-                                            //     return null;
-                                            // }
-                                            return zones;
-                                        },
-                                    }),
-                                ),
-                                E.fold(
-                                    () => [],
-                                    (e) => e,
-                                ),
-                            ),
-                        ),
-                    ),
-                )) ||
-            [],
-        [airacData],
-    );
+    const { activeRestrictedAreasNext24h } = useRtbaZones();
 
     return (
         <>
             {mapBounds &&
-                _.uniqBy(rtbaZones, 'zone.name').map(({ zone, times }, i) => {
+                _.uniqBy(activeRestrictedAreasNext24h, 'zone.name').map(({ zone }, i) => {
                     const { geometry, name, lowerLimit, higherLimit } = zone;
                     return (
                         <AirspaceSVGPolygon

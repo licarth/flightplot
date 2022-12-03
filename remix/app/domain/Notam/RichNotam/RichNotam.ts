@@ -53,7 +53,7 @@ namespace PjeNotam {
     };
 }
 export const foldRichNotam =
-    ({ rtba, pje }: { rtba?: (n: RtbaNotam) => any; pje?: (n: PjeNotam) => any }) =>
+    <T, U>({ rtba, pje }: { rtba?: (n: RtbaNotam) => T; pje?: (n: PjeNotam) => U }) =>
     (rn: RichNotam) => {
         switch (rn._tag) {
             case 'RtbaNotam':
@@ -76,5 +76,5 @@ export namespace RichNotam {
         Decoder.union(PjeNotam.decoder, RtbaNotam.decoder(airacData));
 }
 
-type RtbaNotam = Decoder.TypeOf<ReturnType<typeof RtbaNotam.decoder>>;
+export type RtbaNotam = Decoder.TypeOf<ReturnType<typeof RtbaNotam.decoder>>;
 export type RichNotam = Decoder.TypeOf<ReturnType<typeof RichNotam.decoder>>;

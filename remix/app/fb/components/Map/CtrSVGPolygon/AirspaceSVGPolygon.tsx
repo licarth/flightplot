@@ -19,6 +19,7 @@ type Props = {
     thickBorderWidth?: number;
     thinBorderWidth?: number;
     highlightedThinBorderWidth?: number;
+    fillColor?: string;
 };
 
 export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
@@ -26,6 +27,7 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
     geometry,
     children,
     name,
+    fillColor,
     thinBorderColor,
     thickBorderColor,
     thinDashArray,
@@ -83,6 +85,7 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
                     strokeWidth={thickBorderWidth}
                     clipPath={`url(#${prefix}-clip-${id})`}
                     xlinkHref={`#${prefix}-${id}`}
+                    fill={fillColor}
                 />
                 <use
                     stroke={thinBorderColor}

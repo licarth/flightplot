@@ -6,6 +6,7 @@ import { LayerGroup, Pane, Polygon, SVGOverlay, Tooltip, useMap } from 'react-le
 import styled from 'styled-components';
 import type { Airspace, DangerZone } from 'ts-aerodata-france';
 import { toCheapRulerPoint, toLatLng } from '~/domain';
+import { sha1 } from '~/services/elevation/sha1';
 import { isAerodrome, isVfrPoint, isVor } from '../FixtureDetails/FixtureDetails';
 import { OaciLayer, OpenStreetMapLayer } from '../layer';
 import { SatelliteLayer } from '../layer/SatelliteLayer';
@@ -23,6 +24,7 @@ import { FlightPlanningLayer } from './FlightPlanningLayer';
 import { PrintAreaPreview } from './FlightPlanningLayer/PrintAreaPreview';
 import { useMainMap } from './MainMapContext';
 import { MouseEvents } from './MouseEvents';
+import { RtbaActivationTooltip } from './RtbaActivationTooltip';
 import { useTemporaryMapBounds } from './TemporaryMapCenterContext';
 import { VfrPointC, VfrPoints } from './VfrPoints';
 import { VorMarker } from './VorMarker';
@@ -105,7 +107,7 @@ const DisplayedLayer = ({ layer }: DisplayedLayerProps) => {
 
 const MouseTooltip = ({ hidden }: { hidden: boolean }) => {
     const {
-        underMouse: { airspaces },
+        underMouse: { airspaces, activeRestrictedAreasNext24hUnderMouse },
         mouseLocation,
     } = useFixtureFocus();
 
@@ -118,9 +120,12 @@ const MouseTooltip = ({ hidden }: { hidden: boolean }) => {
         const filteredAirspaces = airspaces
             .filter((a) => airspaceTypesToDisplay.includes(a.type))
             .filter(({ lowerLimit }) => lowerLimit.feetValue <= showAirspacesStartingBelowFL * 100);
-        const airspacesSha = filteredAirspaces.map((a) => a.name).join(',');
+        const airspacesSha = sha1(
+            filteredAirspaces.map((a) => a.name).join(',') +
+                activeRestrictedAreasNext24hUnderMouse.map((a) => a.activeZone.zone.name).join(','),
+        );
         return [filteredAirspaces, airspacesSha];
-    }, [airspaces]);
+    }, [airspaces, activeRestrictedAreasNext24hUnderMouse]);
 
     const bounds = mouseLocation && boxAround(toCheapRulerPoint(toLatLng(mouseLocation)), 1);
 
@@ -140,10 +145,29 @@ const MouseTooltip = ({ hidden }: { hidden: boolean }) => {
                     <StyledTooltip
                         permanent
                         sticky
-                        opacity={!hidden && filteredAirspaces.length > 0 ? 1 : 0}
+                        opacity={
+                            !hidden &&
+                            (filteredAirspaces.length > 0 ||
+                                activeRestrictedAreasNext24hUnderMouse.length > 0)
+                                ? 1
+                                : 0
+                        }
                         key={`tooltip-airspace-${airspacesSha}-${hidden}`}
                         offset={[10, 0]}
                     >
+                        <RtbaTooltips>
+                            {_.sortBy(
+                                activeRestrictedAreasNext24hUnderMouse,
+                                ({ activeZone: zone }) => zone.zone.lowerLimit.feetValue,
+                            ).map((activation, i) => {
+                                return (
+                                    <RtbaActivationTooltip
+                                        key={`tooltip-rtba-description-${i}`}
+                                        activation={activation}
+                                    />
+                                );
+                            })}
+                        </RtbaTooltips>
                         {_.sortBy(filteredAirspaces, ({ lowerLimit }) => lowerLimit.feetValue).map(
                             (airspace, i) => {
                                 return (
@@ -164,14 +188,6 @@ const MouseTooltip = ({ hidden }: { hidden: boolean }) => {
 export const Centered = styled.div`
     display: flex;
     flex-direction: column;
-`;
-
-export const AirspaceContainer = styled.div`
-    position: relative;
-    text-align: center;
-    font-family: 'Futura';
-    font-weight: 900;
-    border-radius: 2px;
 `;
 
 const StyledTooltip = styled(Tooltip)`
@@ -218,3 +234,7 @@ const HighlightedSearchItem = () => {
 const isAirspace = (item: any): item is Airspace | DangerZone => {
     return _.has(item, 'type');
 };
+
+const RtbaTooltips = styled.div`
+    display: flex;
+`;

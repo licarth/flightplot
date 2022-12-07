@@ -9,6 +9,7 @@ import { useFixtureFocus } from '../Map/FixtureFocusContext';
 import type { DisplayedLayerProps } from '../Map/InnerMapContainer';
 import { useMainMap } from '../Map/MainMapContext';
 import { useSearchElement } from '../SearchItemContext';
+import { useAiracData } from '../useAiracData';
 import { useWeather } from '../WeatherContext';
 
 const style = {
@@ -63,6 +64,8 @@ export const MapOverlayMenu = () => {
     const { item } = useSearchElement();
 
     const { weatherEnabled, setWeatherEnabled } = useWeather();
+
+    const { airacData, loading } = useAiracData();
 
     const formatter = (v: number): string =>
         v < MAX_CEILING

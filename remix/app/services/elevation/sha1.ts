@@ -1,5 +1,3 @@
-import crypto from 'crypto';
+import sha1lib from 'sha1';
 
-export const sha1 = (s: string) => {
-    return crypto.createHash('sha1').update(s).digest('base64');
-};
+export const sha1 = sha1lib;

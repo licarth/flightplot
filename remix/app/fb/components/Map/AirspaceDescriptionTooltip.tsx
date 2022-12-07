@@ -5,7 +5,7 @@ import type { Airspace, DangerZone } from 'ts-aerodata-france';
 import { Colors } from './Colors';
 import { borderColor } from './CtrSVGPolygon';
 import { IgnAirspaceNameFont } from './IgnAirspaceNameFont';
-import { AirspaceContainer, Centered } from './InnerMapContainer';
+import { Centered } from './InnerMapContainer';
 
 export const AirspaceDescriptionTooltip = ({ airspace }: { airspace: Airspace | DangerZone }) => {
     const { name, lowerLimit, higherLimit } = airspace;
@@ -105,4 +105,12 @@ const AirspaceNameContainer = styled.div`
 const AltitudeValue = styled.div`
     padding: 0 0.5rem 0 0.5rem;
     min-height: 0.75rem;
+`;
+
+const AirspaceContainer = styled.div`
+    position: relative;
+    text-align: center;
+    font-family: 'Futura';
+    font-weight: 900;
+    border-radius: 2px;
 `;

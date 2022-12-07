@@ -1,20 +1,19 @@
+import * as E from 'fp-ts/lib/Either';
 import { fold, right } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { draw } from 'io-ts/lib/Decoder';
-import { Notam } from './Notam';
-import icao_notams from './notams-icao-fra-en';
-import notams from './notams-notamweb-fra-fr';
-import { foldRichNotam, RichNotam } from './RichNotam/RichNotam';
-import * as E from 'fp-ts/lib/Either';
 import { AiracData } from 'ts-aerodata-france';
 import currentCycle from 'ts-aerodata-france/build/jsonData/2022-11-03.json';
+import { frnotams } from './fr-notams';
+import { Notam } from './Notam';
 import { NotamDate } from './NotamDate';
+import { NotamIdentifier } from './NotamIdentifier';
+import icao_notams from './notams-icao-fra-en';
+import notamsNotamwebFraFr from './notams-notamweb-fra-fr';
 import { Code, Modifier, Q, Subject } from './Q';
 import modifierTable from './Q/Code/modifierTable';
 import subjectTable from './Q/Code/subjectTable';
-import { frnotams } from './fr-notams';
-import notamsNotamwebFraFr from './notams-notamweb-fra-fr';
-import { NotamIdentifier } from './NotamIdentifier';
+import { foldRichNotam, RichNotam } from './RichNotam/RichNotam';
 
 const fixture1 = `LFFA-R3561/21 NOTAMN 
 Q) LFXX/QRTCA/ I/ BO/ W/490/550/4652N00536E307
@@ -272,6 +271,9 @@ CE SUP AIP EST DISPONIBLE SUR WWW.SIA.AVIATION-CIVILE.GOUV.FR`,
                                 // console.log(zones);
                             },
                             rtba: ({ zones }) => {
+                                // console.log(zones);
+                            },
+                            zoneActivationNotam: (zoneActivationNotam) => {
                                 // console.log(zones);
                             },
                         }),

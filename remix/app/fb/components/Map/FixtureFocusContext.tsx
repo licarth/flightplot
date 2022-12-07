@@ -2,6 +2,7 @@ import CheapRuler from 'cheap-ruler';
 import _ from 'lodash';
 import type { Dispatch, PropsWithChildren, SetStateAction } from 'react';
 import React, { createContext, useContext, useMemo, useState } from 'react';
+import { DangerZoneType } from 'ts-aerodata-france';
 import type {
     Aerodrome,
     AiracData,
@@ -13,12 +14,16 @@ import type {
 } from 'ts-aerodata-france';
 import type { LatLngWaypoint } from '~/domain';
 import { toLatLng, toPoint } from '~/domain';
+import type { RtbaActivation } from '~/fb/contexts/RtbaZonesContext';
+import { useRtbaZones } from '~/fb/contexts/RtbaZonesContext';
 import { useAiracData } from '../useAiracData';
+import { sha1 } from '~/services/elevation/sha1';
 
 export type FocusableFixture = Aerodrome | VfrPoint | Vor | LatLngWaypoint;
 
 export type UnderMouse = {
     airspaces: (Airspace | DangerZone)[];
+    activeRestrictedAreasNext24hUnderMouse: RtbaActivation[];
 };
 
 type CenteredElement = FocusableFixture | Airspace | DangerZone;
@@ -42,7 +47,7 @@ export const FixtureFocusContext = createContext<{
     setClickedLocation: () => {},
     setHighlightedLocation: () => {},
     setMouseLocation: () => {},
-    underMouse: { airspaces: [] },
+    underMouse: { airspaces: [], activeRestrictedAreasNext24hUnderMouse: [] },
     setCenteredElement: () => {},
 });
 
@@ -59,12 +64,12 @@ const getFixtures = (airacData: AiracData, l?: LatLng) => {
     );
 };
 
-const getAirspaces = (airacData: AiracData, l?: LatLng) => {
-    const location = l && toLatLng(l);
+const getAirspaces = (airacData: AiracData, mouseLocation?: LatLng) => {
+    const l = mouseLocation && toLatLng(mouseLocation);
     return (
-        location && [
-            ..._.uniqBy(airacData.getAirspacesIntersecting(location.lat, location.lng), 'name'),
-            ..._.uniqBy(airacData.getDangerZonesIntersecting(location.lat, location.lng), 'name'),
+        l && [
+            ..._.uniqBy(airacData.getAirspacesIntersecting(l.lat, l.lng), 'name'),
+            ..._.uniqBy(airacData.getDangerZonesIntersecting(l.lat, l.lng), 'name'),
         ]
     );
 };
@@ -77,9 +82,28 @@ export const FixtureFocusProvider: React.FC<PropsWithChildren> = ({ children }) 
     const { airacData, loading } = useAiracData();
     const fixtures = loading ? [] : getFixtures(airacData, clickedLocation);
     const airspaces = loading || !mouseLocation ? [] : getAirspaces(airacData, mouseLocation);
+    const airspacesSha = useMemo(
+        () => sha1(airspaces?.map((a) => a.name).join('') || ''),
+        [airspaces],
+    );
     const highlightedFixtures = loading ? [] : getFixtures(airacData, highlightedLocation);
     const highlightedFixture = highlightedFixtures ? highlightedFixtures[0] : undefined;
     const [centeredElement, setCenteredElement] = useState<CenteredElement>();
+    const { activeRestrictedAreasNext24h } = useRtbaZones();
+
+    const activeRestrictedAreasNext24hUnderMouse = useMemo(() => {
+        if (!mouseLocation) {
+            return [];
+        } else {
+            const dangerZonesByName = _.keyBy(
+                airspaces?.filter((a) => a.type === DangerZoneType.R),
+                'name',
+            );
+            return activeRestrictedAreasNext24h.filter(
+                (r) => dangerZonesByName[r.activeZone.zone.name],
+            );
+        }
+    }, [airspacesSha]);
 
     const throttledSetMouseLocation = useMemo(() => _.throttle(setMouseLocation, 50), []);
     return (
@@ -94,7 +118,10 @@ export const FixtureFocusProvider: React.FC<PropsWithChildren> = ({ children }) 
                 setHighlightedLocation,
                 mouseLocation,
                 setMouseLocation: throttledSetMouseLocation,
-                underMouse: { airspaces: airspaces || [] },
+                underMouse: {
+                    airspaces: airspaces || [],
+                    activeRestrictedAreasNext24hUnderMouse,
+                },
                 centeredElement,
                 setCenteredElement,
             }}

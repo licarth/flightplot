@@ -97,6 +97,18 @@ ${originalString}
         Notam.propsDecoder,
         Decoder.compose(fromClassCodec(Notam)),
     );
+
+    isActiveOnDay(yyyyMMdd: string) {
+        const { b, c } = this;
+        // If NOTAMC, return true;
+        if (!c) {
+            return true;
+        } else if (c.isPERM()) {
+            return b.isBeforeOrOnSameDay(yyyyMMdd);
+        } else {
+            return b.isBeforeOrOnSameDay(yyyyMMdd) && c.isAfterOrOnSameDay(yyyyMMdd);
+        }
+    }
 }
 
 export type Props = Decoder.TypeOf<typeof Notam.propsDecoder>;

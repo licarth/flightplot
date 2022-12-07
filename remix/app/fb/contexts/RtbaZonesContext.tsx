@@ -1,20 +1,27 @@
-import { addHours, format, subHours } from 'date-fns';
+import { format } from 'date-fns';
 import { collection, getFirestore, onSnapshot, query, where } from 'firebase/firestore';
-import type { PropsWithChildren } from 'react';
-import { useEffect, useState } from 'react';
-import React, { createContext, useContext } from 'react';
-import type { DangerZone } from 'ts-aerodata-france';
+import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import { draw } from 'io-ts/lib/Decoder';
+import _ from 'lodash';
+import type { PropsWithChildren } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Notam } from '~/domain/Notam/Notam';
 import type { RtbaNotam } from '~/domain/Notam/RichNotam/RichNotam';
-import { foldRichNotam, RichNotam } from '~/domain/Notam/RichNotam/RichNotam';
+import { isPjeNotam, RichNotam } from '~/domain/Notam/RichNotam/RichNotam';
 import { useAiracData } from '../components/useAiracData';
-import * as E from 'fp-ts/lib/Either';
-import _ from 'lodash';
 
-type RtbaActivation = {
-    zone: DangerZone;
+export type RtbaActivation = {
+    activeZone: RtbaNotam['zones'][number];
     rtbaNotam: RtbaNotam;
+};
+
+export const isCurrentlyActive = (activation: RtbaActivation) => {
+    const now = new Date();
+    return (
+        now.getTime() >= activation.activeZone.startDate.getTime() &&
+        now.getTime() <= activation.activeZone.endDate.getTime()
+    );
 };
 
 export const RtbaZonesContext = createContext<{
@@ -34,49 +41,45 @@ export const RtbaZonesProvider: React.FC<PropsWithChildren> = ({ children }) => 
     // Call firebase to query documents in notam collection
     useEffect(() => {
         const db = getFirestore();
-        const metarsRef = collection(db, 'notams');
+        const notamsRef = collection(db, 'notams');
 
         // See https://github.com/firebase/firebase-js-sdk/issues/212#issuecomment-338046703
         // We have to fetch all documents (2 queries) and filter them in the client, which is incredibly expensive
         // We should query them on the server side and return only the relevant documents here.
 
         if (enabled && airacData) {
-            const q = query(metarsRef, where('subject', '==', 'RR'), where('modifier', '==', 'CA'));
+            const q = query(notamsRef, where('subject', '==', 'RR'), where('modifier', '==', 'CA'));
             return onSnapshot(q, { includeMetadataChanges: false }, (querySnapshot) => {
-                const docs = querySnapshot.docs.map((doc) => {
-                    return pipe(
+                const docs = querySnapshot.docs.flatMap((doc) => {
+                    const notam = pipe(
                         doc.data().rawNotam,
                         Notam.decoder.decode,
                         E.chain(RichNotam.decoder(airacData).decode),
-                        E.map(
-                            foldRichNotam({
-                                pje: (pjeNotam) => {},
-                                rtba: (richNotam) => {
-                                    const day = format(richNotam.n.b.date!, 'yyyy-MM-dd');
-                                    console.log(day);
-                                    // if (day === format(new Date(), 'yyyy-MM-dd')) {
-                                    //     return null;
-                                    // }
-                                    return richNotam;
-                                },
-                            }),
-                        ),
-                        E.foldW(
-                            () => null,
-                            (n) => {
-                                console.log(n);
-                                return n;
-                            },
-                        ),
+                        E.getOrElseW((e) => {
+                            console.error(draw(e));
+                            return null;
+                        }),
                     );
+                    // if (notam?.n.e.includes('R139')) {
+                    //     console.log(notam);
+                    // }
+                    if (
+                        !notam ||
+                        !notam.n.isActiveOnDay(format(new Date(), 'yyyyMMdd')) ||
+                        isPjeNotam(notam)
+                    ) {
+                        return [];
+                    }
+                    return notam;
                 });
+
                 const activations: RtbaActivation[] = _.flatMap(
                     docs.map((rtbaNotam) => {
                         if (rtbaNotam) {
                             return rtbaNotam.zones.map((zone) => {
                                 return {
-                                    zone: zone.zone,
-                                    rtbaNotam: rtbaNotam,
+                                    activeZone: zone,
+                                    rtbaNotam,
                                 } as RtbaActivation;
                             });
                         } else {
@@ -84,6 +87,7 @@ export const RtbaZonesProvider: React.FC<PropsWithChildren> = ({ children }) => 
                         }
                     }),
                 );
+
                 setActiveRestrictedAreasNext24h(activations);
             });
         } else {

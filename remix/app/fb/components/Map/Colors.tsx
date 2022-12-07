@@ -19,6 +19,9 @@ export const Colors = {
     highlitFixtureBorder: '#b65800',
     highlitFixture: '#ff7b00',
 
+    activeDangerZoneThick: '#fffb00',
+    activeDangerZoneThin: '#00000099',
+
     // Route
     routeIntermediateWaypoint: '#000000',
     routeFinalWaypoint: '#940000',

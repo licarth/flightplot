@@ -12,7 +12,7 @@ export const action: ActionFunction = async ({ request }) => {
         session.set('idToken', idToken);
         const { email } = await auth.verifyIdToken(idToken);
         const sessionCookie = await auth.createSessionCookie(idToken, {
-            expiresIn: 60 * 60 * 24 * 5,
+            expiresIn: 1000 * 60 * 60 * 24 * 5,
         });
 
         session.set('session_cookie', sessionCookie);

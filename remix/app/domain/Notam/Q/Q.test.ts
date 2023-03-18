@@ -1,6 +1,22 @@
-import { right } from 'fp-ts/lib/Either';
+import { foldW, right } from 'fp-ts/lib/Either';
 import { Q } from './Q';
+import * as Codec from 'io-ts/lib/Codec.js';
+import * as Decoder from 'io-ts/lib/Decoder.js';
+import { pipe } from 'fp-ts/lib/function';
+
 describe('Q', () => {
+    describe.only('', () => {
+        it('', () => {
+            const t = pipe(
+                Codec.string.decode('Hello'),
+                foldW(
+                    (e) => e,
+                    (a) => a,
+                ),
+            );
+        });
+    });
+
     describe('lexer', () => {
         it('1', () => {
             expect(Q.lexer.decode('LFFF/QFAXX/IV/NBO/ A/000/999/4843N00223E005')).toEqual(

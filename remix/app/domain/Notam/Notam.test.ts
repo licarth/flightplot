@@ -3,7 +3,7 @@ import { fold, right } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { draw } from 'io-ts/lib/Decoder';
 import { AiracData } from 'ts-aerodata-france';
-import currentCycle from 'ts-aerodata-france/build/jsonData/2022-11-03.json';
+import currentCycle from 'ts-aerodata-france/build/jsonData/2023-02-23.json';
 import { frnotams } from './fr-notams';
 import { Notam } from './Notam';
 import { NotamDate } from './NotamDate';

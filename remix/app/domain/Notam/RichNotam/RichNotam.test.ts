@@ -1,6 +1,6 @@
 import { AiracData } from 'ts-aerodata-france';
 import { foldRichNotam, RichNotam } from './RichNotam';
-import currentCycle from 'ts-aerodata-france/build/jsonData/2022-12-01.json';
+import currentCycle from 'ts-aerodata-france/build/jsonData/2023-02-23.json';
 import { Notam } from '../Notam';
 import { pipe } from 'fp-ts/lib/function';
 import * as Either from 'fp-ts/lib/Either';

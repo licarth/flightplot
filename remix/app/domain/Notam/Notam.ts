@@ -1,5 +1,4 @@
 import { pipe } from 'fp-ts/lib/function';
-import * as Codec from 'io-ts/lib/Codec';
 import * as Decoder from 'io-ts/lib/Decoder';
 import { fromClassCodec } from '~/iots';
 import { NotamDate } from './NotamDate';
@@ -109,6 +108,29 @@ ${originalString}
             return b.isBeforeOrOnSameDay(yyyyMMdd) && c.isAfterOrOnSameDay(yyyyMMdd);
         }
     }
+
+    toString() {
+        return `${this.identifier.toString()}
+Q) ${this.q.toString()}
+A) ${this.a} B) ${this.b.toString()} C) ${this.c ? this.c.toString() : ''}
+E) ${tabulaterPararaph(this.e)}
+${this.g ? `F) ${this.f}` : ''}
+${this.g ? `G) ${this.g}` : ''}
+`;
+        // Q) ${qLine.fir}/Q${qLine.code23}${qLine.code45}/ ${qLine.traffic}/ ${
+        //       qLine.purpose
+        //     }/ W/${qLine.lower}/${qLine.upper}/${coordinates}
+        // A) ${itemA}${startValidity ? `\nB) ${startValidity}` : ""}${
+        //       endValidity ? ` C) ${endValidity}` : ""
+        //     }
+        // E) ${itemE}${itemF ? `\nF) ${itemF}` : ""}${itemG ? `\nG) ${itemG}` : ""}`;
+    }
 }
+
+const tabulaterPararaph = (s: string) => {
+    const [firstLine, ...rest] = s.split('\n');
+    const tabulatedLines = rest.map((l) => `   ${l}`);
+    return [firstLine, ...tabulatedLines].join('\n');
+};
 
 export type Props = Decoder.TypeOf<typeof Notam.propsDecoder>;

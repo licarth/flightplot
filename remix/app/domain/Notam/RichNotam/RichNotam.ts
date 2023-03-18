@@ -109,7 +109,8 @@ namespace ZoneActivationNotam {
 
 const noSpace = (s: string) => s.replace(/ /g, '');
 
-type PjeNotam = Decoder.TypeOf<typeof PjeNotam.decoder>;
+export type PjeNotam = Decoder.TypeOf<typeof PjeNotam.decoder>;
+
 namespace PjeNotam {
     export const decoder = {
         decode: (n: Notam) => {

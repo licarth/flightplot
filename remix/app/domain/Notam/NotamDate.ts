@@ -4,6 +4,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { format, isValid, parseISO } from 'date-fns';
 import { fromClassCodec } from '~/iots';
 import { parseUTCDate } from './parseUTCDate';
+import { formatInTimeZone } from 'date-fns-tz';
 
 // 2205130747
 // Or FR NOTAM FORMAT
@@ -23,9 +24,9 @@ export class NotamDate {
     }
 
     static fromDDMMyy(ddMMYY: string) {
-        const date = parseUTCDate(ddMMYY, 'ddMMyy');
+        const date = parseUTCDate(ddMMYY, 'ddMMyy', new Date());
         return new NotamDate({
-            s: format(date, 'dd MMM yyyy HH:mm'),
+            s: format(date, 'yyMMddHHmm'),
             date,
             est: false,
         });
@@ -36,8 +37,12 @@ export class NotamDate {
     }
 
     toString() {
-        return this.isPERM() ? 'Permanent' : format(this.date!, 'dd MMM yyyy HH:mm');
+        return this.isPERM() ? 'PERM' : formatInTimeZone(this.date!, 'Z', 'yyMMddHHmm');
     }
+
+    static encoder = {
+        encode: (date: NotamDate) => date.toString(),
+    };
 
     isBeforeOrOnSameDay(yyyyMMdd: string) {
         if (!this.date) {
@@ -60,12 +65,12 @@ export class NotamDate {
                 return Decoder.success({ s, date: null, est: false });
             } else if (s.match(/[0-9]{10}\s?(EST)?/g)) {
                 const parts = s.split(/\s+/);
-                const date = parseUTCDate(parts[0], 'yyMMddHHmm');
+                const date = parseUTCDate(parts[0], 'yyMMddHHmm', new Date());
                 if (isValid(date)) {
                     return Decoder.success({ s, date, est: parts[0] === 'EST' });
                 }
             } else {
-                const date = parseUTCDate(s, 'yyyy MMM dd HH:mm');
+                const date = parseUTCDate(s, 'yyyy MMM dd HH:mm', new Date());
                 if (isValid(date)) {
                     return Decoder.success({ s, date, est: false });
                 } else {

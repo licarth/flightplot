@@ -2,7 +2,7 @@ import type { ComponentMeta } from '@storybook/react';
 import 'antd/dist/antd.variable.css';
 import styled from 'styled-components';
 import { AiracData } from 'ts-aerodata-france';
-import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
+import currentCycle from 'ts-aerodata-france/build/jsonData/2023-02-23.json';
 import { RtbaActivationTooltip } from '~/fb/components/Map/RtbaActivationTooltip';
 
 import '../app/styles/global.css';

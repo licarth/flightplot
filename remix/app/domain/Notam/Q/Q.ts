@@ -11,9 +11,11 @@ export interface QProps {
     target: string;
     code: Code;
     traffic: Traffic;
+    originalQLine: string; // TODO: Remove when all props implemented
 }
 
 export class Q {
+    originalQLine;
     target;
     code;
     traffic;
@@ -22,6 +24,14 @@ export class Q {
         this.target = props.target;
         this.code = props.code;
         this.traffic = props.traffic;
+        this.originalQLine = props.originalQLine;
+    }
+
+    toString() {
+        // return `${this.target}/${Code.encoder.encode(this.code)}/${Traffic.encoder.encode(
+        //     this.traffic,
+        // )}`;
+        return this.originalQLine;
     }
 
     static lexer = {
@@ -53,6 +63,7 @@ export class Q {
                 lowerLimit,
                 higherLimit,
                 geoloc,
+                originalQLine: s,
             });
         },
     };
@@ -64,6 +75,7 @@ export class Q {
                 code: Code.decoder,
                 target: Decoder.string,
                 traffic: Traffic.decoder,
+                originalQLine: Decoder.string,
             }),
         ),
         Decoder.compose(fromClassCodec(Q)),

@@ -3,7 +3,7 @@ import * as Decoder from 'io-ts/lib/Decoder';
 import { fromClassCodec } from '~/iots';
 import { Modifier } from './Modifier';
 import { Subject } from './Subject';
-
+import type * as Encoder from 'io-ts/lib/Encoder';
 export class Code {
     subject;
     modifier;
@@ -17,9 +17,9 @@ export class Code {
         return `${this.subject.code}${this.modifier.code}`;
     }
 
-    toString() {
-        return `${this.subject.toString()} (${this.modifier.toString()})`;
-    }
+    static encoder: Encoder.Encoder<string, Code> = {
+        encode: (code) => `Q${code.codeString}`,
+    };
 
     static propsDecoder = pipe(
         {

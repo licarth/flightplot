@@ -17,6 +17,10 @@ export class NotamIdentifier {
         this.parentNotamId = props.parentNotamId;
     }
 
+    toString() {
+        return `${this.notamId} ${this.type}${this.parentNotamId ? ' ' + this.parentNotamId : ''}`;
+    }
+
     static propsDecoder = pipe(
         {
             decode: (s: string) => {

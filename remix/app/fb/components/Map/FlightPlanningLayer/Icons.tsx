@@ -37,6 +37,7 @@ export const icon = (iconName: IconProp, iconAnchor?: PointExpression) => {
 export const planeDeparture = icon('plane-departure');
 export const planeArrival = icon('plane-arrival');
 export const circle = icon('circle');
+export const triangleExclamation = icon('triangle-exclamation');
 
 function pascalize(str: string) {
     let arr = str.split('-');

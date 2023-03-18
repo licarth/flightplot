@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import { AiracData } from "ts-aerodata-france";
-import dataJson from "ts-aerodata-france/build/jsonData/2022-11-03.json" assert { type: "json" };
+import dataJson from "ts-aerodata-france/build/jsonData/2023-02-23.json" assert { type: "json" };
 import fetch from "node-fetch";
 import _ from "lodash";
 import { initializeApp } from "./initializeApp";

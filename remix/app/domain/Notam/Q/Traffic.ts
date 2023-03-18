@@ -1,5 +1,6 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as Decoder from 'io-ts/lib/Decoder';
+import type * as Encoder from 'io-ts/lib/Encoder';
 import { TrafficOption } from './TrafficOption';
 
 export interface TrafficProps {
@@ -21,4 +22,8 @@ export class Traffic {
             }),
         ),
     );
+
+    static encoder: Encoder.Encoder<string, Traffic> = {
+        encode: (t: Traffic) => t.categories.join(''),
+    };
 }

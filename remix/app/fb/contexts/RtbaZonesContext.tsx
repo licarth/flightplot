@@ -1,19 +1,21 @@
-import { format } from 'date-fns';
 import { collection, getFirestore, onSnapshot, query, where } from 'firebase/firestore';
-import * as E from 'fp-ts/lib/Either';
-import { pipe } from 'fp-ts/lib/function';
-import { draw } from 'io-ts/lib/Decoder';
 import _ from 'lodash';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Notam } from '~/domain/Notam/Notam';
-import type { RtbaNotam } from '~/domain/Notam/RichNotam/RichNotam';
-import { isPjeNotam, RichNotam } from '~/domain/Notam/RichNotam/RichNotam';
+import type { PjeNotam, RtbaNotam } from '~/domain/Notam/RichNotam/RichNotam';
+import { isZoneActivationNotam } from '~/domain/Notam/RichNotam/RichNotam';
+import { isPjeNotam } from '~/domain/Notam/RichNotam/RichNotam';
+import { isRtbaNotam } from '~/domain/Notam/RichNotam/RichNotam';
 import { useAiracData } from '../components/useAiracData';
+import { decodeNotamDocsForToday } from './decodeNotamDocsForToday';
 
 export type RtbaActivation = {
     activeZone: RtbaNotam['zones'][number];
-    rtbaNotam: RtbaNotam;
+    notam: RtbaNotam;
+};
+
+export type PjeActivation = {
+    notam: PjeNotam;
 };
 
 export const isCurrentlyActive = (activation: RtbaActivation) => {
@@ -26,8 +28,10 @@ export const isCurrentlyActive = (activation: RtbaActivation) => {
 
 export const RtbaZonesContext = createContext<{
     activeRestrictedAreasNext24h: RtbaActivation[];
+    activePjeNext24h: PjeActivation[];
 }>({
     activeRestrictedAreasNext24h: [],
+    activePjeNext24h: [],
 });
 
 export const RtbaZonesProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -36,9 +40,10 @@ export const RtbaZonesProvider: React.FC<PropsWithChildren> = ({ children }) => 
         RtbaActivation[]
     >([]);
 
+    const [activePjeNext24h, setActivePjeNext24h] = useState<PjeActivation[]>([]);
+
     const [enabled] = useState(true);
 
-    // Call firebase to query documents in notam collection
     useEffect(() => {
         const db = getFirestore();
         const notamsRef = collection(db, 'notams');
@@ -48,38 +53,32 @@ export const RtbaZonesProvider: React.FC<PropsWithChildren> = ({ children }) => 
         // We should query them on the server side and return only the relevant documents here.
 
         if (enabled && airacData) {
-            const q = query(notamsRef, where('subject', '==', 'RR'), where('modifier', '==', 'CA'));
+            const q = query(notamsRef, where('code1234', 'in', ['WPLW', 'RRCA']));
             return onSnapshot(q, { includeMetadataChanges: false }, (querySnapshot) => {
-                const docs = querySnapshot.docs.flatMap((doc) => {
-                    const notam = pipe(
-                        doc.data().rawNotam,
-                        Notam.decoder.decode,
-                        E.chain(RichNotam.decoder(airacData).decode),
-                        E.getOrElseW((e) => {
-                            console.error(draw(e));
-                            return null;
-                        }),
-                    );
-                    // if (notam?.n.e.includes('R139')) {
-                    //     console.log(notam);
-                    // }
-                    if (
-                        !notam ||
-                        !notam.n.isActiveOnDay(format(new Date(), 'yyyyMMdd')) ||
-                        isPjeNotam(notam)
-                    ) {
-                        return [];
-                    }
-                    return notam;
-                });
+                const docs = decodeNotamDocsForToday(querySnapshot.docs, airacData).map(
+                    (n) => n.richNotam,
+                );
 
-                const activations: RtbaActivation[] = _.flatMap(
+                const pjeActivations: PjeActivation[] = _.flatMap(
+                    docs.map((pjeNotam) => {
+                        if (pjeNotam && isPjeNotam(pjeNotam)) {
+                            console.log('pjeNotam', pjeNotam);
+                            return [{ notam: pjeNotam } as PjeActivation];
+                        } else {
+                            return [];
+                        }
+                    }),
+                );
+                const rtbaActivations: RtbaActivation[] = _.flatMap(
                     docs.map((rtbaNotam) => {
-                        if (rtbaNotam) {
+                        if (
+                            rtbaNotam &&
+                            (isRtbaNotam(rtbaNotam) || isZoneActivationNotam(rtbaNotam))
+                        ) {
                             return rtbaNotam.zones.map((zone) => {
                                 return {
                                     activeZone: zone,
-                                    rtbaNotam,
+                                    notam: rtbaNotam,
                                 } as RtbaActivation;
                             });
                         } else {
@@ -87,11 +86,12 @@ export const RtbaZonesProvider: React.FC<PropsWithChildren> = ({ children }) => 
                         }
                     }),
                 );
-
-                setActiveRestrictedAreasNext24h(activations);
+                setActiveRestrictedAreasNext24h(rtbaActivations);
+                setActivePjeNext24h(pjeActivations);
             });
         } else {
             setActiveRestrictedAreasNext24h([]);
+            setActivePjeNext24h([]);
         }
     }, [enabled, airacData]);
 
@@ -99,6 +99,7 @@ export const RtbaZonesProvider: React.FC<PropsWithChildren> = ({ children }) => 
         <RtbaZonesContext.Provider
             value={{
                 activeRestrictedAreasNext24h,
+                activePjeNext24h,
             }}
         >
             {children}

@@ -1,5 +1,4 @@
 import { formatInTimeZone } from 'date-fns-tz';
-import format from 'date-fns-tz/format';
 import styled, { css } from 'styled-components';
 import type { RtbaActivation } from '~/fb/contexts/RtbaZonesContext';
 import { isCurrentlyActive } from '~/fb/contexts/RtbaZonesContext';

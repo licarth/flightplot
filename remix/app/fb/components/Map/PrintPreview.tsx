@@ -4,8 +4,8 @@ import type { Route } from '../../../domain';
 import type { PageFormat } from '../../../domain/PageFormat';
 import type { PrintArea } from '../../../domain/PrintArea';
 import { usePrint } from '../PrintContext';
-import { useRoute } from '../useRoute';
 import { VerticalProfileChartWithHook } from '../VerticalProfileChart';
+import { useRoute } from '../useRoute';
 import { NavigationLog } from './NavigationLog';
 import { RouteSvg } from './RouteSvg';
 
@@ -138,8 +138,7 @@ const Page = styled.div<{
     ${({ landscape }) =>
         landscape &&
         `
-    transform: rotate(90deg);
-    transform-origin: 10.5cm 10.5cm;
+    transform: rotate(90deg) scale(${A4paper.longMm / A4paper.shortMm}) translate(${74}mm, 0mm);
   `}
 `;
 

@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useEffect, useState } from 'react';
 import { AiracData } from 'ts-aerodata-france';
-import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
+import currentCycle from 'ts-aerodata-france/build/jsonData/2023-03-23.json';
 
 export const AiracDataContext = createContext<{
     airacData?: AiracData;

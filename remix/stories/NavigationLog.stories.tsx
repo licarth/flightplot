@@ -1,7 +1,7 @@
 import type { ComponentMeta } from '@storybook/react';
 import styled from 'styled-components';
 import { AiracData } from 'ts-aerodata-france';
-import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
+import currentCycle from 'ts-aerodata-france/build/jsonData/2023-03-23.json';
 import { AiracDataProvider } from '~/fb/components/AiracDataContext';
 import { FixtureFocusProvider } from '~/fb/components/Map/FixtureFocusContext';
 import { NavigationLog } from '~/fb/components/Map/NavigationLog';

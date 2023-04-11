@@ -48,12 +48,21 @@ function isTouchDevice() {
 
 export const VerticalProfileChart = ({
     route,
-    elevation,
+    elevation: elevationSource,
     setWaypointAltitude,
     airspaceOverlaps,
     fitToSpace,
 }: Props) => {
     const { width: availableWidth, ref } = useResizeDetector();
+
+    const elevationDataIsThere = elevationSource.elevations.length > 0;
+
+    const elevation: ElevationAtPoint = elevationDataIsThere
+        ? elevationSource
+        : {
+              distancesFromStartInNm: _.range(0, route.totalDistance, 0.1),
+              elevations: _.range(0, route.totalDistance, 0.1).map(() => 0),
+          };
 
     const onDragEnd =
         //@ts-ignore
@@ -397,74 +406,98 @@ export const VerticalProfileChart = ({
         : Math.max(availableWidth || 0, route.totalDistance * 15);
 
     return (
-        <ChartOuterContainer ref={ref}>
-            <ChartContainer $width={widthInPixels}>
-                <Chart
-                    // style={{ width: '2000px' }}
-                    // width={2000}
-                    key={`vertical-profile-${hashCode(JSON.stringify(route.waypoints))}`}
-                    type="scatter"
-                    data={data}
-                    options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: false,
-                        elements: {
-                            line: {
-                                segment: { borderColor: '#000000F', borderWidth: 2 },
-                                borderColor: 'black',
+        <>
+            {elevationDataIsThere || <ElevationMissingWarning />}
+            <ChartOuterContainer ref={ref}>
+                <ChartContainer $width={widthInPixels}>
+                    <Chart
+                        // style={{ width: '2000px' }}
+                        // width={2000}
+                        key={`vertical-profile-${hashCode(JSON.stringify(route.waypoints))}`}
+                        type="scatter"
+                        data={data}
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: false,
+                            elements: {
+                                line: {
+                                    segment: { borderColor: '#000000F', borderWidth: 2 },
+                                    borderColor: 'black',
+                                },
+                                point: { radius: 0 },
                             },
-                            point: { radius: 0 },
-                        },
-                        plugins: {
-                            tooltip: {
-                                //   callbacks: {
-                                //     footer: footer,
-                                //   }
+                            plugins: {
+                                tooltip: {
+                                    //   callbacks: {
+                                    //     footer: footer,
+                                    //   }
+                                },
+                                legend: {
+                                    display: false,
+                                    labels: {
+                                        filter: function (item, chart) {
+                                            // Logic to remove a particular legend item goes here
+                                            return !item.text.startsWith('<HIDE>');
+                                        },
+                                    },
+                                },
+                                annotation: {
+                                    enter: (event) => {},
+                                    leave: (event) => {},
+                                    annotations: newLocal,
+                                },
+                                // @ts-ignore
+                                dragData: !isTouchDevice() && dragDataPluginOptions,
                             },
-                            legend: {
-                                display: false,
-                                labels: {
-                                    filter: function (item, chart) {
-                                        // Logic to remove a particular legend item goes here
-                                        return !item.text.startsWith('<HIDE>');
+                            scales: {
+                                yAxes: {
+                                    max: (max(route.waypoints.map((w) => w.altitude)) || 0) + 2000,
+                                    grace: 20,
+                                    suggestedMax: 1500,
+                                    suggestedMin: 0,
+                                    min: (elevation && min(elevation.elevations)) || 0,
+                                    ticks: {
+                                        callback: function (val, index) {
+                                            return `${this.getLabelForValue(Number(val))} ft`;
+                                        },
                                     },
                                 },
                             },
-                            annotation: {
-                                enter: (event) => {},
-                                leave: (event) => {},
-                                annotations: newLocal,
-                            },
-                            // @ts-ignore
-                            dragData: !isTouchDevice() && dragDataPluginOptions,
-                        },
-                        scales: {
-                            yAxes: {
-                                max: (max(route.waypoints.map((w) => w.altitude)) || 0) + 2000,
-                                grace: 20,
-                                suggestedMax: 1500,
-                                suggestedMin: 0,
-                                min: (elevation && min(elevation.elevations)) || 0,
-                                ticks: {
-                                    callback: function (val, index) {
-                                        return `${this.getLabelForValue(Number(val))} ft`;
-                                    },
-                                },
-                            },
-                        },
-                    }}
-                />
-            </ChartContainer>
-        </ChartOuterContainer>
+                        }}
+                    />
+                </ChartContainer>
+            </ChartOuterContainer>
+        </>
     );
 };
+
+const ElevationMissingWarningSpan = styled.div`
+    align-self: center;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    background-color: #ff0000;
+    color: #ffffff;
+    border-radius: 5px;
+    text-align: center;
+`;
+
+const ElevationMissingWarning = () => (
+    <ElevationMissingWarningSpan>
+        Les données d'élévation du terrain ne sont pas disponibles actuellement, la dimension
+        verticale des espaces peut être incorrecte !
+    </ElevationMissingWarningSpan>
+);
 
 type ContainerProps = { $width?: number };
 
 const ChartContainer = styled.div<ContainerProps>`
     ${({ $width }) => `${$width ? `width: ${$width}px` : 'width: 100%'};`}
     height: 100%;
+    display: flex;
+    flex-direction: column;
 `;
 
 const ChartOuterContainer = styled.div`

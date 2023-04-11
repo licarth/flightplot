@@ -14,9 +14,9 @@ import { foldW } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { draw } from 'io-ts/lib/Decoder';
 import { useEffect } from 'react';
-import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
-import { useRoute } from '~/fb/components/useRoute';
+import currentCycle from 'ts-aerodata-france/build/jsonData/2023-03-23.json';
 import { UserRoutesProvider } from '~/fb/components/UserRoutesContext';
+import { useRoute } from '~/fb/components/useRoute';
 import { useUserRoutes } from '~/fb/components/useUserRoutes';
 import routeJSON from './route.json';
 

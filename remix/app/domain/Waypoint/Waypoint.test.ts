@@ -1,6 +1,6 @@
 import { right } from 'fp-ts/lib/Either';
 import { AiracData } from 'ts-aerodata-france';
-import currentCycle from 'ts-aerodata-france/build/jsonData/2022-10-06.json';
+import currentCycle from 'ts-aerodata-france/build/jsonData/2023-03-23.json';
 import { AerodromeWaypoint, AerodromeWaypointType } from './AerodromeWaypoint';
 import { LatLngWaypoint } from './LatLngWaypoint';
 import { waypointCodec } from './Waypoint';

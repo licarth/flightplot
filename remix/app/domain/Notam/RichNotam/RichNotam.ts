@@ -90,19 +90,25 @@ namespace ZoneActivationNotam {
                         }
                     }
                 } else {
-                    return Decoder.failure(n, 'matching REGEX of RESTRICTED AREAS');
+                    return Decoder.failure(n.e, 'matching REGEX of RESTRICTED AREAS');
                 }
+
                 if (zones.length === 0) {
                     return Decoder.failure(n, 'a NOTAM with valid zones');
-                } else if (zones.length > 0) {
-                    return Decoder.success({
-                        _tag: 'ZoneActivationNotam' as 'ZoneActivationNotam',
+                } else {
+                    const notam = {
+                        _tag: 'ZoneActivationNotam' as const,
                         n,
                         zones,
-                    });
+                    };
+                    return Decoder.success(notam);
                 }
+            } else {
+                return Decoder.failure(
+                    n.q.code.codeString,
+                    'a single/multiple restricted zone activation notam',
+                );
             }
-            return Decoder.failure(n, 'a single/multiple restricted zone activation notam');
         },
     });
 }

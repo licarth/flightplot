@@ -1,5 +1,5 @@
 import { AiracData } from 'ts-aerodata-france';
-import { foldRichNotam, RichNotam } from './RichNotam';
+import { foldRichNotam, matchZones, RichNotam, ZONE_REGEXP } from './RichNotam';
 import currentCycle from 'ts-aerodata-france/build/jsonData/2023-02-23.json';
 import { Notam } from '../Notam';
 import { pipe } from 'fp-ts/lib/function';
@@ -16,6 +16,130 @@ import { draw } from 'io-ts/lib/Decoder';
 // Zones not in Airac data: CB zones (Cross-border zones)
 // AREA LF-CBA16 ACTIVE
 // AREA LF-CBA16B ACTIVE
+
+describe('ZONE_REGEXP', () => {
+    const examples: {
+        notamE: string;
+        avail: string[];
+        expected: [string[], string[]] | [string[]];
+    }[] = [
+        {
+            notamE: 'AREA LF-CBA16 ACTIVE',
+            avail: ['CBA16'],
+            expected: [['CBA16'], []],
+        },
+        {
+            notamE: 'RESTRICTED AREAS LF-R68 A B C ACTIVATED',
+            avail: ['R68', 'R68A', 'R68B', 'R68C'],
+            expected: [['R68A', 'R68B', 'R68C'], []],
+        },
+        {
+            notamE: 'RESTRICTED AREA LF-R6D "MAILLY" ACTIVATED',
+            avail: ['R6D'],
+            expected: [['R6D'], []],
+        },
+        {
+            notamE: 'RESTRICTED AREA LF-R6D "MAILLY" ACT',
+            avail: ['R6D'],
+            expected: [['R6D'], []],
+        },
+        {
+            notamE: 'LF-R203C LA COURTINE ACT',
+            avail: ['R203', 'R203C'],
+            expected: [['R203C'], []],
+        },
+        {
+            notamE: 'RESTRICTED AREA LFR48 PAS DE LA FOSSE ACTIVATED.',
+            avail: ['R48'],
+            expected: [['R48'], []],
+        },
+        {
+            notamE: 'RESTRICTED AREA LFR102 LA BRACONNE AREA ACTIVATED',
+            avail: ['R102'],
+            expected: [['R102'], []],
+        },
+        {
+            notamE: 'R 111 A LA BRACONNE AREA ACTIVATED', // Case imagined by @licarth
+            avail: ['R111'],
+            expected: [['R111'], []],
+        },
+        {
+            notamE: 'R111 A LA BRACONNE AREA ACTIVATED', // Case imagined by @licarth
+            avail: ['R111'],
+            expected: [['R111'], []],
+        },
+        {
+            notamE: 'R111 A B C LA BRACONNE AREA ACTIVATED', // Case imagined by @licarth
+            avail: ['R111A', 'R111B', 'R111C'],
+            expected: [['R111A', 'R111B', 'R111C'], []],
+        },
+        {
+            notamE: 'ZONE LF-R 203 C, LA COURTINE ACTIVATED.',
+            avail: ['R203C'],
+            expected: [['R203C'], []],
+        },
+        {
+            notamE: 'ZONE LF-R 203 C, LA COURTINE ACTIVATED.',
+            avail: ['R203', 'R203C'],
+            expected: [['R203C'], []],
+        },
+        {
+            notamE: 'ZONE LF-R 203 C LA COURTINE ACTIVATED.',
+            avail: ['R203C'],
+            expected: [['R203C'], []],
+        },
+        {
+            notamE: 'ZONE LF-R 203 C LA COURTINE ACTIVATED.',
+            avail: ['R203', 'R203C'],
+            expected: [['R203C'], []],
+        },
+        {
+            notamE: 'R203C LA COURTINE ACT',
+            avail: ['R203C'],
+            expected: [['R203C'], []],
+        },
+        // Below are tests for suspicious unknown zones
+        {
+            notamE: 'R111 A B C LA BRACONNE AREA ACTIVATED', // Case imagined by @licarth
+            avail: ['R111A', 'R111C'],
+            expected: [['R111A', 'R111C'], ['R111B']],
+        },
+        {
+            notamE: "ORION 2023 PHASE O4 EXERCISE ACTIVATION OF LF-R 213 'NORD-EST' PART A : SEE AERODROME(S) ACCESS RESTRICTIONS AND ACTIVITIES SUSPENSION IN FRENCH AIP FRANCE ENR 5.1-507, 5.1-508 AND 5.1-510",
+            avail: ['R213A', 'R213B', 'R213C'],
+            expected: [[], []],
+        },
+        {
+            notamE: 'LF-CBA16B ACTIVATED',
+            avail: [],
+            expected: [[], ['CBA16B']],
+        },
+        {
+            notamE: "DUE TO WILDBOAR MILITARY EXERCISE 2023: RESTRICTED AREA LF-R 213 'NORD-EST', A B AND C PARTS ACTIVATED.",
+            avail: ['R213A', 'R213B', 'R213C'],
+            expected: [['R213A', 'R213B', 'R213C'], []],
+        },
+        // {
+        //     notamE: 'R111 R112 ACTIVATED', // Case imagined by @licarth
+        //     avail: ['R111', 'R112'],
+        //     expected: [['R111', 'R112' ],]
+        // },
+        // {
+        //     notamE: '',
+        //     avail: [],
+        //     expected: [, ],
+        // },
+        // {
+        //     notamE: '',
+        //     avail: [],
+        //     expected: [, ],
+        // },
+    ];
+
+    it.each(examples)('$notamE', ({ notamE, avail, expected }) => {
+        expect(matchZones(notamE, new Set(avail))).toEqual(expected);
+    });
+});
 
 describe('RichNotam', () => {
     it('should decode an RTBA notam', () => {});

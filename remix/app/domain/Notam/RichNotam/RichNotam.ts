@@ -13,7 +13,7 @@ namespace RtbaNotam {
             );
             if (n.q.code.codeString === 'RRCA' && n.e.match(/RTBA/g) !== null) {
                 const REGEX = /ZONE (R(?:\d|[A-Z]|\.)*).*\s(\d{4}-\d{4})/g;
-                let zones = [];
+                const zones = [];
                 let matches;
                 while ((matches = REGEX.exec(n.e)) !== null) {
                     const zoneId = matches[1];
@@ -47,70 +47,159 @@ namespace RtbaNotam {
     });
 }
 
-namespace ZoneActivationNotam {
-    export const decoder = (airacData: AiracData) => ({
-        decode: (n: Notam) => {
-            const dangerZonesByName = _.keyBy(airacData.dangerZones, ({ name }) =>
-                name.replace(/ /g, ''),
-            );
-            if (n.q.code.codeString === 'RRCA') {
-                const startDate = n.b.date;
-                const endDate = n.c?.date;
-                if (!startDate || !endDate) {
-                    return Decoder.failure(n, '/have valid dates');
-                }
-                const REGEX =
-                    /(?:RESTRICTED )?(?:AREAS? )?(?:LF-|LF)((?:R|CBA) ?[0-9]{1,3}[A-Z]?-?)((?: (?!ACT)[[A-Z]{0,3}[1-9]?)*)( |\n)/g;
-                const matched = new RegExp(REGEX).exec(n.e);
-                const zones: { zone: DangerZone; startDate: Date; endDate: Date }[] = [];
-                const addZone = (zoneName: string) => {
-                    const zone = dangerZonesByName[zoneName];
-                    if (!zone) {
-                        console.error("couldn't find zone", zoneName);
-                    } else {
-                        zones.push({
-                            zone,
-                            startDate,
-                            endDate,
-                        });
-                    }
-                };
-                if (matched && matched.length >= 1) {
-                    const mainZone = noSpace(matched[1]);
-                    const secondaryZones = matched[2]
-                        .split(' ')
-                        .map(noSpace)
-                        .filter((z) => z !== '');
-                    if (secondaryZones.length === 0) {
-                        addZone(mainZone);
-                    } else {
-                        for (const zone of secondaryZones) {
-                            const secondaryZone = `${mainZone}${zone}`;
-                            addZone(secondaryZone);
-                        }
-                    }
-                } else {
-                    return Decoder.failure(n.e, 'matching REGEX of RESTRICTED AREAS');
-                }
+export const ZONE_REGEXP =
+    /(?:RESTRICTED )?(?:AREAS? )?(?:LF-|LF)?((?:R|CBA) ?[0-9]{1,3}[A-Z]?-?)((?: (?!ACT)[[A-Z]{0,2}[1-9]?)*)( |\n)/g;
 
-                if (zones.length === 0) {
-                    return Decoder.failure(n, 'a NOTAM with valid zones');
+export const INCLUDES_ACT_OR_ACTIVATED = /ACT$|ACTIVATED|ACT /g;
+
+const forbiddenZoneSuffixes = ['LA', 'PAS']; // LF-R68LA is not a zone it's to avoid confusion with LF-R68 LA COURTINE Or LF-R68 PAS DE ...
+
+export const degradedMatch = (notamE: string, dangerZonesByName: Set<string>) => {
+    if (!INCLUDES_ACT_OR_ACTIVATED.test(notamE)) {
+        return [[], []];
+    }
+    const MAIN_ZONE_REGEXP = /(?:LF-|LF)?((?:R|CBA) ?[0-9]{1,3})(.*)/g;
+    const REST_REGEXP = /(?<![A-Z])[A-Z]{1,2}(?![A-Z])/g; // Negative lookbehind and negative lookahead to avoid matching more than 2 consecutive letters
+    const mainMatch = new RegExp(MAIN_ZONE_REGEXP).exec(notamE.replace(/,/g, ' ')); // Replace commas with spaces
+    console.log(mainMatch);
+
+    if (!mainMatch || mainMatch.length < 2) {
+        return [[], []];
+    }
+
+    const mainZone = noSpace(mainMatch[1]);
+    const rest = mainMatch[2];
+
+    const suffixes = rest.match(REST_REGEXP); // Replace commas with spaces
+
+    console.log(suffixes);
+
+    if (suffixes?.length && suffixes.length > 0) {
+        const mappedZones = suffixes
+            .filter((suffix) => {
+                return !forbiddenZoneSuffixes.includes(suffix);
+            })
+            .map((z) => `${mainZone}${z}`);
+        const [knownZones, unknownZones] = _.partition(mappedZones, (z) =>
+            dangerZonesByName.has(z),
+        );
+
+        return [knownZones, unknownZones];
+    }
+
+    return [[], []];
+};
+
+export const matchZones = (notamE: string, dangerZonesByName: Set<string>) => {
+    const matched = new RegExp(ZONE_REGEXP).exec(notamE.replace(/,/g, ' ')); // Replace commas with spaces
+    console.log('matched', matched);
+
+    if (matched && matched.length >= 1) {
+        const mainZone = noSpace(matched[1]);
+        const secondaryZonesSuffixes = matched[2]
+            .split(' ')
+            .map(noSpace)
+            .filter((z) => z !== '');
+        if (secondaryZonesSuffixes.length === 0 && dangerZonesByName.has(mainZone)) {
+            return [[mainZone], []];
+        } else {
+            const mappedZones = secondaryZonesSuffixes
+                .filter((suffix) => {
+                    return !forbiddenZoneSuffixes.includes(suffix);
+                })
+                .map((z) => `${mainZone}${z}`);
+            const [knownZones, unknownZones] = _.partition(mappedZones, (z) =>
+                dangerZonesByName.has(z),
+            );
+
+            if (secondaryZonesSuffixes.length === 1) {
+                if (dangerZonesByName.has(mappedZones[0])) {
+                    return [[mappedZones[0]], []];
                 } else {
-                    const notam = {
-                        _tag: 'ZoneActivationNotam' as const,
-                        n,
-                        zones,
-                    };
-                    return Decoder.success(notam);
+                    return [[mainZone], []];
                 }
-            } else {
-                return Decoder.failure(
-                    n.q.code.codeString,
-                    'a single/multiple restricted zone activation notam',
-                );
             }
-        },
-    });
+
+            if (knownZones.length > unknownZones.length / 2) {
+                // Most zones are known
+                return [knownZones, unknownZones];
+            } else if (knownZones.length === 0) {
+                if (dangerZonesByName.has(mainZone)) {
+                    return [[mainZone], []];
+                }
+            }
+            console.log('unknownZones', unknownZones, 'notamE', notamE, 'knownZones', knownZones);
+
+            // If we still have zero zones, let's switch to the degraded mode
+            if (knownZones.length === 0 && unknownZones.length === 0) {
+                return degradedMatch(notamE, dangerZonesByName);
+            }
+
+            return [knownZones, []];
+        }
+    } else {
+        return 'matching REGEX of RESTRICTED AREAS' as const;
+    }
+};
+
+class NotamDecoder {
+    private dangerZonesByName;
+    private airacData;
+    private dangerZoneNames;
+
+    constructor(airacData: AiracData) {
+        this.airacData = airacData;
+        this.dangerZonesByName = _.keyBy(airacData.dangerZones, ({ name }) =>
+            name.replace(/ /g, ''),
+        );
+        this.dangerZoneNames = new Set(Object.keys(this.dangerZonesByName));
+    }
+
+    decode(n: Notam) {
+        if (n.q.code.codeString === 'RRCA') {
+            const startDate = n.b.date;
+            const endDate = n.c?.date;
+            if (!startDate || !endDate) {
+                return Decoder.failure(n, 'have valid dates');
+            }
+            const [knownZones, unknownZones] = matchZones(n.e, this.dangerZoneNames);
+
+            if (unknownZones.length > 0) {
+                console.warn('unknownZones', unknownZones, 'notamE', n.e, 'knownZones', knownZones);
+            }
+            if (knownZones.length === 0 && unknownZones.length === 0) {
+                console.warn('no zones found in NOTAM', n.e);
+            }
+
+            if (typeof knownZones === 'string') {
+                return Decoder.failure(n, knownZones);
+            }
+
+            if (knownZones.length === 0) {
+                return Decoder.failure(n, 'a NOTAM with valid zones');
+            } else {
+                const notam = {
+                    _tag: 'ZoneActivationNotam' as const,
+                    n,
+                    zones: knownZones.map((zoneName) => ({
+                        zone: this.dangerZonesByName[zoneName],
+                        startDate,
+                        endDate,
+                    })),
+                };
+                return Decoder.success(notam);
+            }
+        } else {
+            return Decoder.failure(
+                n.q.code.codeString,
+                'a single/multiple restricted zone activation notam',
+            );
+        }
+    }
+}
+
+namespace ZoneActivationNotam {
+    export const decoder = (airacData: AiracData) => new NotamDecoder(airacData);
 }
 
 const noSpace = (s: string) => s.replace(/ /g, '');

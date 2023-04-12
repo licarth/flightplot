@@ -55,6 +55,8 @@ export const RtbaZonesProvider: React.FC<PropsWithChildren> = ({ children }) => 
         if (enabled && airacData) {
             const q = query(notamsRef, where('code1234', 'in', ['WPLW', 'RRCA']));
             return onSnapshot(q, { includeMetadataChanges: false }, (querySnapshot) => {
+                console.warn('DOCS_COUNT', querySnapshot.docs.length);
+
                 const docs = decodeNotamDocsForToday(querySnapshot.docs, airacData).map(
                     (n) => n.richNotam,
                 );

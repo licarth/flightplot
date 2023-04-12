@@ -61,7 +61,6 @@ export const degradedMatch = (notamE: string, dangerZonesByName: Set<string>) =>
     const MAIN_ZONE_REGEXP = /(?:LF-|LF)?((?:R|CBA) ?[0-9]{1,3})(.*)/g;
     const REST_REGEXP = /(?<![A-Z])[A-Z]{1,2}(?![A-Z])/g; // Negative lookbehind and negative lookahead to avoid matching more than 2 consecutive letters
     const mainMatch = new RegExp(MAIN_ZONE_REGEXP).exec(notamE.replace(/,/g, ' ')); // Replace commas with spaces
-    console.log(mainMatch);
 
     if (!mainMatch || mainMatch.length < 2) {
         return [[], []];
@@ -71,8 +70,6 @@ export const degradedMatch = (notamE: string, dangerZonesByName: Set<string>) =>
     const rest = mainMatch[2];
 
     const suffixes = rest.match(REST_REGEXP); // Replace commas with spaces
-
-    console.log(suffixes);
 
     if (suffixes?.length && suffixes.length > 0) {
         const mappedZones = suffixes
@@ -92,7 +89,6 @@ export const degradedMatch = (notamE: string, dangerZonesByName: Set<string>) =>
 
 export const matchZones = (notamE: string, dangerZonesByName: Set<string>) => {
     const matched = new RegExp(ZONE_REGEXP).exec(notamE.replace(/,/g, ' ')); // Replace commas with spaces
-    console.log('matched', matched);
 
     if (matched && matched.length >= 1) {
         const mainZone = noSpace(matched[1]);
@@ -128,7 +124,7 @@ export const matchZones = (notamE: string, dangerZonesByName: Set<string>) => {
                     return [[mainZone], []];
                 }
             }
-            console.log('unknownZones', unknownZones, 'notamE', notamE, 'knownZones', knownZones);
+            // console.log('unknownZones', unknownZones, 'notamE', notamE, 'knownZones', knownZones);
 
             // If we still have zero zones, let's switch to the degraded mode
             if (knownZones.length === 0 && unknownZones.length === 0) {

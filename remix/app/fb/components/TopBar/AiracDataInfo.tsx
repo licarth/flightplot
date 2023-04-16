@@ -34,4 +34,7 @@ const todayIsBetween = (start: Date, end: Date) => {
 
 const Container = styled.div`
     padding: 4px;
+    @media (max-width: 600px) {
+        display: none;
+    }
 `;

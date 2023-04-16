@@ -17,6 +17,7 @@ export const TopBar = () => {
     const loginModal = useRef<ModalHandle>(null);
     const { open } = useHelpPage();
     const { airacData } = useAiracData();
+
     return (
         <TopBarContainer>
             <SearchBar airacData={airacData} />

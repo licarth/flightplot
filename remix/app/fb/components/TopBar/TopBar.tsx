@@ -3,13 +3,14 @@ import { type User } from '@firebase/auth';
 import { Avatar, Button, Dropdown, Menu } from 'antd';
 import { useRef } from 'react';
 import styled from 'styled-components';
-import { useFirebaseAuth } from '~/fb/firebase/auth/FirebaseAuthContext';
 import { Login } from '~/fb/Login';
 import Modal, { type ModalHandle } from '~/fb/Modal';
+import { useFirebaseAuth } from '~/fb/firebase/auth/FirebaseAuthContext';
 import { useHelpPage } from '../HelpPageContext';
 import { SearchBar } from '../SearchBar';
 import { useAiracData } from '../useAiracData';
 import { useRoute } from '../useRoute';
+import { AiracDataInfo } from './AiracDataInfo';
 
 export const TopBar = () => {
     const { user, googleSignIn, anonymousSignIn, signOut } = useFirebaseAuth();
@@ -21,6 +22,7 @@ export const TopBar = () => {
             <SearchBar airacData={airacData} />
 
             <RightButtons>
+                <AiracDataInfo />
                 <AppLogo>
                     <LogoLeft>FLIGHT</LogoLeft>
                     <LogoRight>PLOT</LogoRight>

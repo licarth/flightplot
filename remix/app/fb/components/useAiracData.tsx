@@ -1,14 +1,11 @@
 import { useContext } from 'react';
-import type { AiracData } from 'ts-aerodata-france';
 import { AiracDataContext } from './AiracDataContext';
 
-export const useAiracData = ():
-    | { loading: true; airacData: undefined }
-    | { loading: false; airacData: AiracData } => {
-    const { airacData } = useContext(AiracDataContext);
+export const useAiracData = () => {
+    const { airacData, availableCycles, setCycle } = useContext(AiracDataContext);
     if (!airacData) {
-        return { airacData, loading: true };
+        return { airacData, availableCycles, setCycle, loading: true } as const;
     } else {
-        return { airacData, loading: false };
+        return { airacData, availableCycles, setCycle, loading: false } as const;
     }
 };

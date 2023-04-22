@@ -1,5 +1,5 @@
-import { pipe } from 'fp-ts/lib/function';
 import * as Option from 'fp-ts/lib/Option';
+import { pipe } from 'fp-ts/lib/function';
 import styled, { css } from 'styled-components';
 import type { Aerodrome, VhfFrequencyWithRemarks } from 'ts-aerodata-france';
 import type { Route } from '../../../domain';
@@ -23,11 +23,13 @@ const STRIP_COLOR = Colors.sivThinBorder;
 export const NavigationLog = ({
     route,
     paperVersion = false,
+    tinyVersion = false,
 }: {
     route: Route;
     paperVersion?: boolean;
+    tinyVersion?: boolean;
 }) => (
-    <NavlogContainer paperVersion={paperVersion}>
+    <NavlogContainer paperVersion={paperVersion} tinyVersion={tinyVersion}>
         {route.departure && AerodromeWaypoint.isAerodromeWaypoint(route.departure) && (
             <AirportDetails aerodrome={route.departure.aerodrome} />
         )}
@@ -590,11 +592,20 @@ const formatHeading = (trueHdg: number) => String(Math.round(trueHdg)).padStart(
 
 const NavlogContainer = styled.div<{
     paperVersion: boolean;
+    tinyVersion: boolean;
 }>`
     font-size: 1.3em;
     ${FrequenciesCell} {
         flex-grow: ${() => TOP_BOTTOM_FREQUENCIES_COLUMN_RELATIVE_WIDTH};
     }
+
+    /* Scale for tiny version */
+    ${({ tinyVersion }) =>
+        tinyVersion &&
+        css`
+            font-size: 0.8em;
+        `}
+
     @media print {
         page-break-inside: avoid;
         :not(:first-of-type) {

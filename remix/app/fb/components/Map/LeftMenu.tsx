@@ -1,10 +1,6 @@
-import { Button, Collapse, Spin } from 'antd';
-import { useState } from 'react';
+import { Button, Collapse } from 'antd';
 import styled from 'styled-components';
-import { MyRoutes, PrintOptions, RouteWaypoints } from '~/fb/components/Menus';
-import { useFirebaseAuth } from '~/fb/firebase/auth/FirebaseAuthContext';
-import { useRoute } from '../useRoute';
-import { useUserRoutes } from '../useUserRoutes';
+import { RouteDisplay } from './RouteDisplay';
 
 const Panel = styled(Collapse.Panel)`
     font-family: 'Univers';
@@ -32,65 +28,15 @@ const ContainerDiv = styled.div`
 export const LeftMenu = () => {
     return (
         <ContainerDiv>
-            <RouteDisplay />
+            <LeftColumn>
+                <RouteDisplay />
+            </LeftColumn>
             {/* @ts-ignore */}
         </ContainerDiv>
     );
 };
 
-export const RouteDisplay = () => {
-    const { user, loading: authLoading } = useFirebaseAuth();
-    const { loading: routesLoading } = useUserRoutes();
-    const loading = authLoading || routesLoading;
-
-    const [activeKey, setActiveKey] = useState<string | string[]>(['routes', 'details', 'print']);
-    const { route } = useRoute();
-
-    return (
-        <LeftColumn>
-            <StyledCollapse
-                expandIcon={() => <></>}
-                activeKey={activeKey}
-                onChange={(keys) => setActiveKey(keys)}
-                destroyInactivePanel
-            >
-                {loading ? (
-                    <SpinnerContainer>
-                        <Spin size="large" />
-                        <div>Chargement en cours...</div>
-                    </SpinnerContainer>
-                ) : (
-                    <>
-                        {user && (
-                            <StyledPanel header="Mes navigations" key={'routes'} $shrinkable>
-                                <MyRoutes onRouteSelect={() => setActiveKey(['details'])} />
-                            </StyledPanel>
-                        )}
-                        <StyledPanel
-                            $shrinkable
-                            collapsible={(!route && 'disabled') || undefined}
-                            header={
-                                <Header>
-                                    {route &&
-                                        `${route?.title} (${route?.totalDistance.toFixed(1)} NM)`}
-                                </Header>
-                            }
-                            style={!route ? { display: 'none' } : {}}
-                            key="details"
-                        >
-                            <RouteWaypoints />
-                        </StyledPanel>
-                        <StyledPanel header="Impression" key="print">
-                            <PrintOptions />
-                        </StyledPanel>
-                    </>
-                )}
-            </StyledCollapse>
-        </LeftColumn>
-    );
-};
-
-const LeftColumn = styled.div`
+export const LeftColumn = styled.div`
     pointer-events: none;
     display: flex;
     flex-grow: 1;
@@ -100,7 +46,7 @@ const LeftColumn = styled.div`
     max-height: 90%;
 `;
 
-const StyledPanel = styled(Panel)<{ $shrinkable?: boolean }>`
+export const StyledPanel = styled(Panel)<{ $shrinkable?: boolean }>`
     display: flex;
     flex-direction: column;
     ${({ $shrinkable }) => {
@@ -118,7 +64,7 @@ const StyledPanel = styled(Panel)<{ $shrinkable?: boolean }>`
     }}
 `;
 
-const Header = styled.div`
+export const Header = styled.div`
     padding: 0px;
 `;
 
@@ -128,7 +74,7 @@ export const NewNavButton = styled(Button)`
     height: 30px;
 `;
 
-const StyledCollapse = styled(Collapse)`
+export const StyledCollapse = styled(Collapse)`
     pointer-events: auto;
     display: flex;
     flex-direction: column;
@@ -136,7 +82,7 @@ const StyledCollapse = styled(Collapse)`
     border-radius: 7px;
 `;
 
-const SpinnerContainer = styled.div`
+export const SpinnerContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;

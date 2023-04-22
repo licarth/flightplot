@@ -1,7 +1,7 @@
 import type { ComponentMeta } from '@storybook/react';
 
 import { AiracData } from 'ts-aerodata-france';
-import { RouteDisplay } from '~/fb/components/Map/LeftMenu';
+import { RouteDisplay } from '~/fb/components/Map/RouteDisplay';
 import { FirebaseAuthProvider } from '~/fb/firebase/auth/FirebaseAuthContext';
 import '../app/styles/global.css';
 
@@ -14,6 +14,7 @@ import { foldW } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { draw } from 'io-ts/lib/Decoder';
 import { useEffect } from 'react';
+import styled from 'styled-components';
 import currentCycle from 'ts-aerodata-france/build/jsonData/2023-03-23.json';
 import { UserRoutesProvider } from '~/fb/components/UserRoutesContext';
 import { useRoute } from '~/fb/components/useRoute';
@@ -65,7 +66,9 @@ export const Default = (args, { loaded: { airacData } }) => {
             <UserRoutesProvider>
                 <RouteProvider>
                     <SetRoute airacData={airacData} />
-                    <RouteDisplay {...args} />
+                    <Container>
+                        <RouteDisplay {...args} />
+                    </Container>
                 </RouteProvider>
             </UserRoutesProvider>
         </FirebaseAuthProvider>
@@ -77,3 +80,7 @@ Default.loaders = [
         airacData: await AiracData.loadCycle(currentCycle),
     }),
 ];
+
+const Container = styled.div`
+    max-width: 400px;
+`;

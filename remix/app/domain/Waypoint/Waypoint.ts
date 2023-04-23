@@ -2,6 +2,7 @@ import * as Codec from 'io-ts/lib/Codec';
 import * as Decoder from 'io-ts/lib/Decoder';
 import type { Aerodrome, AiracData, VfrPoint, Vor } from 'ts-aerodata-france';
 import { v4 as uuidv4 } from 'uuid';
+import type { CodecType } from '~/iots';
 import type { LatLng } from '../LatLng';
 import { AerodromeWaypoint, AerodromeWaypointType } from './AerodromeWaypoint';
 import { LatLngWaypoint, latLngWaypointCodec } from './LatLngWaypoint';
@@ -27,6 +28,7 @@ export type Waypoint = AerodromeWaypoint | LatLngWaypoint | VfrPointWaypoint | V
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export namespace Waypoint {
+    export const codec = (type: CodecType) => Codec.string;
     export const create = (props: Omit<WaypointProps, 'id'>) => {
         return new LatLngWaypoint({ ...props, id: uuidv4() });
     };

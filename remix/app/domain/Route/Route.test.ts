@@ -1,61 +1,97 @@
-import { aircraftCollection } from '../Aircraft';
-import type { Waypoint } from '../Waypoint';
-import { latLngWaypointFactory } from '../Waypoint/LatLngWaypoint.factory';
-import { OldRoute } from './OldRoute';
+import { UUID } from '../Uuid';
+import { AerodromeWpt } from './AerodromeWpt';
+import { AltitudeInFeet } from './AltHeightFl';
+import { LatLngWpt } from './LatLngWpt';
+import { Route } from './Route';
+import { VfrWpt } from './VfrWpt';
+import { VorWpt } from './VorWpt';
 
 describe('Route', () => {
-    it('should add a waypoint properly', () => {
-        const route = OldRoute.create().addWaypoint({
-            waypoint: latLngWaypointFactory(),
+    it('should be correctly encoded', () => {
+        const result = Route.codec('string').encode(
+            Route.factory({
+                waypoints: [
+                    new AerodromeWpt({
+                        icaoCode: 'LFMT',
+                        altHeightFl: AltitudeInFeet.of(1000),
+                        waypointType: 'OVERFLY',
+                    }),
+                    new VorWpt({
+                        ident: 'FJR',
+                        altHeightFl: AltitudeInFeet.of(1000),
+                    }),
+                    new VfrWpt({
+                        icaoCode: 'LFMT',
+                        ident: 'SW',
+                        altHeightFl: AltitudeInFeet.of(1000),
+                    }),
+                    new LatLngWpt({
+                        id: UUID.generatev4(),
+                        name: 'Test',
+                        latLng: {
+                            lat: 0,
+                            lng: 0,
+                        },
+                        altHeightFl: AltitudeInFeet.of(1000),
+                    }),
+                ],
+            }),
+        );
+
+        expect(result).toMatchObject({
+            _tag: 'Route',
+            _version: 1,
+            id: expect.any(String),
+            title: 'Route Title',
+            waypoints: [
+                {
+                    _tag: 'AerodromeWpt',
+                    _version: 1,
+                    icaoCode: 'LFMT',
+                    altHeightFl: {
+                        _tag: 'AltitudeInFeet',
+                        _version: 1,
+                        altitudeInFeet: 1000,
+                    },
+                },
+                {
+                    _tag: 'VorWpt',
+                    _version: 1,
+                    ident: 'FJR',
+                    altHeightFl: {
+                        _tag: 'AltitudeInFeet',
+                        _version: 1,
+                        altitudeInFeet: 1000,
+                    },
+                },
+                {
+                    _tag: 'VfrWpt',
+                    _version: 1,
+                    icaoCode: 'LFMT',
+                    ident: 'SW',
+                    altHeightFl: {
+                        _tag: 'AltitudeInFeet',
+                        _version: 1,
+                        altitudeInFeet: 1000,
+                    },
+                },
+                {
+                    _tag: 'LatLngWpt',
+                    _version: 1,
+                    id: expect.any(String),
+                    name: 'Test',
+                    latLng: {
+                        lat: 0,
+                        lng: 0,
+                    },
+                    altHeightFl: {
+                        _tag: 'AltitudeInFeet',
+                        _version: 1,
+                        altitudeInFeet: 1000,
+                    },
+                },
+            ],
+            printAreas: [],
         });
-
-        expect(route.waypoints).toHaveLength(1);
-    });
-    it('should remove a waypoint properly', () => {
-        const route = OldRoute.create({
-            waypoints: [latLngWaypointFactory()],
-        });
-
-        expect(route.removeWaypoint(0).waypoints).toHaveLength(0);
-    });
-
-    it('should remove a waypoint in the middle properly', () => {
-        const wp0 = wp(0);
-        const wp1 = wp(1);
-        const wp2 = wp(2);
-        const wp3 = wp(3);
-        const route = OldRoute.create({
-            waypoints: [wp0, wp1, wp2, wp3],
-        });
-
-        expect(route.removeWaypoint(2).waypoints).toEqual([wp0, wp1, wp3]);
-    });
-    it('should remove first waypoint properly', () => {
-        const wp0 = wp(0);
-        const wp1 = wp(1);
-        const wp2 = wp(2);
-        const wp3 = wp(3);
-
-        const route = OldRoute.create({
-            waypoints: [wp0, wp1, wp2, wp3],
-        });
-
-        expect(route.removeWaypoint(0).waypoints).toEqual([wp1, wp2, wp3]);
-    });
-});
-
-const wp = (lat: number): Waypoint => {
-    return latLngWaypointFactory({ latLng: { lat, lng: 0 } });
-};
-
-describe('Route.verticalProfile()', () => {
-    it('should return correct climb calculations', () => {
-        const wp0 = wp(0);
-        const wp1 = wp(1).clone({ altitude: 1000 });
-        const route = OldRoute.create({
-            waypoints: [wp0, wp1],
-        });
-
-        expect(route.verticalProfile({ aircraft: aircraftCollection[0] })).toHaveLength(3);
     });
 });

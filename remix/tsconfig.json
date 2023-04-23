@@ -22,7 +22,9 @@
             "~components": ["./app/components/index.ts"],
             "~hooks": ["./app/hooks/index.ts"],
             "~public/*": ["./app/public/*"],
-            "~domain/*": ["app/domain/*"]
+            "~domain/*": ["app/domain/*"],
+            "~iots/*": ["app/iots/*"],
+            "~fpts/*": ["app/fpts/*"]
         },
         "noEmit": true,
         "allowJs": true

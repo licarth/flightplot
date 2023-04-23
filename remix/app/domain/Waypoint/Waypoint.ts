@@ -9,6 +9,9 @@ import { LatLngWaypoint, latLngWaypointCodec } from './LatLngWaypoint';
 import { VfrPointWaypoint } from './VfrPointWaypoint';
 import { VorPointWaypoint } from './VorPointWaypoint';
 
+/**
+ * @deprecated
+ */
 export type WaypointProps = {
     latLng: LatLng;
     name: string | null;
@@ -24,8 +27,14 @@ export type WaypointProps = {
 //   clone: (props: Partial<WaypointProps>) => Waypoint;
 // }
 
+/**
+ * @deprecated
+ */
 export type Waypoint = AerodromeWaypoint | LatLngWaypoint | VfrPointWaypoint | VorPointWaypoint;
 
+/**
+ * @deprecated
+ */
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export namespace Waypoint {
     export const codec = (type: CodecType) => Codec.string;
@@ -69,13 +78,16 @@ export namespace Waypoint {
     };
 }
 
+/**
+ * @deprecated
+ */
 export const waypointCodec = (airacData: AiracData) =>
     Codec.make(
         Decoder.union(
             latLngWaypointCodec,
             AerodromeWaypoint.codec(airacData),
-            VfrPointWaypoint.codec(airacData),
             VorPointWaypoint.codec(airacData),
+            VfrPointWaypoint.codec(airacData),
         ),
         {
             encode: (a) => {

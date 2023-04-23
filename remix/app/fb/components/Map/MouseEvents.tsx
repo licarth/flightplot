@@ -1,19 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useMapEvent } from 'react-leaflet';
 import { toDomainLatLng } from '~/domain';
 import { useMouseMode } from '../MouseModeContext';
 import { useRoute } from '../useRoute';
-import { addFixtureToRoute } from './addFixtureToRoute';
 import { useFixtureFocus } from './FixtureFocusContext';
+import { addFixtureToRoute } from './addFixtureToRoute';
 
 export const MouseEvents = () => {
     const routeContext = useRoute();
     const { addLatLngWaypoint } = routeContext;
-
-    const [contextMenuAnchorPoint, setContextMenuAnchorPoint] = useState({ x: 0, y: 0 });
-
-    console.log('contextMenuAnchorPoint', contextMenuAnchorPoint);
 
     const {
         setClickedLocation,
@@ -40,7 +36,6 @@ export const MouseEvents = () => {
         console.log(e);
         e.originalEvent.preventDefault();
         setClickedLocation(toDomainLatLng(e.latlng));
-        setContextMenuAnchorPoint({ x: e.originalEvent.x, y: e.originalEvent.y });
     });
 
     useHotkeys(

@@ -25,7 +25,7 @@ export const AiracDataProvider: React.FC<PropsWithChildren> = ({ children }) => 
 
     useEffect(() => {
         const cycleDate = AiracData.currentCycleDate();
-        fetchCycle(cycleDate, setAiracData);
+        fetchCycle(cycleDate).then(setAiracData);
     }, []);
 
     useEffect(() => {
@@ -51,7 +51,7 @@ export const AiracDataProvider: React.FC<PropsWithChildren> = ({ children }) => 
         const cycleInfo = availableCycles.find((c) => c.cycle.identifier === cycleIdentifier);
         if (cycleInfo) {
             setAiracData(undefined);
-            fetchCycle(cycleInfo.date, setAiracData);
+            fetchCycle(cycleInfo.date).then(setAiracData);
         } else {
             console.error(`Cycle ${cycleIdentifier} not found`);
         }
@@ -64,15 +64,13 @@ export const AiracDataProvider: React.FC<PropsWithChildren> = ({ children }) => 
     );
 };
 
-const fetchCycle = (
-    cycleDate: string,
-    callback: React.Dispatch<React.SetStateAction<AiracData | undefined>>,
-) => {
-    fetch(`https://storage.googleapis.com/flightplot-data/aerodata/${cycleDate}.json`).then((res) =>
-        res.text().then((text) => {
-            return AiracData.loadCycle(JSON.parse(text)).then((data) => {
-                callback(data);
-            });
-        }),
+export const fetchCycle = (cycleDate: string) => {
+    return fetch(`https://storage.googleapis.com/flightplot-data/aerodata/${cycleDate}.json`).then(
+        (res) =>
+            res.text().then((text) => {
+                return AiracData.loadCycle(JSON.parse(text)).then((data) => {
+                    return data;
+                });
+            }),
     );
 };

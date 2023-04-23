@@ -84,7 +84,7 @@ export class AerodromeWaypoint {
                             new AerodromeWaypoint({
                                 aerodrome: airacData.getAerodromeByIcaoCode(icaoCode),
                                 altitude,
-                                waypointType,
+                                waypointType: waypointType ?? AerodromeWaypointType.RUNWAY,
                             }),
                         ),
                 }),
@@ -105,10 +105,16 @@ export const toLeafletLatLng = (aerodromeLatLng: SiaLatLng): LatLng => {
     return res;
 };
 
-const serialCodec = Codec.struct({
-    icaoCode: Codec.string,
-    altitude: Codec.nullable(Codec.number),
-    waypointType: fromEnumCodec('AerodromeWaypointType', AerodromeWaypointType),
-});
+const serialCodec = pipe(
+    Codec.struct({
+        icaoCode: Codec.string,
+        altitude: Codec.nullable(Codec.number),
+    }),
+    Codec.intersect(
+        Codec.partial({
+            waypointType: fromEnumCodec('AerodromeWaypointType', AerodromeWaypointType),
+        }),
+    ),
+);
 
 type SerialType = Codec.TypeOf<typeof serialCodec>;

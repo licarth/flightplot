@@ -1,40 +1,58 @@
-import { initializeApp } from 'firebase-admin/app';
-
-// app/firebase.server.ts
-
+import dotenv from 'dotenv';
 import type { App, AppOptions } from 'firebase-admin/app';
-import { cert, getApp, getApps } from 'firebase-admin/app';
+import { cert, initializeApp as firebaseInit } from 'firebase-admin/app';
 import type { Auth } from 'firebase-admin/auth';
 import { getAuth } from 'firebase-admin/auth';
-import { environmentVariable } from '~/fb/environmentVariable';
+import type { Firestore } from 'firebase-admin/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
 
+dotenv.config();
+
+let initializationOptions: AppOptions = {
+    databaseURL: 'https://flightplot-web-default-rtdb.europe-west1.firebasedatabase.app',
+};
+let firestore: Firestore;
 let app: App;
 let auth: Auth;
-let initializationOptions: AppOptions = {};
-if (getApps().length === 0) {
-    if (environmentVariable('PUBLIC_USE_EMULATORS') === 'true') {
-        console.log('🔸 Using Emulators in the Backend');
-        process.env['FIREBASE_AUTH_EMULATOR_HOST'] = 'localhost:8082';
+
+export function initializeApp({
+    appName,
+    serviceAccount,
+    useEmulators,
+}: Partial<{
+    appName: string;
+    serviceAccount: string;
+    useEmulators?: boolean;
+}> = {}) {
+    if ((useEmulators || process.env.PUBLIC_USE_EMULATORS === 'true') && !serviceAccount) {
+        console.log('🔸 Using Emulators in the Jobs');
+        process.env['FIRESTORE_EMULATOR_HOST'] = 'localhost:8080';
         initializationOptions = {
             ...initializationOptions,
             projectId: 'flightplot-web',
         };
     } else {
-        const serviceAccount = environmentVariable('FIREBASE_SERVICE_ACCOUNT_KEY');
-        if (!serviceAccount) {
-            throw new Error(
-                'FIREBASE_SERVICE_ACCOUNT_KEY must be set if PUBLIC_USE_EMULATORS is not set to true',
-            );
-        }
+        delete process.env['FIRESTORE_EMULATOR_HOST'];
         initializationOptions = {
             ...initializationOptions,
-            credential: cert(JSON.parse(serviceAccount)),
+            credential: cert(
+                JSON.parse(serviceAccount || process.env.FIREBASE_SERVICE_ACCOUNT_KEY || ''),
+            ),
         };
     }
-    app = initializeApp(initializationOptions);
-} else {
-    app = getApp();
+    app = firebaseInit(initializationOptions, appName || randomString());
+
+    firestore = getFirestore(app);
+    firestore.settings({
+        ignoreUndefinedProperties: true,
+    });
+
+    auth = getAuth(app);
+    return { app, firestore, auth: auth };
 }
-auth = getAuth(app);
+
+const randomString = () => {
+    return Math.random().toString(36).substring(7);
+};
 
 export { auth };

@@ -13,7 +13,7 @@ type VorPointWaypointProps = {
 };
 
 export class VorPointWaypoint {
-    private readonly _vorDme;
+    readonly _vorDme;
     altitude: number | null;
     qdr;
     distanceInNm;

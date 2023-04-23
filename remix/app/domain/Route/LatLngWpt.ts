@@ -29,8 +29,8 @@ export class LatLngWpt {
             Codec.struct({
                 id: uuidCodec, // TODO Implement IcaoCode codec
                 latLng: latLngCodec,
-                name: Codec.string,
-                altHeightFl: AltHeightFl.codec(codecType),
+                name: Codec.nullable(Codec.string),
+                altHeightFl: Codec.nullable(AltHeightFl.codec(codecType)),
             }),
         );
 

@@ -26,6 +26,15 @@ export class Route {
         this.lastChangeAt = props.lastChangeAt;
     }
 
+    static empty = () =>
+        new Route({
+            waypoints: [],
+            id: UUID.generatev4(),
+            title: 'Route Sans Titre',
+            printAreas: [],
+            lastChangeAt: new Date().getTime(),
+        });
+
     static propsCodec = (codecType: CodecType) =>
         pipe(
             Codec.struct({

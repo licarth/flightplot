@@ -1,26 +1,26 @@
 import type { DataSnapshot, Unsubscribe } from 'firebase/database';
 import { getDatabase, onValue, ref, remove, set } from 'firebase/database';
 import * as Either from 'fp-ts/lib/Either';
-import { pipe } from 'fp-ts/lib/function';
 import * as Option from 'fp-ts/lib/Option';
+import { pipe } from 'fp-ts/lib/function';
 import * as _ from 'lodash';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import type { AiracData } from 'ts-aerodata-france';
-import { Route } from '../../domain';
+import { OldRoute } from '../../domain';
 import type { UUID } from '../../domain/Uuid/Uuid';
 import { useFirebaseAuth } from '../firebase/auth/FirebaseAuthContext';
 import { useAiracData } from './useAiracData';
 
 export const UserRoutesContext = createContext<{
-    routes: Record<string, Route>;
-    saveRoute: (route: Route) => void;
+    routes: Record<string, OldRoute>;
+    saveRoute: (route: OldRoute) => void;
     deleteRoute: (routeId: UUID) => void;
     lastLocalChangeAt: number;
     listenToRouteChanges: (
         routeId: UUID,
         lastChangeAt: number,
-        callback: (newRoute: Route) => void,
+        callback: (newRoute: OldRoute) => void,
     ) => Unsubscribe;
     loading: boolean;
 }>({
@@ -32,7 +32,7 @@ export const UserRoutesContext = createContext<{
     loading: false,
 });
 
-type RoutesState = Record<string, Route> | 'loading';
+type RoutesState = Record<string, OldRoute> | 'loading';
 
 export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const { user } = useFirebaseAuth();
@@ -47,7 +47,7 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
 
     const { airacData, loading: airacDataLoading } = useAiracData();
 
-    const shouldPropagateChange = (newRoute: Route) => {
+    const shouldPropagateChange = (newRoute: OldRoute) => {
         if (newRoute.lastChangeAt && lastLocalChangeAt) {
             if (newRoute.lastChangeAt > lastLocalChangeAt.current) {
                 return true;
@@ -61,7 +61,7 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
     };
 
     const listenToRouteChanges = useCallback(
-        (routeId: UUID, lastChangeAt: number, routeCallback: (newRoute: Route) => void) => {
+        (routeId: UUID, lastChangeAt: number, routeCallback: (newRoute: OldRoute) => void) => {
             if (airacDataLoading) {
                 return () => {};
             }
@@ -69,7 +69,7 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
             setLastLocalChangeAt(lastChangeAt);
             if (route) {
                 const dbAddress = `routes/${user?.uid}/${routeId.toString()}`;
-                const newRouteCallback = (newRoute: Route): void => {
+                const newRouteCallback = (newRoute: OldRoute): void => {
                     if (shouldPropagateChange(newRoute)) {
                         routeCallback(newRoute);
                     }
@@ -106,7 +106,7 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
                             Option.fromNullable(v),
                             Either.fromOption(() => new Error('no route stored')),
                             Either.map((x) => JSON.parse(x)),
-                            Either.chainW(Route.codec(airacData).decode),
+                            Either.chainW(OldRoute.codec(airacData).decode),
                             Either.fold(
                                 () => null,
                                 (r) => r,
@@ -114,7 +114,7 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
                         ),
                     ),
                     _.isNull,
-                ) as Record<string, Route>;
+                ) as Record<string, OldRoute>;
                 setRoutes(routesOrError);
             },
             (reason) => console.error(`Connection rejected: ${reason}`),
@@ -127,13 +127,13 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
     }, [user, airacDataLoading]);
 
     const saveRoute = useCallback(
-        (route: Route) => {
+        (route: OldRoute) => {
             if (airacDataLoading) {
                 return;
             }
             console.log(`Saving route... with lastChangeAt ${route.lastChangeAt}`);
             const aRef = ref(db, `routes/${user?.uid}/${route.id.toString()}`);
-            const routeJson = JSON.stringify(Route.codec(airacData).encode(route));
+            const routeJson = JSON.stringify(OldRoute.codec(airacData).encode(route));
             setLastLocalChangeAt(route.lastChangeAt || 0);
             set(aRef, routeJson)
                 .then(() => {
@@ -177,7 +177,7 @@ export const UserRoutesProvider: React.FC<PropsWithChildren> = ({ children }) =>
 };
 
 const processValue =
-    (newRouteCallback: (newRoute: Route) => void, airacData: AiracData) =>
+    (newRouteCallback: (newRoute: OldRoute) => void, airacData: AiracData) =>
     (rSnapshot: DataSnapshot) => {
         console.log('Current route has changed !');
         const routeString = rSnapshot.val() as string;
@@ -186,7 +186,7 @@ const processValue =
                 Option.fromNullable(rSnapshot.val() as string),
                 Either.fromOption(() => new Error('no route stored')),
                 Either.map((x) => JSON.parse(x)),
-                Either.chainW(Route.codec(airacData).decode),
+                Either.chainW(OldRoute.codec(airacData).decode),
                 Either.fold((e) => {
                     //@ts-ignore
                     console.error(draw(e));

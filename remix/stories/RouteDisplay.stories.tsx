@@ -6,7 +6,7 @@ import { FirebaseAuthProvider } from '~/fb/firebase/auth/FirebaseAuthContext';
 import '../app/styles/global.css';
 
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { Route } from '~/domain';
+import { OldRoute } from '~/domain';
 import { RouteProvider } from '~/fb/components/RouteContext';
 import { auth } from '~/fb/firebaseConfig';
 
@@ -38,11 +38,11 @@ const SetRoute = ({ airacData }: { airacData: AiracData }) => {
     const { setRoute } = useRoute();
     const { saveRoute } = useUserRoutes();
     const route = pipe(
-        Route.codec(airacData).decode(routeJSON),
+        OldRoute.codec(airacData).decode(routeJSON),
         foldW(
             (e) => {
                 console.log(draw(e));
-                return Route.empty();
+                return OldRoute.empty();
             },
             (r) => {
                 return r;

@@ -1,4 +1,4 @@
-import { Route, Waypoint } from '../domain';
+import { OldRoute, Waypoint } from '../domain';
 import { elevationOnRoute } from './elevationOnRoute';
 import { localApiElevationService } from './ElevationService/localApiElevationService';
 
@@ -9,7 +9,7 @@ describe.skip('elevationOnRoute', () => {
                 await elevationOnRoute({
                     elevationService: localApiElevationService,
                 })(
-                    new Route({
+                    new OldRoute({
                         waypoints: [
                             Waypoint.create({
                                 latLng: { lat: 43, lng: -10 },

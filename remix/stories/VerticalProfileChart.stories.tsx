@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { draw } from 'io-ts/lib/Decoder';
 import { AiracData, AirspaceType, DangerZoneType } from 'ts-aerodata-france';
 import currentCycle from 'ts-aerodata-france/build/jsonData/2023-03-23.json';
-import { Route } from '~/domain/Route';
+import { OldRoute } from '~/domain/Route';
 import { VerticalProfileChart } from '~/fb/components/VerticalProfileChart/VerticalProfileChart';
 import { emptyElevation } from '~/fb/elevationOnRoute';
 import '../app/styles/global.css';
@@ -28,11 +28,11 @@ const Template: ComponentStory<typeof VerticalProfileChart> = (
 ) => {
     // useEffect(() => {
     const route = pipe(
-        Route.codec(airacData).decode(routeJSON),
+        OldRoute.codec(airacData).decode(routeJSON),
         foldW(
             (e) => {
                 console.log(draw(e));
-                return Route.empty();
+                return OldRoute.empty();
             },
             (r) => r,
         ),

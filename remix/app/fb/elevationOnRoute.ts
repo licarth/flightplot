@@ -2,7 +2,7 @@ import CheapRuler from 'cheap-ruler';
 import type { Reader } from 'fp-ts/lib/Reader';
 import _ from 'lodash';
 import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
-import type { Route } from '../domain';
+import type { OldRoute } from '../domain';
 import type { ElevationService } from './ElevationService/ElevationService';
 
 const ruler = new CheapRuler(43, 'nauticalmiles');
@@ -18,10 +18,10 @@ export const emptyElevation = {
 };
 export const elevationOnRoute: Reader<
     { elevationService: ElevationService },
-    (route: Route) => Promise<ElevationAtPoint>
+    (route: OldRoute) => Promise<ElevationAtPoint>
 > =
     ({ elevationService }) =>
-    async (route: Route) => {
+    async (route: OldRoute) => {
         if (route.length === 0) {
             return emptyElevation;
         }

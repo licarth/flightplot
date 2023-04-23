@@ -1,7 +1,7 @@
 import type { Airspace, Latitude, Longitude } from 'ts-aerodata-france';
 import { AirspaceClass, AirspaceType, Altitude, Height } from 'ts-aerodata-france';
 import { routeAirspaceOverlaps } from './AirspaceIntersection/routeAirspaceOverlaps';
-import { Route } from './Route';
+import { OldRoute } from './Route';
 import { latLngWaypointFactory } from './Waypoint';
 
 const lat = (lat: number) => lat as unknown as Latitude; // Workaround
@@ -25,7 +25,7 @@ describe('VerticalProfile', () => {
                 name: 'CTR IMAGINAIRE',
             },
         ];
-        const route = Route.factory({
+        const route = OldRoute.factory({
             waypoints: [
                 latLngWaypointFactory({ latLng: { lat: 0.1, lng: 0.1 } }),
                 latLngWaypointFactory({ latLng: { lat: 0.3, lng: 0.3 } }),
@@ -56,7 +56,7 @@ describe('VerticalProfile', () => {
                 name: 'CTR IMAGINAIRE',
             },
         ];
-        const route = Route.factory({
+        const route = OldRoute.factory({
             waypoints: [
                 latLngWaypointFactory({ latLng: { lat: 0.1, lng: 0.1 } }),
                 latLngWaypointFactory({ latLng: { lat: 0.2, lng: 0.2 } }),
@@ -88,7 +88,7 @@ describe('VerticalProfile', () => {
                 name: 'CTR IMAGINAIRE',
             },
         ];
-        const route = Route.factory({
+        const route = OldRoute.factory({
             waypoints: [
                 latLngWaypointFactory({ latLng: { lat: -0.1, lng: -0.1 } }),
                 latLngWaypointFactory({ latLng: { lat: 0.1, lng: 0.1 } }),

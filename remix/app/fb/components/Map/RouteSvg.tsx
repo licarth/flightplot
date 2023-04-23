@@ -1,15 +1,15 @@
 import { useRef } from 'react';
-import type { Route } from '../../../domain';
+import type { OldRoute } from '../../../domain';
 import type { LatLng } from '../../../domain/LatLng';
 import type { PrintArea } from '../../../domain/PrintArea';
-import { convertToLambert } from './coordsConverter';
 import { createLineForRouteSegment } from './FlightPlanningLayer';
+import { convertToLambert } from './coordsConverter';
 
 export const RouteSvg = ({
     route,
     printArea: { pageFormat: format, bottomLeft },
 }: {
-    route: Route;
+    route: OldRoute;
     printArea: PrintArea;
 }) => {
     const hundredMilliInLambert = 105_000 / 2.1;

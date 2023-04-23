@@ -16,7 +16,7 @@ import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
 import type { Altitude, FlightLevel, Height } from 'ts-aerodata-france';
 import { AirspaceType, DangerZoneType } from 'ts-aerodata-france';
-import type { Route, Waypoint } from '../../../domain';
+import type { OldRoute, Waypoint } from '../../../domain';
 import { AerodromeWaypoint, AerodromeWaypointType } from '../../../domain';
 import { aircraftCollection } from '../../../domain/Aircraft';
 import type { AirspaceSegmentOverlap } from '../../../domain/AirspaceIntersection/routeAirspaceOverlaps';
@@ -35,7 +35,7 @@ export type SetWaypointAltitude = ({
 }) => void;
 
 type Props = {
-    route: Route;
+    route: OldRoute;
     elevation: ElevationAtPoint;
     setWaypointAltitude?: SetWaypointAltitude;
     airspaceOverlaps: AirspaceSegmentOverlap[];

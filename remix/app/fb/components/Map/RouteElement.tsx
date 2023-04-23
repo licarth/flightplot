@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import _ from 'lodash';
 import { useState } from 'react';
 import styled from 'styled-components';
-import type { Route, Waypoint } from '../../../domain';
+import type { OldRoute, Waypoint } from '../../../domain';
 import { AerodromeWaypoint, AerodromeWaypointType } from '../../../domain';
 import type { RemoveWaypoint, ReplaceWaypoint, SetWaypointAltitude, useRoute } from '../useRoute';
 
@@ -11,7 +11,7 @@ type RouteElementProps = {
     waypoint: Waypoint;
     waypointPosition: number;
     removeWaypoint: RemoveWaypoint;
-    routeContextWithRoute: ReturnType<typeof useRoute> & { route: Route };
+    routeContextWithRoute: ReturnType<typeof useRoute> & { route: OldRoute };
 };
 
 export const RouteElement = ({
@@ -153,7 +153,7 @@ const NameDisplay = ({
     w,
     i,
 }: {
-    route: Route;
+    route: OldRoute;
     editingName: boolean;
     setEditingName: (b: boolean) => void;
     replaceWaypoint: ReplaceWaypoint;
@@ -202,7 +202,7 @@ const AltitudeDisplay = ({
     w,
     i,
 }: {
-    route: Route;
+    route: OldRoute;
     editingAltitude: boolean;
     setEditingAltitude: (b: boolean) => void;
     setWaypointAltitude: SetWaypointAltitude;

@@ -1,18 +1,18 @@
 import { aircraftCollection } from '../Aircraft';
 import type { Waypoint } from '../Waypoint';
 import { latLngWaypointFactory } from '../Waypoint/LatLngWaypoint.factory';
-import { Route } from './Route';
+import { OldRoute } from './OldRoute';
 
 describe('Route', () => {
     it('should add a waypoint properly', () => {
-        const route = Route.create().addWaypoint({
+        const route = OldRoute.create().addWaypoint({
             waypoint: latLngWaypointFactory(),
         });
 
         expect(route.waypoints).toHaveLength(1);
     });
     it('should remove a waypoint properly', () => {
-        const route = Route.create({
+        const route = OldRoute.create({
             waypoints: [latLngWaypointFactory()],
         });
 
@@ -24,7 +24,7 @@ describe('Route', () => {
         const wp1 = wp(1);
         const wp2 = wp(2);
         const wp3 = wp(3);
-        const route = Route.create({
+        const route = OldRoute.create({
             waypoints: [wp0, wp1, wp2, wp3],
         });
 
@@ -36,7 +36,7 @@ describe('Route', () => {
         const wp2 = wp(2);
         const wp3 = wp(3);
 
-        const route = Route.create({
+        const route = OldRoute.create({
             waypoints: [wp0, wp1, wp2, wp3],
         });
 
@@ -52,7 +52,7 @@ describe('Route.verticalProfile()', () => {
     it('should return correct climb calculations', () => {
         const wp0 = wp(0);
         const wp1 = wp(1).clone({ altitude: 1000 });
-        const route = Route.create({
+        const route = OldRoute.create({
             waypoints: [wp0, wp1],
         });
 

@@ -2,7 +2,7 @@ import * as Option from 'fp-ts/lib/Option';
 import { pipe } from 'fp-ts/lib/function';
 import styled, { css } from 'styled-components';
 import type { Aerodrome, VhfFrequencyWithRemarks } from 'ts-aerodata-france';
-import type { Route } from '../../../domain';
+import type { OldRoute } from '../../../domain';
 import { AerodromeWaypoint } from '../../../domain';
 import { useWeather } from '../WeatherContext';
 import { Colors } from './Colors';
@@ -25,7 +25,7 @@ export const NavigationLog = ({
     paperVersion = false,
     tinyVersion = false,
 }: {
-    route: Route;
+    route: OldRoute;
     paperVersion?: boolean;
     tinyVersion?: boolean;
 }) => (
@@ -442,7 +442,7 @@ const Row = styled.div`
 `;
 
 const LegTable = styled.div<{
-    route: Route;
+    route: OldRoute;
 }>`
     display: flex;
     flex-direction: column;

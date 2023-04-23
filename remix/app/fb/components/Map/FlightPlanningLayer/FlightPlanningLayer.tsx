@@ -3,18 +3,18 @@ import CheapRuler from 'cheap-ruler';
 import { primaryInput } from 'detect-it';
 import { Fragment, useState } from 'react';
 import { Circle, Pane, Polyline, SVGOverlay, Tooltip } from 'react-leaflet';
-import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
 import { VfrPointWaypoint } from '~/domain/Waypoint/VfrPointWaypoint';
 import { VorPointWaypoint } from '~/domain/Waypoint/VorPointWaypoint';
+import { toCheapRulerPoint } from '~/domain/toCheapRulerPoint';
 import { Target as TargetIcon } from '~/generated/icons';
-import type { Route, Waypoint } from '../../../../domain';
+import type { OldRoute, Waypoint } from '../../../../domain';
 import type { LatLng } from '../../../../domain/LatLng';
 import { fromtTurfPoint, toLatLng } from '../../../../domain/LatLng';
 import type { LatLngWaypoint } from '../../../../domain/Waypoint';
 import { AerodromeWaypoint, AerodromeWaypointType } from '../../../../domain/Waypoint';
 import type { useRoute } from '../../useRoute';
-import { boxAround } from '../boxAround';
 import { useFixtureFocus } from '../FixtureFocusContext';
+import { boxAround } from '../boxAround';
 import { preventDefault } from '../preventDefault';
 import { Z_INDEX_MOUSE_ADD_POINT_TOOLTIP } from '../zIndex';
 import { FixtureWaypointMarker } from './FixtureWaypointMarker';
@@ -200,7 +200,7 @@ export const FlightPlanningLayer = ({
     );
 };
 
-export function createLineForRouteSegment(route: Route, segmentNumber: number) {
+export function createLineForRouteSegment(route: OldRoute, segmentNumber: number) {
     const waypoint1 = route.waypoints[segmentNumber];
     const waypoint2 = route.waypoints[segmentNumber + 1];
     return lineBetweenWaypoints(waypoint1, waypoint2);

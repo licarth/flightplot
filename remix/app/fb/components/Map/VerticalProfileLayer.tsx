@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Polyline, useMap, useMapEvents } from 'react-leaflet';
 import type { AiracData } from 'ts-aerodata-france';
 import { AirspaceType } from 'ts-aerodata-france';
-import type { Route } from '../../../domain';
+import type { OldRoute } from '../../../domain';
 import { routeAirspaceOverlapsGraphical } from '../../../domain/VerticalProfileGraphical';
 
 export const VerticalProfileLayer = ({
@@ -11,7 +11,7 @@ export const VerticalProfileLayer = ({
     route,
 }: {
     airacData?: AiracData;
-    route: Route;
+    route: OldRoute;
 }) => {
     const [mapBounds, setMapBounds] = useState<[number, number, number, number]>();
     const leafletMap = useMap();

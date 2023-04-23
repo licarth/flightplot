@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import styled from 'styled-components';
 import { AiracData } from 'ts-aerodata-france';
 import currentCycle from 'ts-aerodata-france/build/jsonData/2023-03-23.json';
-import type { Route } from '~/domain';
+import type { OldRoute } from '~/domain';
 import { AiracDataProvider } from '~/fb/components/AiracDataContext';
 import { FixtureFocusProvider } from '~/fb/components/Map/FixtureFocusContext';
 import { LeafletMapContainer } from '~/fb/components/Map/LeafletMapContainer.client';
@@ -15,7 +15,7 @@ import '../app/styles/global.css';
 import { importRoute } from './importRoute';
 import routeJSON from './route1.json';
 
-const RouteInit = ({ route }: { route: Route }) => {
+const RouteInit = ({ route }: { route: OldRoute }) => {
     const { setRoute } = useRoute();
     useEffect(() => {
         route && setRoute(route);

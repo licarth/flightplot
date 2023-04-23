@@ -3,16 +3,16 @@ import _ from 'lodash';
 import { useRef, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
-import { AerodromeWaypoint, AerodromeWaypointType, Route } from '../../../domain';
-import { useFirebaseAuth } from '../../firebase/auth/FirebaseAuthContext';
+import { AerodromeWaypoint, AerodromeWaypointType, OldRoute } from '../../../domain';
 import Modal from '../../Modal';
+import { useFirebaseAuth } from '../../firebase/auth/FirebaseAuthContext';
 import { CollapsibleDiv } from '../Map/CollapsibleDiv';
 import { NewNavButton } from '../Map/LeftMenu';
 import { useMainMap } from '../Map/MainMapContext';
 import { useRoute } from '../useRoute';
 import { useUserRoutes } from '../useUserRoutes';
 
-type OnRouteSelect = (route: Route) => void;
+type OnRouteSelect = (route: OldRoute) => void;
 
 export const MyRoutes = ({
     onRouteSelect = () => {},
@@ -36,7 +36,7 @@ export const MyRoutes = ({
             <CollapsibleDiv collapsed={collapsed}>
                 <NewNavButton
                     onClick={() => {
-                        const newRoute = Route.empty();
+                        const newRoute = OldRoute.empty();
                         saveRoute(newRoute);
                         setRoute(() => newRoute);
                         onRouteSelect(newRoute);
@@ -64,7 +64,7 @@ const RouteLine = ({
     routeName,
     onRouteSelect = () => {},
 }: {
-    route: Route;
+    route: OldRoute;
     routeName: string | null;
     onRouteSelect?: OnRouteSelect;
 }) => {

@@ -1,21 +1,21 @@
 import type { Unsubscribe } from 'firebase/database';
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
-import type { Route } from '../../domain';
+import type { OldRoute } from '../../domain';
 import type { AirspaceSegmentOverlap } from '../../domain/AirspaceIntersection/routeAirspaceOverlaps';
 import { routeAirspaceOverlaps } from '../../domain/AirspaceIntersection/routeAirspaceOverlaps';
 import type { UUID } from '../../domain/Uuid/Uuid';
+import { localApiElevationService } from '../ElevationService/localApiElevationService';
 import type { ElevationAtPoint } from '../elevationOnRoute';
 import { elevationOnRoute } from '../elevationOnRoute';
-import { localApiElevationService } from '../ElevationService/localApiElevationService';
 import { useMainMap } from './Map/MainMapContext';
 import { useAiracData } from './useAiracData';
 import { useUserRoutes } from './useUserRoutes';
 
 const emptyElevation = { distancesFromStartInNm: [], elevations: [] };
 type RouteContextProps = {
-    route?: Route;
-    setRoute: React.Dispatch<React.SetStateAction<Route | undefined>>;
+    route?: OldRoute;
+    setRoute: React.Dispatch<React.SetStateAction<OldRoute | undefined>>;
     elevation: ElevationAtPoint;
     switchRoute: (routeId: UUID) => void;
     airspaceOverlaps: AirspaceSegmentOverlap[];
@@ -32,7 +32,7 @@ export const RouteProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const { routes, saveRoute, listenToRouteChanges } = useUserRoutes();
     const [unsubscribe, setUnsubscribe] = useState<Unsubscribe>();
     // const [route, setRoute] = useState<Route>(exampleRoute);
-    const [route, setRoute] = useState<Route>();
+    const [route, setRoute] = useState<OldRoute>();
 
     const { airspaceTypesToDisplay } = useMainMap();
 

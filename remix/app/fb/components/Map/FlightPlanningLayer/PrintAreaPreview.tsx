@@ -4,7 +4,7 @@ import { Point } from 'leaflet';
 import _ from 'lodash';
 import React, { useRef, useState } from 'react';
 import { Marker, Polygon } from 'react-leaflet';
-import type { Route } from '../../../../domain';
+import type { OldRoute } from '../../../../domain';
 import type { LatLng } from '../../../../domain/LatLng';
 import type { PageFormat } from '../../../../domain/PageFormat';
 import { toArrayCoords } from '../../../../domain/VerticalProfileGraphical';
@@ -46,8 +46,8 @@ const SinglePrintAreaPreview = ({
     setRoute,
 }: {
     currentPrintAreaIndex: number;
-    route: Route;
-    setRoute: React.Dispatch<React.SetStateAction<Route | undefined>>;
+    route: OldRoute;
+    setRoute: React.Dispatch<React.SetStateAction<OldRoute | undefined>>;
 }) => {
     const [bottomLeftDrag, setBottomLeftDrag] = useState<LatLng | null>(null);
     const markerRef = useRef<LeafletMarker>(null);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import type { Route } from '../../../domain';
+import type { OldRoute } from '../../../domain';
 import type { PageFormat } from '../../../domain/PageFormat';
 import type { PrintArea } from '../../../domain/PrintArea';
 import { usePrint } from '../PrintContext';
@@ -40,7 +40,7 @@ export const PrintPreview = () => {
     );
 };
 
-const PrintedMapPage = ({ route, printArea }: { route: Route; printArea: PrintArea }) => {
+const PrintedMapPage = ({ route, printArea }: { route: OldRoute; printArea: PrintArea }) => {
     const { pageFormat: format } = printArea;
     return (
         <Page singlePage landscape={format.dxMillimeters > format.dyMillimeters}>

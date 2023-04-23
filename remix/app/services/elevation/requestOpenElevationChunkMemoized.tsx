@@ -1,3 +1,4 @@
+import { Agent } from 'https';
 import memoize from 'memoizee';
 import type { LatLng } from './ElevationService';
 import { checkStatus } from './ElevationService';
@@ -14,6 +15,9 @@ const requestOpenElevationChunk = async (chunk: LatLng[]): Promise<any> => {
         },
         body: JSON.stringify({
             locations: chunk.map(([lat, lng]) => ({ latitude: lat, longitude: lng })),
+        }),
+        agent: new Agent({
+            rejectUnauthorized: false,
         }),
     });
     try {

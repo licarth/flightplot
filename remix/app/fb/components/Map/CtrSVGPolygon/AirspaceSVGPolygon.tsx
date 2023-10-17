@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Polygon, SVGOverlay } from 'react-leaflet';
+import styled from 'styled-components';
 import type { LatLng } from 'ts-aerodata-france';
 import { toLeafletLatLng } from '~/domain';
 import { boundingBox } from '~/domain/boundingBox';
@@ -18,6 +19,7 @@ type Props = {
     thickBorderWidth?: number;
     thinBorderWidth?: number;
     highlightedThinBorderWidth?: number;
+    displayLabels: boolean;
 };
 
 export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
@@ -32,9 +34,10 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
     thinBorderWidth = 0.6,
     highlightedThinBorderWidth = thinBorderWidth * 3,
     prefix,
+    displayLabels,
 }: Props) {
     // remove spaces
-    const id = `${prefix}-${name}`.replace(/\s/g, '');
+    const id = `${name}`.replace(/\s/g, '_');
     const leafletGeom = geometry.map(toLeafletLatLng);
     const geom = leafletGeom
         .map(convertToWebMercator)
@@ -66,7 +69,7 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
                     (maxlat - minlat) / 1000
                 }`}
             >
-                <clipPath id={`${prefix}-clip-${id}`}>
+                <clipPath id={`clip-${id}`}>
                     <path d={d}></path>
                 </clipPath>
                 <g
@@ -74,23 +77,34 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
                         display: 'none',
                     }}
                 >
-                    <path id={`${prefix}-${id}`} d={d}></path>
+                    <path id={`${id}`} d={d}></path>
                 </g>
                 <use
                     stroke={thickBorderColor}
                     strokeOpacity={0.5}
                     strokeWidth={thickBorderWidth}
-                    clipPath={`url(#${prefix}-clip-${id})`}
-                    xlinkHref={`#${prefix}-${id}`}
+                    clipPath={`url(#clip-${id})`}
+                    xlinkHref={`#${id}`}
                 />
                 <use
                     stroke={thinBorderColor}
                     strokeWidth={highlighted ? highlightedThinBorderWidth : thinBorderWidth}
                     fillOpacity={0.2}
                     strokeDasharray={thinDashArray}
-                    clipPath={`url(#${prefix}-clip-${id})`}
-                    xlinkHref={`#${prefix}-${id}`}
+                    clipPath={`url(#clip-${id})`}
+                    xlinkHref={`#${id}`}
                 />
+                {displayLabels && (
+                    <AirspaceNameText dy={-thinBorderWidth}>
+                        <AirspaceNameTextPath
+                            xlinkHref={`#${id}`}
+                            $color={thinBorderColor}
+                            startOffset={'50%'}
+                        >
+                            {name}
+                        </AirspaceNameTextPath>
+                    </AirspaceNameText>
+                )}
             </svg>
             {/* Polygon is only required for tooltip */}
             <Polygon
@@ -104,3 +118,14 @@ export const AirspaceSVGPolygon = memo(function AirspaceSVGPolygon({
         </SVGOverlay>
     );
 });
+
+const AirspaceNameText = styled.text`
+    /* transform: scale(+1, -1); */
+`;
+
+const AirspaceNameTextPath = styled.textPath<{ $color: string }>`
+    font-size: 0.1rem;
+    fill: ${({ $color }) => $color};
+    font-family: 'Futura';
+    font-weight: 900;
+`;

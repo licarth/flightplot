@@ -9,12 +9,14 @@ type CtrSVGPolygonProps = {
     ctr: Airspace;
     i: number;
     highlighted?: boolean;
+    displayLabels: boolean;
 };
 
 export const CtrSVGPolygon = memo(function CtrSVGPolygon({
     ctr: airspace,
     i,
     highlighted,
+    displayLabels,
 }: CtrSVGPolygonProps) {
     const { geometry, name, type } = airspace;
 
@@ -31,6 +33,7 @@ export const CtrSVGPolygon = memo(function CtrSVGPolygon({
             thinBorderWidth={thinBorderWidth(airspace)}
             highlightedThinBorderWidth={highlightedThinBorderWidth(type)}
             prefix="ctr-tma-siv"
+            displayLabels={displayLabels}
         />
     );
 });

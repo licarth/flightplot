@@ -11,6 +11,7 @@ import { PrintPreview } from '~/fb/components/Map/PrintPreview';
 import { TemporaryMapBoundsProvider } from '~/fb/components/Map/TemporaryMapCenterContext';
 import { MouseModeProvider } from '~/fb/components/MouseModeContext';
 import { SearcheableElementProvider } from '~/fb/components/SearchItemContext';
+import { RtbaZonesProvider } from '~/fb/contexts/RtbaZonesContext';
 import { WeatherProvider } from '~/fb/components/WeatherContext';
 import { environmentVariable } from '~/fb/environmentVariable';
 import { AiracDataProvider } from '../fb/components/AiracDataContext';
@@ -33,33 +34,35 @@ export default () => {
                 {fullstoryOrgId && <FullStory org={fullstoryOrgId} />}
                 <FirebaseAuthProvider>
                     <AiracDataProvider>
-                        <WeatherProvider>
-                            <UserRoutesProvider>
-                                <MainMapProvider>
-                                    <RouteProvider>
-                                        <FixtureFocusProvider>
-                                            <SearcheableElementProvider>
-                                                <PrintProvider>
-                                                    <div
-                                                        id="modal-root"
-                                                        data-testid="modal-root"
-                                                    ></div>
-                                                    <AppContainer id="app">
-                                                        <MouseModeProvider>
-                                                            <TemporaryMapBoundsProvider>
-                                                                <DisplayedContent />
-                                                            </TemporaryMapBoundsProvider>
-                                                        </MouseModeProvider>
-                                                    </AppContainer>
-                                                    <PrintContent>{''}</PrintContent>
-                                                    <PrintPreview />
-                                                </PrintProvider>
-                                            </SearcheableElementProvider>
-                                        </FixtureFocusProvider>
-                                    </RouteProvider>
-                                </MainMapProvider>
-                            </UserRoutesProvider>
-                        </WeatherProvider>
+                        <RtbaZonesProvider>
+                            <WeatherProvider>
+                                <UserRoutesProvider>
+                                    <MainMapProvider>
+                                        <RouteProvider>
+                                            <FixtureFocusProvider>
+                                                <SearcheableElementProvider>
+                                                    <PrintProvider>
+                                                        <div
+                                                            id="modal-root"
+                                                            data-testid="modal-root"
+                                                        ></div>
+                                                        <AppContainer id="app">
+                                                            <MouseModeProvider>
+                                                                <TemporaryMapBoundsProvider>
+                                                                    <DisplayedContent />
+                                                                </TemporaryMapBoundsProvider>
+                                                            </MouseModeProvider>
+                                                        </AppContainer>
+                                                        <PrintContent>{''}</PrintContent>
+                                                        <PrintPreview />
+                                                    </PrintProvider>
+                                                </SearcheableElementProvider>
+                                            </FixtureFocusProvider>
+                                        </RouteProvider>
+                                    </MainMapProvider>
+                                </UserRoutesProvider>
+                            </WeatherProvider>
+                        </RtbaZonesProvider>
                     </AiracDataProvider>
                 </FirebaseAuthProvider>
             </HelpPageProvider>

@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import { AiracData } from "ts-aerodata-france";
-import dataJson from "ts-aerodata-france/build/jsonData/2022-11-03.json" assert { type: "json" };
+import dataJson from "ts-aerodata-france/build/jsonData/2023-02-23.json" assert { type: "json" };
 import { getFirestore } from "firebase-admin/firestore";
 import fetch from "node-fetch";
 import _ from "lodash";
@@ -61,12 +61,10 @@ export const fetchMetars = async () => {
     `found ${Object.keys(frenchMetarsByIcaoCode).length} unique french metars`
   );
   const db = getFirestore();
-  await db
-    .collection("metars")
-    .add({
-      queriedAt: new Date(),
-      metars: Object.values(frenchMetarsByIcaoCode),
-    });
+  await db.collection("metars").add({
+    queriedAt: new Date(),
+    metars: Object.values(frenchMetarsByIcaoCode),
+  });
   console.log("wrote metars to firestore");
 };
 

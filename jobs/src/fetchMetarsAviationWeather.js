@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 import { getFirestore } from "firebase-admin/firestore";
 import fetch from "node-fetch";
 import { AiracData } from "ts-aerodata-france";
-import dataJson from "ts-aerodata-france/build/jsonData/2022-11-03.json" assert { type: "json" };
+import dataJson from "ts-aerodata-france/build/jsonData/2023-02-23.json" assert { type: "json" };
 
 dotenv.config();
 const METAR_API_URL = "https://api.checkwx.com/metar";

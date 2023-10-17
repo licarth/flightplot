@@ -346,10 +346,6 @@ const ResultsContainer = styled.div<{ $itemSelected?: boolean }>`
     background-color: #fff;
     /* border: 1px solid #000; */
     max-height: ${() => {
-        if (typeof window !== 'undefined') {
-            console.log(window?.visualViewport?.height);
-        }
-
         return typeof window !== 'undefined' && window?.visualViewport
             ? `${window.visualViewport.height - 100}px`
             : '80vh';

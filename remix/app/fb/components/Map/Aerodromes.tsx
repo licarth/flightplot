@@ -291,8 +291,6 @@ const MetarTafC = ({
 
     const isOld = elapsedMinutes > 40;
 
-    `${icaoCode}` === 'LFMT' && console.log('Render metar info for' + icaoCode);
-
     return (
         <>
             <SVGOverlay

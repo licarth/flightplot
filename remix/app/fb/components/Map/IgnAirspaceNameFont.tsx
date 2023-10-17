@@ -5,7 +5,7 @@ type Props = {
     $color?: string;
 };
 
-export const IgnAirspaceNameFont = styled.span<Props>`
+export const IgnAirspaceNameFont = styled.div<Props>`
     text-align: center;
     font-family: 'Futura';
     color: ${({ $color }) => $color || Colors.ctrBorderBlue};
